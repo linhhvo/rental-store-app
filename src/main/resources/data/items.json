@@ -1,0 +1,26 @@
+[
+  {
+    "name": "sleeping bag",
+    "desc": "one sleeper bag",
+    "ownedQuantity": 10,
+    "category": "Camping",
+    "ratePerHour": 1,
+    "itemId": "item1",
+    "incidents": [],
+    "dependencies": [],
+    "images": [],
+    "comments": []
+  },
+  {
+    "name": "tent",
+    "desc": "tent for camping",
+    "ownedQuantity": 3,
+    "category": "Camping",
+    "ratePerHour": 2.5,
+    "itemId": "item1",
+    "incidents": [],
+    "dependencies": [],
+    "images": [],
+    "comments": []
+  }
+]
