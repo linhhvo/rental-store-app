@@ -5,10 +5,12 @@
     "ownedQuantity": 10,
     "category": "Camping",
     "ratePerHour": 1,
-    "itemId": "item1",
+    "itemId": "9ebe928f-c6d3-429b-8aa1-3aab31336b19",
     "incidents": [],
     "dependencies": [],
-    "images": [],
+    "images": [
+      "sleepingbang1.jpg"
+    ],
     "comments": []
   },
   {
@@ -17,10 +19,13 @@
     "ownedQuantity": 3,
     "category": "Camping",
     "ratePerHour": 2.5,
-    "itemId": "item1",
+    "itemId": "a2b0eda0-b400-4fbb-9977-53657db92477",
     "incidents": [],
     "dependencies": [],
-    "images": [],
+    "images": [
+      "tent2.jpg",
+      "tent1.jpg"
+    ],
     "comments": []
   }
 ]
