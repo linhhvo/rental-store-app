@@ -1,7 +1,9 @@
 import ItemCategory.Camping
 import upickle.default.*
-import java.util.UUID
 
+import scala.util.Random
+import java.util.UUID
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils._
 import scala.collection.mutable.Set
 
 @upickle.implicits.serializeDefaults( true )
@@ -10,7 +12,7 @@ case class Item( name:          String,
                  ownedQuantity: Int,
                  category:      ItemCategory,
                  ratePerHour:   Double,
-                 itemId:        String = UUID.randomUUID().toString,
+                 itemId:        String = randomNanoId(),
                  incidents:     Set[Incident] = Set.empty,
                  dependencies:  Set[Item] = Set.empty,
                  images:        Set[String] = Set.empty,
@@ -19,6 +21,8 @@ case class Item( name:          String,
 
    private var availableQuantity = ownedQuantity
 
+   images += s"${this.name}.jpg"
+   
    def addComment( newComment: String ) =
       comments += newComment
 
