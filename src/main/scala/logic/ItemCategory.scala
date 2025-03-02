@@ -1,7 +1,7 @@
 package logic
 
 import ujson.IncompleteParseException
-import upickle.default.*
+import upickle.default._
 
 import scala.collection.mutable.Buffer
 
@@ -10,13 +10,9 @@ object ItemCategory:
 
    def getItemCategoryList =
       try
-         ujson
-            .read( os.read( os.pwd / os.RelPath( dataFilePath ) ) )
-            .arr
-            .map( value => value.str )
+         IOHandler.getDataFromFile("itemCategories").arr.map( value => value.str )
       catch
          case IncompleteParseException( msg ) =>
-            println( msg )
             Buffer.empty
 
    def addItemCategory( newCategory: String ) =

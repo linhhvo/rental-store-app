@@ -3,7 +3,7 @@ package logic
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
 import upickle.default.*
 
-import scala.collection.mutable.Set
+import scala.collection.mutable.{Buffer, Set}
 
 @upickle.implicits.serializeDefaults( true )
 case class Item( name:          String,
@@ -14,7 +14,7 @@ case class Item( name:          String,
                  itemId:        String = randomNanoId(),
                  incidents:     Set[Incident] = Set.empty,
                  dependencies:  Set[Item] = Set.empty,
-                 images:        Set[String] = Set.empty,
+                 images:        Buffer[String] = Buffer.empty,
                  comments:      Set[String] = Set.empty
 ) derives ReadWriter:
 

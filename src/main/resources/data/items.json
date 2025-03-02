@@ -1,30 +1,32 @@
 [
   {
-    "name": "sleeping bag",
-    "desc": "one sleeper bag",
-    "ownedQuantity": 10,
-    "category": "Camping",
-    "ratePerHour": 1,
-    "itemId": "9ebe928f-c6d3-429b-8aa1-3aab31336b19",
-    "incidents": [],
-    "dependencies": [],
-    "images": [
-      "sleepingbang1.jpg"
-    ],
-    "comments": []
-  },
-  {
     "name": "tent",
     "desc": "tent for camping",
     "ownedQuantity": 3,
     "category": "Camping",
     "ratePerHour": 2.5,
-    "itemId": "a2b0eda0-b400-4fbb-9977-53657db92477",
+    "itemId": "erlpiRzN2wbskNaJCphc-",
     "incidents": [],
     "dependencies": [],
     "images": [
-      "tent2.jpg",
-      "tent1.jpg"
+      "tent.jpg"
+    ],
+    "comments": [
+      "good tent",
+      "good for 2 people"
+    ]
+  },
+  {
+    "name": "sleeping bag",
+    "desc": "one sleeper bag",
+    "ownedQuantity": 10,
+    "category": "Camping",
+    "ratePerHour": 1,
+    "itemId": "lJ5C-epfazvxFmIgGa2Aa",
+    "incidents": [],
+    "dependencies": [],
+    "images": [
+      "sleeping bag.jpg"
     ],
     "comments": []
   }
