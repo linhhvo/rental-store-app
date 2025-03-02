@@ -1,5 +1,6 @@
-import upickle.default.*
+package logic
 
+import upickle.default.*
 import scala.collection.mutable.{Buffer, Set}
 
 case class RentalStore( ownedItems: Set[Item] = Set.empty, bookings: Set[Booking] = Set.empty )

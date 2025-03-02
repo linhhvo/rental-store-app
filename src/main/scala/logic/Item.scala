@@ -1,5 +1,8 @@
+package logic
+
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
 import upickle.default.*
-import com.aventrix.jnanoid.jnanoid.NanoIdUtils._
+
 import scala.collection.mutable.Set
 
 @upickle.implicits.serializeDefaults( true )

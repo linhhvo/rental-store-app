@@ -1,4 +1,6 @@
-import upickle.default._
+package logic
+
+import upickle.default.*
 
 enum IncidentType derives ReadWriter: 
    case Damage
