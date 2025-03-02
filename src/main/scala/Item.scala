@@ -1,8 +1,4 @@
-import ItemCategory.Camping
 import upickle.default.*
-
-import scala.util.Random
-import java.util.UUID
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils._
 import scala.collection.mutable.Set
 
@@ -10,7 +6,7 @@ import scala.collection.mutable.Set
 case class Item( name:          String,
                  desc:          String,
                  ownedQuantity: Int,
-                 category:      ItemCategory,
+                 category:      String,
                  ratePerHour:   Double,
                  itemId:        String = randomNanoId(),
                  incidents:     Set[Incident] = Set.empty,
