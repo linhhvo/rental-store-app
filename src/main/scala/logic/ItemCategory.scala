@@ -1,15 +1,17 @@
+package logic
+
 import ujson.IncompleteParseException
 import upickle.default.*
 
 import scala.collection.mutable.Buffer
 
 object ItemCategory:
-   val dataFilePath = getClass.getResource( "/data/itemCategories.json" ).getPath
+   val dataFilePath = "src/main/resources/data/itemCategories.json"
 
    def getItemCategoryList =
       try
          ujson
-            .read( os.read( os.Path( dataFilePath ) ) )
+            .read( os.read( os.pwd / os.RelPath( dataFilePath ) ) )
             .arr
             .map( value => value.str )
       catch
@@ -22,5 +24,5 @@ object ItemCategory:
       if !existingCategories.contains( newCategory ) then
          existingCategories += newCategory
 
-         os.write.over( os.Path( dataFilePath ), write( existingCategories.toSet ) )
+         os.write.over( os.pwd / os.RelPath( dataFilePath ), write( existingCategories.toSet ) )
       else throw DuplicateItemCategory( "Category already exists" )

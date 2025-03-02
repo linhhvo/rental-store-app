@@ -1,5 +1,6 @@
 package ui
 
+import logic.{DuplicateItemCategory, ItemCategory}
 import scalafx.application.JFXApp3
 import scalafx.application.JFXApp3.PrimaryStage
 import scalafx.geometry.Insets
@@ -13,7 +14,7 @@ object Main extends JFXApp3:
    def start() =
       val bodyHeight = 500
       val bodyWidth = 500
-      val dataFilePath = "src/main/resources/data"
+      val dataFilePath = getClass.getResource( "/data/" ).getPath
 //      val imageFilePath = "src/main/resources/images"
       stage = new PrimaryStage:
          title = "Cookie Rental Company"
@@ -40,7 +41,7 @@ object Main extends JFXApp3:
          menus = Array( navigationMenu, actionsMenu )
 
       // Retrieve items data from json file
-      val jsonItems = ujson.read( os.read( os.pwd / os.RelPath( dataFilePath ) / "items.json" ) )
+      val jsonItems = ujson.read( os.read( os.Path( dataFilePath + "items.json" ) ) )
       val itemList = jsonItems.arr
 
       // Create a container for each item
@@ -75,16 +76,27 @@ object Main extends JFXApp3:
       val itemCatTextField = TextField()
       itemCatTextField.maxWidth = 200
       val addItemCatBtn = Button( "Add Category" )
-      val addItemCatContainer = 
-         VBox( Label( "Enter new item category" ), itemCatTextField, addItemCatBtn )
+      val actionMsg = Label( null )
+      actionMsg.textFill = Color.Red
+      val addItemCatContainer =
+         VBox( Label( "Enter new item category" ), itemCatTextField, addItemCatBtn, actionMsg )
       addItemCatContainer.margin = Insets( 20 )
       addItemCatContainer.spacing = 10
       addItemCatContainer.setVisible( false )
       // Add action for add button
-//      addItemCatBtn.onAction = ((e) => 
-//         if itemCatTextField.text.isNotEmpty 
-//            then 
-//      )
+      addItemCatBtn.onAction = (
+          ( e ) =>
+             if itemCatTextField.getText.nonEmpty then
+                try
+                   ItemCategory.addItemCategory( itemCatTextField.getText )
+                   actionMsg.setText( s"Category ${itemCatTextField.getText} has been added." )
+                   itemCatTextField.clear()
+                catch
+                   case DuplicateItemCategory( errorMsg ) =>
+                      actionMsg.setText( errorMsg )
+                      itemCatTextField.clear()
+             else actionMsg.setText( "Category is empty." )
+      )
 
       // Create a pane to stack different views. The view changes based on selected menu option
       val bodyStack = StackPane()
@@ -94,8 +106,11 @@ object Main extends JFXApp3:
       itemListMenuItem.onAction = ( ( event ) => this.displayPage( bodyStack, itemListPageScroll ) )
       calendarMenuItem.onAction =
          ( ( event ) => this.displayPage( bodyStack, calendarPageContainer ) )
-      addItemCategoryMenuItem.onAction =
-         ( ( e ) => this.displayPage( bodyStack, addItemCatContainer ) )
+      addItemCategoryMenuItem.onAction = ( ( e ) =>
+         this.displayPage( bodyStack, addItemCatContainer )
+         itemCatTextField.clear()
+         actionMsg.setText( null )
+      )
 
       // Root pane
       val root = new BorderPane {
