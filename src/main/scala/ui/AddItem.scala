@@ -29,6 +29,7 @@ object AddItem:
 
    val qntSpinner = Spinner( 1, 100, 1, 1 )
    qntSpinner.maxWidth = smallWidth
+   qntSpinner.editable = true
 
    val itemQuantity = new VBox:
       spacing = 5
@@ -80,6 +81,7 @@ object AddItem:
                 RentalStore.addItem( newItem )
                 messageAlert.headerText = "Item added to the system."
                 messageAlert.showAndWait()
+                resetItemPage()
              catch
                 case InvalidItemCategory( msg ) =>
                    messageAlert.headerText = msg
@@ -100,3 +102,9 @@ object AddItem:
       visible = false
       margin = Insets( 20 )
       spacing = 10
+
+   def resetItemPage() =
+      nameTextField.clear()
+      descTextField.clear()
+      rateTextField.clear()
+      catChoiceBox.getSelectionModel.clearSelection()
