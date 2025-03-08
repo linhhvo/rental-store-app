@@ -1,25 +1,11 @@
 [
   {
-    "name": "tent",
-    "desc": "tent for camping",
-    "ownedQuantity": 3,
-    "category": "Camping",
-    "ratePerHour": 2.5,
-    "itemId": "MPgK6l4KMqNdjmTnmedSI",
-    "incidents": [],
-    "dependencies": [],
-    "images": [
-      "tent.jpg"
-    ],
-    "comments": []
-  },
-  {
     "name": "sleeping bag",
-    "desc": "sleeping bag",
+    "desc": "bag",
     "ownedQuantity": 3,
     "category": "camping",
-    "ratePerHour": 15,
-    "itemId": "Ye4jRhQCh-dSyf_gDwzgO",
+    "ratePerHour": 12,
+    "itemId": "mu3UK98pnfVRC-t85Fya8",
     "incidents": [],
     "dependencies": [],
     "images": [
