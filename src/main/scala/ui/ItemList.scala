@@ -7,7 +7,7 @@ import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{Border, FlowPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Font
-import ui.Helper.displayItemPage
+import ui.ItemDetails.displayItemPage
 import upickle.default._
 
 object ItemList:
@@ -27,7 +27,7 @@ object ItemList:
       itemNameLabel.font = Font( "Arial", 18 )
       val viewItemBtn = Button( "View Item" )
       viewItemBtn.onAction = ( ( e ) =>
-         itemPageContainer.setContent( displayItemPage( read[Item]( item ) ) )
+         itemPageContainer.setContent( displayItemPage( item ) )
          itemPageContainer.setVisible( true )
       )
 
