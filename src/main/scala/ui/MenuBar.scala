@@ -1,7 +1,11 @@
 package ui
 
 import scalafx.scene.control.{Menu, MenuBar, MenuItem}
+import ui.AddItemCategory.{actionMsg, addItemCatContainer, itemCatTextField}
+import ui.BodyContainer.bodyStack
+import ui.Calendar.calendarPageContainer
 import ui.Helper.displayPage
+import ui.ItemList.itemListPageScroll
 
 object MenuBar:
    /** MENU BAR */
