@@ -1,9 +1,5 @@
 package logic
 
-import upickle.default.*
-
-import scala.collection.mutable.Buffer
-
 object IOHandler:
    val dataFilePath = "src/main/resources/data/"
    
