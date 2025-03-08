@@ -6,8 +6,8 @@ import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType
+import scalafx.scene.control.Alert.AlertType.Information
 import scalafx.scene.layout.VBox
-import ui.Helper.addAlert
 
 object AddItem:
    val longWidth = 350
@@ -63,7 +63,7 @@ object AddItem:
    val addItemBtn = Button( "Add Item" )
    addItemBtn.margin = Insets( 15, 0, 0, 0 )
 
-   val messageAlert = addAlert
+   val messageAlert = new Alert(Information)
 
    addItemBtn.onAction = (
        ( e ) =>
