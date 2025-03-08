@@ -1,6 +1,7 @@
 package ui
 
 import scalafx.scene.layout.StackPane
+import ui.AddItem.addItemContainer
 import ui.AddItemCategory.addItemCatContainer
 import ui.Calendar.calendarPageContainer
 import ui.ItemList.{itemListPageScroll, itemPageContainer}
@@ -13,5 +14,6 @@ object BodyContainer:
    bodyStack.getChildren.addAll( itemListPageScroll,
                                  calendarPageContainer,
                                  addItemCatContainer,
-                                 itemPageContainer
+                                 itemPageContainer,
+                                 addItemContainer
    )

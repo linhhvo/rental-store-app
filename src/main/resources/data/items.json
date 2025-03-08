@@ -5,24 +5,21 @@
     "ownedQuantity": 3,
     "category": "Camping",
     "ratePerHour": 2.5,
-    "itemId": "erlpiRzN2wbskNaJCphc-",
+    "itemId": "MPgK6l4KMqNdjmTnmedSI",
     "incidents": [],
     "dependencies": [],
     "images": [
       "tent.jpg"
     ],
-    "comments": [
-      "good tent",
-      "good for 2 people"
-    ]
+    "comments": []
   },
   {
     "name": "sleeping bag",
-    "desc": "one sleeper bag",
-    "ownedQuantity": 10,
-    "category": "Camping",
-    "ratePerHour": 1,
-    "itemId": "lJ5C-epfazvxFmIgGa2Aa",
+    "desc": "sleeping bag",
+    "ownedQuantity": 3,
+    "category": "camping",
+    "ratePerHour": 15,
+    "itemId": "Ye4jRhQCh-dSyf_gDwzgO",
     "incidents": [],
     "dependencies": [],
     "images": [
