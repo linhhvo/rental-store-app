@@ -20,24 +20,30 @@ object RentalStore:
 
    def addItem( item: Item ) =
       if itemCategoryList.contains( item.category ) then
-         println( ownedItems )
-         ownedItems += write( item )
-         os.write.over( os.pwd / os.RelPath( dataResourcePath ) / "items.json",
-                        write( ownedItems, indent = 2 )
-         )
-      else throw InvalidItemCategory( "Item category doesn't exist in the system." )
+         if ownedItems.exists( existingItem => existingItem( "name" ).str == item.name ) then
+            throw DuplicateItem( s"${item.name} already exists in the system." )
+         else
+            ownedItems += writeJs( item )
+            os.write.over( os.pwd / os.RelPath( dataResourcePath ) / "items.json",
+                           write( ownedItems, indent = 2 )
+            )
+      else
+         throw InvalidItemCategory( s"Item category ${item.category} doesn't exist in the system." )
 
    def deleteItem( item: Item ) =
-      if ownedItems.contains( item ) then
-         ownedItems -= write( item )
+      if ownedItems.exists( existingItem => existingItem( "name" ).str == item.name ) then
+         ownedItems -= writeJs( item )
          os.write.over( os.pwd / os.RelPath( dataResourcePath ) / "items.json",
                         write( ownedItems.toSet, indent = 2 )
          )
-      else throw ItemDoesNotExist( "Item does not exist in the system." )
+      else throw ItemDoesNotExist( s"${item.name} does not exist in the system." )
 
    def getAvailableItems = ownedItems
 
 @main def tempFunc() =
    val item0 = Item( "tent", "tent for camping", 3, "Camping", 2.5 )
    val item1 = Item( "sleeping bag", "one sleeper bag", 10, "Camping", 1.0 )
+   RentalStore.addItem( item1 )
    RentalStore.addItem( item0 )
+   RentalStore.deleteItem( item1 )
+//   println( RentalStore.getAvailableItems.find(item => item("name").str == "tent") )
