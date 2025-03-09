@@ -5,9 +5,9 @@ import logic.{DuplicateItem, InvalidItemCategory, Item, RentalStore}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
-import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.Alert.AlertType.Information
 import scalafx.scene.layout.VBox
+import ui.Helper.displayAlert
 
 object AddItem:
    val longWidth = 350
@@ -63,7 +63,7 @@ object AddItem:
    val addItemBtn = Button( "Add Item" )
    addItemBtn.margin = Insets( 15, 0, 0, 0 )
 
-   val messageAlert = new Alert(Information)
+   val messageAlert = new Alert( Information )
 
    addItemBtn.onAction = (
        ( e ) =>
@@ -77,19 +77,14 @@ object AddItem:
              )
              try
                 RentalStore.addItem( newItem )
-                messageAlert.headerText = "Item added to the system."
-                messageAlert.showAndWait()
+                displayAlert( messageAlert, "Item added to the system" )
                 resetItemPage()
              catch
                 case InvalidItemCategory( msg ) =>
-                   messageAlert.headerText = msg
-                   messageAlert.showAndWait()
+                   displayAlert( messageAlert, msg )
                 case DuplicateItem( msg )       =>
-                   messageAlert.headerText = msg
-                   messageAlert.showAndWait()
-          else
-             messageAlert.headerText = "Missing item data."
-             messageAlert.showAndWait()
+                   displayAlert( messageAlert, msg )
+          else displayAlert( messageAlert, "Missing item data" )
    )
 //   val itemImage = new VBox:
 //      spacing = 5

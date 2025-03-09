@@ -10,6 +10,7 @@ import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.Alert.AlertType.Information
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{HBox, VBox}
+import ui.Helper.{displayAlert, displayPage, toggleDisplay}
 import upickle.default.*
 
 object ItemDetails:
@@ -27,12 +28,10 @@ object ItemDetails:
           ( e ) =>
              try
                 deleteItem( item )
-                messageAlert.headerText = "Item has been deleted from the system."
-                messageAlert.showAndWait()
+                displayAlert(messageAlert, "Item has been deleted from the system")
              catch
                 case ItemDoesNotExist( msg ) =>
-                   messageAlert.headerText = msg
-                   messageAlert.showAndWait()
+                   displayAlert(messageAlert, msg)
       )
 
       /** Add item comment */
@@ -47,15 +46,12 @@ object ItemDetails:
              try
                 updateItemComment( item, cmtText.getText )
                 cmtText.clear()
-                messageAlert.headerText = "Comment has been added."
-                messageAlert.showAndWait()
+                displayAlert(messageAlert, "Comment has been added")
              catch
                 case ItemDoesNotExist( msg ) =>
-                   messageAlert.headerText = msg
-                   messageAlert.showAndWait()
+                   displayAlert(messageAlert, msg)
                 case MissingData( msg )      =>
-                   messageAlert.headerText = msg
-                   messageAlert.showAndWait()
+                   displayAlert(messageAlert, msg)
       )
 
       val addCmtContainer = new VBox:
@@ -66,23 +62,13 @@ object ItemDetails:
          margin = Insets( 5, 0, 5, 0 )
 
       val addCmtBtn = Button( "Add Comment" )
-      addCmtBtn.onAction = (
-          ( e ) =>
-             if addCmtContainer.visible.get() then
-                addCmtContainer.visible = false
-                addCmtContainer.managed = false
-             else
-                addCmtContainer.visible = true
-                addCmtContainer.managed = true
-      )
+      addCmtBtn.onAction = ( ( e ) => toggleDisplay( addCmtContainer ) )
 
       /** Report item incident */
       val incTypeList = ObservableBuffer[IncidentType]( IncidentType.Loss, IncidentType.Damage )
       val incTypeChoiceBox = ChoiceBox( incTypeList )
       incTypeChoiceBox.margin = Insets( 0, 0, 0, 29 )
-//      incTypeChoiceBox.maxWidth = 170
       val incidentType = new HBox:
-//         spacing = 15
          maxWidth = smallWidth
          alignment = BaselineLeft
          children = Array( Label( "Incident Type" ), incTypeChoiceBox )
@@ -120,15 +106,7 @@ object ItemDetails:
       val reportDmgBtn = Button( "Report Incident" )
       reportDmgBtn.margin = Insets( 15, 0, 0, 0 )
 
-      reportDmgBtn.onAction = (
-          ( e ) =>
-             if incidentContainer.visible.get() then
-                incidentContainer.visible = false
-                incidentContainer.managed = false
-             else
-                incidentContainer.visible = true
-                incidentContainer.managed = true
-      )
+      reportDmgBtn.onAction = ( ( e ) => toggleDisplay( incidentContainer ) )
 
       /** Item details container */
       val itemNameLabel = Label( item.name )

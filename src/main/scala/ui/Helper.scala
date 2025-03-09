@@ -1,6 +1,7 @@
 package ui
 
 import scalafx.scene.Node
+import scalafx.scene.control.Alert
 import scalafx.scene.layout.Pane
 
 object Helper:
@@ -8,3 +9,15 @@ object Helper:
    def displayPage( parentContainer: Pane, targetPage: Node ) =
       parentContainer.children.foreach( page => page.setVisible( false ) )
       targetPage.setVisible( true )
+
+   def toggleDisplay( element: Node ) =
+      if element.visible.get() then
+         element.visible = false
+         element.managed = false
+      else
+         element.visible = true
+         element.managed = true
+         
+   def displayAlert(alert: Alert, msg: String) =
+      alert.headerText = msg
+      alert.showAndWait()
