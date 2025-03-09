@@ -67,7 +67,10 @@ object AddItem:
 
    addItemBtn.onAction = (
        ( e ) =>
-          if nameTextField.getText.nonEmpty && descTextField.getText.nonEmpty && catChoiceBox.getSelectionModel.getSelectedItem != null && rateTextField.getText.nonEmpty
+          if nameTextField.getText.nonEmpty
+             && descTextField.getText.nonEmpty
+             && catChoiceBox.getSelectionModel.getSelectedItem != null
+             && rateTextField.getText.nonEmpty
           then
              val newItem = Item( nameTextField.getText,
                                  descTextField.getText,
