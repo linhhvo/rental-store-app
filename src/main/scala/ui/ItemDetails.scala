@@ -23,11 +23,50 @@ object ItemDetails:
 
       /** Rent item */
       val rentItemBtn = Button( "Rent Item" )
-      rentItemBtn.margin = Insets( 0, 0, 15, 0 )
+
+      val rentQuantity = Spinner( 1, 100, 1, 1 )
+      rentQuantity.maxWidth = 125
+      rentQuantity.editable = true
+
+      val hours = ObservableBuffer[Int]() ++ ( 0 to 23 ).toArray
+      val mins = ObservableBuffer[Int]() ++ ( 0 to 59 ).toArray
+      val rentStartDate = new DatePicker()
+      rentStartDate.maxWidth = 125
+      val rentStartHour = ChoiceBox( hours )
+      val rentStartMin = ChoiceBox( mins )
+      val rentStart = new HBox:
+         spacing = 5
+         children = Array( rentStartDate, rentStartHour, rentStartMin )
+
+      val rentEndDate = new DatePicker()
+      rentEndDate.maxWidth = 125
+      val rentEndHour = ChoiceBox( hours )
+      val rentEndMin = ChoiceBox( mins )
+      val rentEnd = new HBox:
+         spacing = 5
+         children = Array( rentEndDate, rentEndHour, rentEndMin )
+
+      val submitItemBtn = Button( "Add To List" )
+
+      val rentItemContainer = new VBox:
+         spacing = 7
+         children = Array( Label( "Quantity" ),
+                           rentQuantity,
+                           Label( "Rent Start" ),
+                           rentStart,
+                           Label( "Rent End" ),
+                           rentEnd,
+                           submitItemBtn
+         )
+         visible = false
+         managed = false
+         margin = Insets( 5, 0, 5, 0 )
+
+      rentItemBtn.onAction = ( ( e ) => toggleDisplay( rentItemContainer ) )
 
       /** Delete item button */
       val deleteItemBtn = Button( "Delete Item" )
-      deleteItemBtn.margin = Insets( 0, 0, 15, 0 )
+      deleteItemBtn.margin = Insets( 15, 0, 15, 0 )
       deleteItemBtn.onAction = (
           ( e ) =>
              new Alert( Confirmation ) {
@@ -144,6 +183,7 @@ object ItemDetails:
           if item.comments.nonEmpty then Label( "Comments:\n- " + item.comments.mkString( "\n- " ) )
           else Label( null ),
           rentItemBtn,
+          rentItemContainer,
           deleteItemBtn,
           addCmtBtn,
           addCmtContainer,
