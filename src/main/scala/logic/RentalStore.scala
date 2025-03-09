@@ -1,5 +1,6 @@
 package logic
 
+import logic.IOHandler.{getDataFromFile, writeItems}
 import ujson.IncompleteParseException
 import upickle.default.*
 
@@ -9,7 +10,7 @@ object RentalStore:
    private val dataResourcePath = "src/main/resources/data"
 
    private val ownedItems =
-      try ujson.read( os.read( os.pwd / os.RelPath( dataResourcePath ) / "items.json" ) ).arr
+      try getDataFromFile( "items" ).arr
       catch
          case IncompleteParseException( msg ) =>
             Buffer.empty
@@ -24,9 +25,7 @@ object RentalStore:
             throw DuplicateItem( s"${item.name} already exists in the system." )
          else
             ownedItems += writeJs( item )
-            os.write.over( os.pwd / os.RelPath( dataResourcePath ) / "items.json",
-                           write( ownedItems, indent = 2 )
-            )
+            writeItems( ownedItems )
       else
          throw InvalidItemCategory( s"Item category ${item.category} doesn't exist in the system." )
 
@@ -37,9 +36,7 @@ object RentalStore:
       deletedItem match
          case Some( itemValue ) =>
             ownedItems -= writeJs( itemValue )
-            os.write.over( os.pwd / os.RelPath( dataResourcePath ) / "items.json",
-                           write( ownedItems.toSet, indent = 2 )
-            )
+            writeItems( ownedItems )
          case None => throw ItemDoesNotExist( s"${item.name} does not exist in the system." )
 
    def getAvailableItems = ownedItems
