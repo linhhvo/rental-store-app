@@ -1,30 +1,26 @@
 package ui
 
-import logic.RentalStore.{deleteItem, getAvailableItems, updateItemComment}
-import logic.{Item, ItemDoesNotExist}
+import logic.RentalStore.{deleteItem, updateItemComment}
+import logic.{IncidentType, Item, ItemDoesNotExist, MissingData}
+import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
+import scalafx.geometry.Pos.BaselineLeft
+import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.Alert.AlertType.Information
-import scalafx.scene.control.{Alert, Button, Label, TextArea}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{HBox, VBox}
 import upickle.default.*
 
 object ItemDetails:
+   val smallWidth = 200
+   val smallHeight = 75
+
    def displayItemPage( item: Item ) =
-//      val item = read[Item]( itemJs )
-      val itemPageContainer = HBox( 20 )
-      val itemDetailsContainer = VBox( 5 )
-
-      val itemImage = getClass.getResourceAsStream( "/images/" + item.images )
-      val itemImageView = ImageView( Image( itemImage, 0, 400, true, true ) )
-      val itemNameLabel = Label( item.name )
-
-      itemPageContainer.getChildren.addAll( itemImageView, itemDetailsContainer )
-      itemPageContainer.padding = Insets( 20 )
-
+      /** User message alert */
       val messageAlert = new Alert( Information )
 
+      /** Delete item button */
       val deleteItemBtn = Button( "Delete Item" )
       deleteItemBtn.margin = Insets( 0, 0, 15, 0 )
       deleteItemBtn.onAction = (
@@ -39,27 +35,37 @@ object ItemDetails:
                    messageAlert.showAndWait()
       )
 
-      val addCmtBtn = Button( "Add Comment" )
-
+      /** Add item comment */
       val cmtText = TextArea()
-      cmtText.maxWidth = 150
-      cmtText.maxHeight = 75
+      cmtText.promptText = "Enter comment"
+      cmtText.maxWidth = smallWidth
+      cmtText.maxHeight = smallHeight
 
-      val submitCmtBtn = Button( "Submit Comment" )
-      submitCmtBtn.onAction = ( ( e ) =>
-         updateItemComment( item, cmtText.getText )
-         cmtText.clear()
-         println( item )
-         println( getAvailableItems )
+      val submitCmtBtn = Button( "Submit" )
+      submitCmtBtn.onAction = (
+          ( e ) =>
+             try
+                updateItemComment( item, cmtText.getText )
+                cmtText.clear()
+                messageAlert.headerText = "Comment has been added."
+                messageAlert.showAndWait()
+             catch
+                case ItemDoesNotExist( msg ) =>
+                   messageAlert.headerText = msg
+                   messageAlert.showAndWait()
+                case MissingData( msg )      =>
+                   messageAlert.headerText = msg
+                   messageAlert.showAndWait()
       )
 
       val addCmtContainer = new VBox:
          spacing = 10
-         children = Array( Label( "Enter Comment" ), cmtText, submitCmtBtn )
+         children = Array( cmtText, submitCmtBtn )
          visible = false
          managed = false
          margin = Insets( 5, 0, 5, 0 )
 
+      val addCmtBtn = Button( "Add Comment" )
       addCmtBtn.onAction = (
           ( e ) =>
              if addCmtContainer.visible.get() then
@@ -70,9 +76,64 @@ object ItemDetails:
                 addCmtContainer.managed = true
       )
 
-      val reportDmgBtn = Button( "Report Damage/Loss" )
-      reportDmgBtn.margin = Insets( 15, 0, 15, 0 )
+      /** Report item incident */
+      val incTypeList = ObservableBuffer[IncidentType]( IncidentType.Loss, IncidentType.Damage )
+      val incTypeChoiceBox = ChoiceBox( incTypeList )
+      incTypeChoiceBox.margin = Insets( 0, 0, 0, 29 )
+//      incTypeChoiceBox.maxWidth = 170
+      val incidentType = new HBox:
+//         spacing = 15
+         maxWidth = smallWidth
+         alignment = BaselineLeft
+         children = Array( Label( "Incident Type" ), incTypeChoiceBox )
 
+      val incidentDatePicker = DatePicker()
+      incidentDatePicker.promptText = "Select incident date"
+      incidentDatePicker.maxWidth = smallWidth
+
+      val incidentCmt = TextArea()
+      incidentCmt.maxWidth = smallWidth
+      incidentCmt.maxHeight = smallHeight
+      incidentCmt.promptText = "Enter incident detail"
+
+      val repairCostField = TextField()
+      repairCostField.maxWidth = smallWidth
+      repairCostField.promptText = "Enter repair cost"
+
+      val incSubmitBtn = Button( "Submit" )
+      incSubmitBtn.onAction = ( ( e ) =>
+
+         incidentCmt.clear()
+         repairCostField.clear()
+         incTypeChoiceBox.getSelectionModel.clearSelection()
+         incidentDatePicker.setValue( null )
+      )
+
+      val incidentContainer = new VBox:
+         spacing = 10
+         children =
+            Array( incidentType, incidentDatePicker, incidentCmt, repairCostField, incSubmitBtn )
+         visible = false
+         managed = false
+         margin = Insets( 5, 0, 5, 0 )
+
+      val reportDmgBtn = Button( "Report Incident" )
+      reportDmgBtn.margin = Insets( 15, 0, 0, 0 )
+
+      reportDmgBtn.onAction = (
+          ( e ) =>
+             if incidentContainer.visible.get() then
+                incidentContainer.visible = false
+                incidentContainer.managed = false
+             else
+                incidentContainer.visible = true
+                incidentContainer.managed = true
+      )
+
+      /** Item details container */
+      val itemNameLabel = Label( item.name )
+
+      val itemDetailsContainer = VBox( 5 )
       itemDetailsContainer.padding = Insets( 10, 0, 0, 0 )
       itemDetailsContainer.getChildren.addAll(
           itemNameLabel,
@@ -85,7 +146,17 @@ object ItemDetails:
           deleteItemBtn,
           addCmtBtn,
           addCmtContainer,
-          reportDmgBtn
+          reportDmgBtn,
+          incidentContainer
       )
+
+      /** Page container */
+      val itemPageContainer = HBox( 20 )
+
+      val itemImage = getClass.getResourceAsStream( "/images/" + item.images )
+      val itemImageView = ImageView( Image( itemImage, 0, 400, true, true ) )
+
+      itemPageContainer.getChildren.addAll( itemImageView, itemDetailsContainer )
+      itemPageContainer.padding = Insets( 20 )
 
       itemPageContainer
