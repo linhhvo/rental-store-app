@@ -14,14 +14,14 @@ case class Item( name:          String,
                  itemId:        String = randomNanoId(),
                  incidents:     Set[Incident] = Set.empty,
                  dependencies:  Set[Item] = Set.empty,
-                 images:        Buffer[String] = Buffer.empty,
+                 var images:    String = "",
                  comments:      Set[String] = Set.empty
 ) derives ReadWriter:
 
    private var availableQuantity = ownedQuantity
 
-   images += s"${this.name}.jpg"
-   
+   images = s"${this.name}.jpg"
+
    def addComment( newComment: String ) =
       comments += newComment
 

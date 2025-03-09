@@ -1,6 +1,6 @@
 package ui
 
-import logic.{IOHandler, Item}
+import logic.RentalStore.getAvailableItems
 import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, Label, ScrollPane}
 import scalafx.scene.image.{Image, ImageView}
@@ -8,20 +8,20 @@ import scalafx.scene.layout.{Border, FlowPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Font
 import ui.ItemDetails.displayItemPage
-import upickle.default._
+import upickle.default.*
 
 object ItemList:
    /** ITEM LIST PAGE */
 
    // Retrieve items data from json file
-   val jsonItems = IOHandler.getDataFromFile( "items" )
-   val itemList = jsonItems.arr
+//   val jsonItems = IOHandler.getDataFromFile( "items" )
+   val itemList = getAvailableItems
 
    // Create a container for each item
    val itemPageContainer = ScrollPane()
    val itemElements = itemList.map( item =>
       val itemImage =
-         getClass.getResourceAsStream( "/images/" + item( "images" )( 0 ).str )
+         getClass.getResourceAsStream( "/images/" + item( "images" ).str )
       val itemImageView = ImageView( Image( itemImage, 0, 200, true, true ) )
       val itemNameLabel = Label( item( "name" ).str )
       itemNameLabel.font = Font( "Arial", 18 )

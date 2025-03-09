@@ -16,7 +16,7 @@ object ItemDetails:
       val itemPageContainer = HBox( 20 )
       val itemDetailsContainer = VBox( 5 )
 
-      val itemImage = getClass.getResourceAsStream( "/images/" + item.images.head )
+      val itemImage = getClass.getResourceAsStream( "/images/" + item.images )
       val itemImageView = ImageView( Image( itemImage, 0, 400, true, true ) )
       val itemNameLabel = Label( item.name )
 
