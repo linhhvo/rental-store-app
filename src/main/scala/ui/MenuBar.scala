@@ -6,7 +6,7 @@ import ui.AddItemCategory.{actionMsg, addItemCatContainer, itemCatTextField}
 import ui.BodyContainer.bodyStack
 import ui.Calendar.calendarPageContainer
 import ui.Helper.displayPage
-import ui.ItemList.itemListPageScroll
+import ui.ItemList.{itemListPageScroll, renderItemListPage}
 
 object MenuBar:
    /** MENU BAR */
@@ -30,7 +30,10 @@ object MenuBar:
    /** MENU BAR ACTIONS */
 
    // Add actions for menu items to change pages
-   itemListMenuItem.onAction = ( ( event ) => displayPage( bodyStack, itemListPageScroll ) )
+   itemListMenuItem.onAction = ( ( event ) =>
+      displayPage( bodyStack, itemListPageScroll )
+      itemListPageScroll.setContent( renderItemListPage )
+   )
    calendarMenuItem.onAction = ( ( event ) => displayPage( bodyStack, calendarPageContainer ) )
    addItemCategoryMenuItem.onAction = ( ( e ) =>
       displayPage( bodyStack, addItemCatContainer )
