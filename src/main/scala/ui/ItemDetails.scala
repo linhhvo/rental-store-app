@@ -7,7 +7,7 @@ import scalafx.geometry.Insets
 import scalafx.geometry.Pos.BaselineLeft
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType
-import scalafx.scene.control.Alert.AlertType.Information
+import scalafx.scene.control.Alert.AlertType.{Confirmation, Information}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{HBox, VBox}
 import ui.Helper.{displayAlert, toggleDisplay}
@@ -21,17 +21,27 @@ object ItemDetails:
       /** User message alert */
       val messageAlert = new Alert( Information )
 
+      /** Rent item */
+      val rentItemBtn = Button( "Rent Item" )
+      rentItemBtn.margin = Insets( 0, 0, 15, 0 )
+
       /** Delete item button */
       val deleteItemBtn = Button( "Delete Item" )
       deleteItemBtn.margin = Insets( 0, 0, 15, 0 )
       deleteItemBtn.onAction = (
           ( e ) =>
-             try
-                deleteItem( item )
-                displayAlert( messageAlert, "Item has been deleted from the system" )
-             catch
-                case ItemDoesNotExist( msg ) =>
-                   displayAlert( messageAlert, msg )
+             new Alert( Confirmation ) {
+                headerText = "Do you want to delete this item?"
+                buttonTypes = Seq( ButtonType.Yes, ButtonType.No )
+             }.showAndWait() match
+                case Some( ButtonType.Yes ) =>
+                   try
+                      deleteItem( item )
+                      displayAlert( messageAlert, "Item has been deleted from the system" )
+                   catch
+                      case ItemDoesNotExist( msg ) =>
+                         displayAlert( messageAlert, msg )
+                case _                      => println( "cancel" )
       )
 
       /** Add item comment */
@@ -133,6 +143,7 @@ object ItemDetails:
           Label( "Status: " + ( if item.isAvailable then "Available" else "Not Available" ) ),
           if item.comments.nonEmpty then Label( "Comments:\n- " + item.comments.mkString( "\n- " ) )
           else Label( null ),
+          rentItemBtn,
           deleteItemBtn,
           addCmtBtn,
           addCmtContainer,
