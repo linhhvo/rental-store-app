@@ -1,6 +1,6 @@
 package ui
 
-import logic.RentalStore.deleteItem
+import logic.RentalStore.{deleteItem, getAvailableItems, updateItemComment}
 import logic.{Item, ItemDoesNotExist}
 import scalafx.geometry.Insets
 import scalafx.scene.control.Alert.AlertType
@@ -11,8 +11,8 @@ import scalafx.scene.layout.{HBox, VBox}
 import upickle.default.*
 
 object ItemDetails:
-   def displayItemPage( itemJs: ujson.Value ) =
-      val item = read[Item]( itemJs )
+   def displayItemPage( item: Item ) =
+//      val item = read[Item]( itemJs )
       val itemPageContainer = HBox( 20 )
       val itemDetailsContainer = VBox( 5 )
 
@@ -46,6 +46,12 @@ object ItemDetails:
       cmtText.maxHeight = 75
 
       val submitCmtBtn = Button( "Submit Comment" )
+      submitCmtBtn.onAction = ( ( e ) =>
+         updateItemComment( item, cmtText.getText )
+         cmtText.clear()
+         println( item )
+         println( getAvailableItems )
+      )
 
       val addCmtContainer = new VBox:
          spacing = 10

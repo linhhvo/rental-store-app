@@ -10,7 +10,7 @@ object RentalStore:
    private val dataResourcePath = "src/main/resources/data"
 
    private val ownedItems =
-      try getDataFromFile( "items" ).arr
+      try getDataFromFile( "items" ).arr.map(item => read[Item](item))
       catch
          case IncompleteParseException( msg ) =>
             Buffer.empty
@@ -21,10 +21,10 @@ object RentalStore:
 
    def addItem( item: Item ) =
       if itemCategoryList.contains( item.category.toLowerCase ) then
-         if ownedItems.exists( existingItem => existingItem( "name" ).str == item.name ) then
+         if ownedItems.exists( existingItem => existingItem.name == item.name ) then
             throw DuplicateItem( s"${item.name} already exists in the system." )
          else
-            ownedItems += writeJs( item )
+            ownedItems +=  item 
             writeItems( ownedItems )
       else
          throw InvalidItemCategory( s"Item category ${item.category} doesn't exist in the system." )
@@ -32,14 +32,22 @@ object RentalStore:
    def deleteItem( item: Item ) =
 //      if ownedItems.exists( existingItem => existingItem( "name" ).str == item.name ) then
       val deletedItem =
-         ownedItems.find( existingItem => existingItem( "itemId" ).str == item.itemId )
+         ownedItems.find( existingItem => existingItem.itemId == item.itemId )
       deletedItem match
          case Some( itemValue ) =>
-            ownedItems -= writeJs( itemValue )
+            ownedItems -= itemValue
             writeItems( ownedItems )
          case None => throw ItemDoesNotExist( s"${item.name} does not exist in the system." )
 
    def getAvailableItems = ownedItems
+   
+   def updateItemComment(targetItem: Item, newCmt: String) =
+      ownedItems.find(existingItem => existingItem.itemId == targetItem.itemId) match
+         case Some(itemValue) => 
+            itemValue.addComment(newCmt)
+            writeItems(ownedItems)
+         case None => throw ItemDoesNotExist( s"${targetItem.name} does not exist in the system." )
+
 
 @main def tempFunc() =
    val item0 = Item( "tent", "tent for camping", 3, "camping", 2.5 )

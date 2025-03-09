@@ -3,7 +3,7 @@ package logic
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
 import upickle.default.*
 
-import scala.collection.mutable.{Buffer, Set}
+import scala.collection.mutable.{Buffer, Set, SortedSet}
 
 @upickle.implicits.serializeDefaults( true )
 case class Item( name:          String,
@@ -15,7 +15,7 @@ case class Item( name:          String,
                  incidents:     Set[Incident] = Set.empty,
                  dependencies:  Set[Item] = Set.empty,
                  var images:    String = "",
-                 comments:      Set[String] = Set.empty
+                 comments:      SortedSet[String] = SortedSet.empty
 ) derives ReadWriter:
 
    private var availableQuantity = ownedQuantity

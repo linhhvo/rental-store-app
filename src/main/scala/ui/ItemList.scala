@@ -21,9 +21,9 @@ object ItemList:
    val itemPageContainer = ScrollPane()
    val itemElements = itemList.map( item =>
       val itemImage =
-         getClass.getResourceAsStream( "/images/" + item( "images" ).str )
+         getClass.getResourceAsStream( "/images/" + item.images )
       val itemImageView = ImageView( Image( itemImage, 0, 200, true, true ) )
-      val itemNameLabel = Label( item( "name" ).str )
+      val itemNameLabel = Label( item.name )
       itemNameLabel.font = Font( "Arial", 18 )
       val viewItemBtn = Button( "View Item" )
       viewItemBtn.onAction = ( ( e ) =>
