@@ -1,9 +1,11 @@
 package logic
 
 import logic.IOHandler.{getDataFromFile, writeItems}
+import logic.IncidentType.{Damage, Loss}
 import ujson.IncompleteParseException
 import upickle.default.*
 
+import java.time.LocalDate
 import scala.collection.mutable.Buffer
 
 object RentalStore:
@@ -22,12 +24,12 @@ object RentalStore:
    def addItem( item: Item ) =
       if itemCategoryList.contains( item.category.toLowerCase ) then
          if ownedItems.exists( existingItem => existingItem.name == item.name ) then
-            throw DuplicateItem( s"${item.name} already exists in the system." )
+            throw DuplicateItem( s"${item.name} already exists in the system" )
          else
             ownedItems += item
             writeItems( ownedItems )
       else
-         throw InvalidItemCategory( s"Item category ${item.category} doesn't exist in the system." )
+         throw InvalidItemCategory( s"Item category ${item.category} doesn't exist in the system" )
 
    def deleteItem( item: Item ) =
 //      if ownedItems.exists( existingItem => existingItem( "name" ).str == item.name ) then
@@ -37,7 +39,7 @@ object RentalStore:
          case Some( itemValue ) =>
             ownedItems -= itemValue
             writeItems( ownedItems )
-         case None => throw ItemDoesNotExist( s"${item.name} does not exist in the system." )
+         case None => throw ItemDoesNotExist( s"${item.name} does not exist in the system" )
 
    def getAvailableItems = ownedItems
 
@@ -49,17 +51,23 @@ object RentalStore:
                itemValue.addComment( newCmtFormatted )
                writeItems( ownedItems )
             case None              =>
-               throw ItemDoesNotExist( s"${targetItem.name} does not exist in the system." )
-      else throw MissingData( "Comment can't be empty." )
+               throw ItemDoesNotExist( s"${targetItem.name} does not exist in the system" )
+      else throw MissingData( "Comment can't be empty" )
+
+   def updateItemIncident( targetItem: Item, newIncident: Incident ) =
+      ownedItems.find( existingItem => existingItem.itemId == targetItem.itemId ) match
+         case Some( itemValue ) =>
+            itemValue.reportIncident( newIncident )
+            writeItems( ownedItems )
+         case None              =>
+            throw ItemDoesNotExist( s"${targetItem.name} does not exist in the system" )
 
 @main def tempFunc() =
    val item0 = Item( "tent", "tent for camping", 3, "camping", 2.5 )
    val item1 = Item( "sleeping bag", "one sleeper bag", 10, "camping", 1.0 )
    RentalStore.addItem( item1 )
-//   println( RentalStore.getAvailableItems )
    RentalStore.addItem( item0 )
-//   println( RentalStore.getAvailableItems )
-//   RentalStore.deleteItem( item1 )
-//   println( RentalStore.getAvailableItems )
-
-//   println( RentalStore.getAvailableItems.find(item => item("name").str == "tent") )
+   val incident1 = Incident( LocalDate.parse( "2025-03-09" ), Damage, "damage on the side", 12.0 )
+   RentalStore.updateItemIncident( item1, incident1 )
+   val incident2 = Incident( LocalDate.parse( "2025-03-09" ), Loss, "damage on the side", 12.0 )
+   RentalStore.updateItemIncident( item1, incident2 )

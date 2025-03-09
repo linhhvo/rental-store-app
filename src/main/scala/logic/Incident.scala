@@ -1,23 +1,23 @@
 package logic
 
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
 import upickle.default.*
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.UUID
 
-case class Incident( incidentId:   String = UUID.randomUUID().toString,
-                     incidentDate: LocalDateTime,
+case class Incident( incidentDate: LocalDate,
                      incidentType: IncidentType,
                      comment:      String,
-                     repairCost:   Double
+                     repairCost:   Double,
+                     incidentId:   String = randomNanoId()
 ) derives ReadWriter
 
 object Incident {
-   implicit val dateTimeReadWrite: ReadWriter[LocalDateTime] =
-      readwriter[String].bimap[LocalDateTime](
-          dateTime => dateTime.format( DateTimeFormatter.ISO_LOCAL_DATE_TIME ),
-          str => LocalDateTime.parse( str, DateTimeFormatter.ISO_LOCAL_DATE_TIME )
+   implicit val dateTimeReadWrite: ReadWriter[LocalDate] =
+      readwriter[String].bimap[LocalDate](
+          dateTime => dateTime.format( DateTimeFormatter.ofPattern( "d-MMM-yyyy" ) ),
+          str => LocalDate.parse( str, DateTimeFormatter.ofPattern( "d-MMM-yyyy" ) )
       )
 
 }

@@ -1,7 +1,7 @@
 package ui
 
-import logic.RentalStore.{deleteItem, updateItemComment}
-import logic.{IncidentType, Item, ItemDoesNotExist, MissingData}
+import logic.*
+import logic.RentalStore.{deleteItem, updateItemComment, updateItemIncident}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.BaselineLeft
@@ -10,7 +10,7 @@ import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.Alert.AlertType.Information
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{HBox, VBox}
-import ui.Helper.{displayAlert, displayPage, toggleDisplay}
+import ui.Helper.{displayAlert, toggleDisplay}
 import upickle.default.*
 
 object ItemDetails:
@@ -28,10 +28,10 @@ object ItemDetails:
           ( e ) =>
              try
                 deleteItem( item )
-                displayAlert(messageAlert, "Item has been deleted from the system")
+                displayAlert( messageAlert, "Item has been deleted from the system" )
              catch
                 case ItemDoesNotExist( msg ) =>
-                   displayAlert(messageAlert, msg)
+                   displayAlert( messageAlert, msg )
       )
 
       /** Add item comment */
@@ -46,12 +46,12 @@ object ItemDetails:
              try
                 updateItemComment( item, cmtText.getText )
                 cmtText.clear()
-                displayAlert(messageAlert, "Comment has been added")
+                displayAlert( messageAlert, "Comment has been added" )
              catch
                 case ItemDoesNotExist( msg ) =>
-                   displayAlert(messageAlert, msg)
+                   displayAlert( messageAlert, msg )
                 case MissingData( msg )      =>
-                   displayAlert(messageAlert, msg)
+                   displayAlert( messageAlert, msg )
       )
 
       val addCmtContainer = new VBox:
@@ -88,8 +88,20 @@ object ItemDetails:
 
       val incSubmitBtn = Button( "Submit" )
       incSubmitBtn.onAction = ( ( e ) =>
-
-         incidentCmt.clear()
+         if incTypeChoiceBox.getSelectionModel.getSelectedItem != null
+            && incidentDatePicker.getValue != null
+            && incidentCmt.getText.nonEmpty
+            && repairCostField.getText.nonEmpty
+         then
+            val newIncident = Incident( incidentDatePicker.getValue,
+                                        incTypeChoiceBox.getValue,
+                                        incidentCmt.getText,
+                                        repairCostField.getText.toDouble
+            )
+            try updateItemIncident( item, newIncident )
+            catch case ItemDoesNotExist( msg ) => displayAlert( messageAlert, msg )
+            incidentCmt.clear()
+         else displayAlert( messageAlert, "Missing information" )
          repairCostField.clear()
          incTypeChoiceBox.getSelectionModel.clearSelection()
          incidentDatePicker.setValue( null )

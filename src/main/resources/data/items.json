@@ -1,30 +1,45 @@
 [
   {
-    "name": "tent",
-    "desc": "tent",
-    "ownedQuantity": 4,
+    "name": "sleeping bag",
+    "desc": "one sleeper bag",
+    "ownedQuantity": 10,
     "category": "camping",
-    "ratePerHour": 12,
-    "itemId": "c39xCm7ywrMvyVYpZXNRD",
+    "ratePerHour": 1,
+    "itemId": "_EU5Z-xQRCZRFdWIfqfDH",
+    "incidents": [
+      {
+        "incidentDate": "9-Mar-2025",
+        "incidentType": "Damage",
+        "comment": "damage on the side",
+        "repairCost": 12,
+        "incidentId": "-QZxVd3kLQGeQ894WKtzP"
+      },
+      {
+        "incidentDate": "9-Mar-2025",
+        "incidentType": "Loss",
+        "comment": "damage on the side",
+        "repairCost": 12,
+        "incidentId": "dbYzfV7QjWDnUQYX5sQje"
+      }
+    ],
+    "dependencies": [],
+    "images": "sleeping bag.jpg",
+    "comments": [],
+    "lostQuantity": 1,
+    "rentedQuantity": 0
+  },
+  {
+    "name": "tent",
+    "desc": "tent for camping",
+    "ownedQuantity": 3,
+    "category": "camping",
+    "ratePerHour": 2.5,
+    "itemId": "vf81tSMl5IHKr_soJbLRU",
     "incidents": [],
     "dependencies": [],
     "images": "tent.jpg",
-    "comments": [
-      "cmt1",
-      "cmt2",
-      "cmt3"
-    ]
-  },
-  {
-    "name": "sleeping bag",
-    "desc": "bag",
-    "ownedQuantity": 2,
-    "category": "clothes",
-    "ratePerHour": 234.2,
-    "itemId": "8WiI7ZKxx7-eD6Z3w_030",
-    "incidents": [],
-    "dependencies": [],
-    "images": "sleeping bag.jpg",
-    "comments": []
+    "comments": [],
+    "lostQuantity": 0,
+    "rentedQuantity": 0
   }
 ]
