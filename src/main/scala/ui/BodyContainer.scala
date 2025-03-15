@@ -5,6 +5,7 @@ import ui.AddItem.addItemContainer
 import ui.AddItemCategory.addItemCatContainer
 import ui.Calendar.calendarPageContainer
 import ui.ItemList.{itemListPageScroll, itemPageContainer}
+import ui.RentItem.rentItemPageContainer
 
 object BodyContainer:
    /** BODY CONTAINER */
@@ -15,5 +16,6 @@ object BodyContainer:
                                  calendarPageContainer,
                                  addItemCatContainer,
                                  itemPageContainer,
-                                 addItemContainer
+                                 addItemContainer,
+                                 rentItemPageContainer
    )

@@ -5,8 +5,9 @@ import ui.AddItem.{addItemContainer, resetItemPage}
 import ui.AddItemCategory.{actionMsg, addItemCatContainer, itemCatTextField}
 import ui.BodyContainer.bodyStack
 import ui.Calendar.calendarPageContainer
-import ui.Helper.displayPage
+import ui.Helper.{displayAlert, displayPage}
 import ui.ItemList.{itemListPageScroll, renderItemListPage}
+import ui.RentItem.{renderSavedItems, rentItemPageContainer}
 
 object MenuBar:
    /** MENU BAR */
@@ -22,7 +23,12 @@ object MenuBar:
    val addItemCategoryMenuItem = MenuItem( "Add Item Category" )
    val addItemMenuItem = MenuItem( "Add Item" )
    val returnItemMenuItem = MenuItem( "Return Item" )
-   actionsMenu.getItems.addAll( addItemCategoryMenuItem, addItemMenuItem, returnItemMenuItem )
+   val createBookingItem = MenuItem( "Rent Items" )
+   actionsMenu.getItems.addAll( addItemCategoryMenuItem,
+                                addItemMenuItem,
+                                returnItemMenuItem,
+                                createBookingItem
+   )
 
    val menuBar = new MenuBar:
       menus = Array( navigationMenu, actionsMenu )
@@ -44,3 +50,8 @@ object MenuBar:
       displayPage( bodyStack, addItemContainer )
       resetItemPage()
    )
+
+   createBookingItem.onAction = ((e) => 
+      displayPage(bodyStack, rentItemPageContainer)
+      rentItemPageContainer.setContent(renderSavedItems)
+      )
