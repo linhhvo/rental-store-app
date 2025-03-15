@@ -2,9 +2,9 @@ package ui
 
 import logic.*
 import logic.RentalStore.{deleteItem, updateItemComment, updateItemIncident}
+import logic.SavedItems.addToCart
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
-import scalafx.geometry.Pos.BaselineLeft
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.Alert.AlertType.{Confirmation, Information}
@@ -14,7 +14,7 @@ import ui.Helper.{displayAlert, toggleDisplay}
 import upickle.default.*
 
 object ItemDetails:
-   val smallWidth = 200
+   val smallWidth = 240
    val smallHeight = 75
 
    def displayItemPage( item: Item ) =
@@ -28,43 +28,27 @@ object ItemDetails:
       rentQuantity.maxWidth = 125
       rentQuantity.editable = true
 
-      val hours = ObservableBuffer[Int]() ++ ( 0 to 23 ).toArray
-      val mins = ObservableBuffer[Int]() ++ ( 0 to 59 ).toArray
-      val rentStartDate = new DatePicker()
-      rentStartDate.maxWidth = 125
-      val rentStartHour = ChoiceBox( hours )
-      val rentStartMin = ChoiceBox( mins )
-      val rentStart = new HBox:
-         spacing = 5
-         children = Array( rentStartDate, rentStartHour, rentStartMin )
-
-      val rentEndDate = new DatePicker()
-      rentEndDate.maxWidth = 125
-      val rentEndHour = ChoiceBox( hours )
-      val rentEndMin = ChoiceBox( mins )
-      val rentEnd = new HBox:
-         spacing = 5
-         children = Array( rentEndDate, rentEndHour, rentEndMin )
-
       val submitItemBtn = Button( "Add To List" )
 
       val rentItemContainer = new VBox:
          spacing = 7
-         children = Array( Label( "Quantity" ),
-                           rentQuantity,
-                           Label( "Rent Start" ),
-                           rentStart,
-                           Label( "Rent End" ),
-                           rentEnd,
-                           submitItemBtn
-         )
+         children = Array( Label( "Quantity" ), rentQuantity, submitItemBtn )
          visible = false
          managed = false
          margin = Insets( 5, 0, 5, 0 )
 
       rentItemBtn.onAction = ( ( e ) => toggleDisplay( rentItemContainer ) )
 
+      submitItemBtn.onAction = (
+          ( e ) =>
+             try
+                addToCart( item, rentQuantity.getValue )
+                displayAlert( messageAlert, "Added to saved list" )
+             catch case DuplicateItem( msg ) => displayAlert( messageAlert, msg )
+      )
+
       /** Delete item button */
+
       val deleteItemBtn = Button( "Delete Item" )
       deleteItemBtn.margin = Insets( 15, 0, 15, 0 )
       deleteItemBtn.onAction = (
@@ -84,6 +68,7 @@ object ItemDetails:
       )
 
       /** Add item comment */
+
       val cmtText = TextArea()
       cmtText.promptText = "Enter comment"
       cmtText.maxWidth = smallWidth
@@ -114,13 +99,10 @@ object ItemDetails:
       addCmtBtn.onAction = ( ( e ) => toggleDisplay( addCmtContainer ) )
 
       /** Report item incident */
+
       val incTypeList = ObservableBuffer[IncidentType]( IncidentType.Loss, IncidentType.Damage )
       val incTypeChoiceBox = ChoiceBox( incTypeList )
-      incTypeChoiceBox.margin = Insets( 0, 0, 0, 29 )
-      val incidentType = new HBox:
-         maxWidth = smallWidth
-         alignment = BaselineLeft
-         children = Array( Label( "Incident Type" ), incTypeChoiceBox )
+      incTypeChoiceBox.maxWidth = smallWidth
 
       val incidentDatePicker = DatePicker()
       incidentDatePicker.promptText = "Select incident date"
@@ -157,9 +139,18 @@ object ItemDetails:
       )
 
       val incidentContainer = new VBox:
-         spacing = 10
-         children =
-            Array( incidentType, incidentDatePicker, incidentCmt, repairCostField, incSubmitBtn )
+         spacing = 7
+         children = Array(
+             Label( "Incident Type" ),
+             incTypeChoiceBox,
+             Label( "Incident Date" ),
+             incidentDatePicker,
+             Label( "Incident Detail" ),
+             incidentCmt,
+             Label( "Repair Cost" ),
+             repairCostField,
+             incSubmitBtn
+         )
          visible = false
          managed = false
          margin = Insets( 5, 0, 5, 0 )
