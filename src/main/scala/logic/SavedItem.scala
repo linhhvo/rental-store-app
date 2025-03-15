@@ -20,7 +20,7 @@ object SavedItems:
          savedItems.find( existingItem => existingItem.itemId == requestItem.itemId )
       existingItem match
          case Some( itemValue ) =>
-            throw DuplicateItem( "Item has already been added to the saved list." )
+            throw DuplicateItem( "Item has already been added to the saved list" )
          case None              =>
             savedItems += SavedItem( requestItem.itemId, requestQuantity )
             requestItem.dependencies.foreach( d =>

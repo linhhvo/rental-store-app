@@ -13,10 +13,11 @@ import upickle.default.*
 object ItemList:
    /** ITEM LIST PAGE */
 
-   // Create a container for each item
+   // Create a page for each item details and actions
    val itemPageContainer = ScrollPane()
    itemPageContainer.setVisible( false )
-   
+
+   // Container for the list of items (landing page itself)
    val itemListPageScroll = ScrollPane()
    itemListPageScroll.setContent( renderItemListPage )
    itemListPageScroll.fitToWidth = true

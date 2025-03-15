@@ -13,10 +13,9 @@ case class Incident( incidentDate: LocalDate,
                      incidentId:   String = randomNanoId()
 ) derives ReadWriter
 
-object Incident {
+object Incident:
    implicit val dateReadWrite: ReadWriter[LocalDate] =
       readwriter[String].bimap[LocalDate](
           dateTime => dateTime.format( DateTimeFormatter.ofPattern( "d-MM-yyyy" ) ),
           str => LocalDate.parse( str, DateTimeFormatter.ofPattern( "d-MM-yyyy" ) )
       )
-}
