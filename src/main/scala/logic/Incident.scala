@@ -14,10 +14,9 @@ case class Incident( incidentDate: LocalDate,
 ) derives ReadWriter
 
 object Incident {
-   implicit val dateTimeReadWrite: ReadWriter[LocalDate] =
+   implicit val dateReadWrite: ReadWriter[LocalDate] =
       readwriter[String].bimap[LocalDate](
-          dateTime => dateTime.format( DateTimeFormatter.ofPattern( "d-MMM-yyyy" ) ),
-          str => LocalDate.parse( str, DateTimeFormatter.ofPattern( "d-MMM-yyyy" ) )
+          dateTime => dateTime.format( DateTimeFormatter.ofPattern( "d-MM-yyyy" ) ),
+          str => LocalDate.parse( str, DateTimeFormatter.ofPattern( "d-MM-yyyy" ) )
       )
-
 }
