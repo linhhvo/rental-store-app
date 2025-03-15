@@ -5,27 +5,20 @@
     "ownedQuantity": 10,
     "category": "camping",
     "ratePerHour": 1,
-    "itemId": "_EU5Z-xQRCZRFdWIfqfDH",
+    "itemId": "QsYhna7VvmwMGK84Q9JgH",
     "incidents": [
       {
-        "incidentDate": "9-Mar-2025",
-        "incidentType": "Damage",
-        "comment": "damage on the side",
-        "repairCost": 12,
-        "incidentId": "-QZxVd3kLQGeQ894WKtzP"
-      },
-      {
-        "incidentDate": "9-Mar-2025",
+        "incidentDate": "12-03-2025",
         "incidentType": "Loss",
-        "comment": "damage on the side",
-        "repairCost": 12,
-        "incidentId": "dbYzfV7QjWDnUQYX5sQje"
+        "comment": "lost item",
+        "repairCost": 12.4,
+        "incidentId": "rgAgR9ANr3IuMoWKPQPTI"
       }
     ],
     "dependencies": [],
     "images": "sleeping bag.jpg",
     "comments": [],
-    "lostQuantity": 1,
+    "lostQuantity": 2,
     "rentedQuantity": 0
   },
   {
@@ -34,7 +27,7 @@
     "ownedQuantity": 3,
     "category": "camping",
     "ratePerHour": 2.5,
-    "itemId": "vf81tSMl5IHKr_soJbLRU",
+    "itemId": "WgnFXN00y3Mibxc256QNZ",
     "incidents": [],
     "dependencies": [],
     "images": "tent.jpg",
