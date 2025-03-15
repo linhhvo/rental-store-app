@@ -5,9 +5,9 @@ import ui.AddItem.{addItemContainer, resetItemPage}
 import ui.AddItemCategory.{actionMsg, addItemCatContainer, itemCatTextField}
 import ui.BodyContainer.bodyStack
 import ui.Calendar.calendarPageContainer
-import ui.Helper.{displayAlert, displayPage}
+import ui.Helper.displayPage
 import ui.ItemList.{itemListPageScroll, renderItemListPage}
-import ui.RentItem.{renderSavedItems, rentItemPageContainer}
+import ui.RentItem.rentItemScrollContainer
 
 object MenuBar:
    /** MENU BAR */
@@ -51,7 +51,4 @@ object MenuBar:
       resetItemPage()
    )
 
-   createBookingItem.onAction = ((e) => 
-      displayPage(bodyStack, rentItemPageContainer)
-      rentItemPageContainer.setContent(renderSavedItems)
-      )
+   createBookingItem.onAction = ( ( e ) => displayPage( bodyStack, rentItemScrollContainer ) )
