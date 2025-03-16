@@ -5,7 +5,7 @@ import logic.RentalStore.getAvailableItems
 import ujson.IncompleteParseException
 import upickle.default.*
 
-import scala.collection.mutable
+import scala.collection.mutable.Buffer
 
 case class SavedItem( itemId: String, var rentQuantity: Int ) derives ReadWriter
 
@@ -14,7 +14,7 @@ object SavedItems:
       try getDataFromFile( "savedItems" ).arr.map( item => read[SavedItem]( item ) )
       catch
          case IncompleteParseException( msg ) =>
-            mutable.Buffer.empty
+            Buffer.empty
 
    def getSavedItems = savedItems
 
@@ -31,6 +31,10 @@ object SavedItems:
             )
 
       writeSavedItems( savedItems )
+
+   def resetList() =
+      savedItems.clear()
+      writeSavedItems( Buffer.empty )
 
    def rentalRatePerHour =
       val allItems = getAvailableItems
