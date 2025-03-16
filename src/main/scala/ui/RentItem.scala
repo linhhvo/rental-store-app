@@ -1,15 +1,18 @@
 package ui
 
-import logic.SavedItems.getSavedItems
-import scalafx.beans.property.IntegerProperty
+import logic.InvalidDateTime
+import logic.RentalStore.getAvailableItems
+import logic.SavedItems.{getSavedItems, rentalRatePerHour}
+import scalafx.beans.property.DoubleProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
-import scalafx.scene.control.Alert.AlertType.Information
 import scalafx.scene.layout.VBox
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
 import ui.Helper.*
+
+import java.time.{LocalDate, LocalDateTime}
 
 object RentItem:
    // Container to enable scrolling if page is long
@@ -49,12 +52,46 @@ object RentItem:
 //      spacing = 5
 
    /** Total rental cost container */
-   var totalCost = IntegerProperty( 0 )
+   var totalCost = DoubleProperty( 0 )
+
+   // Calculate and update total cost when start date and time change
+   rentStart._2
+      .valueProperty()
+      .addListener( ( observable, oldDate, newDate ) => {
+         try totalCost.value = rentalRatePerHour * calculateRentalDuration( rentStart, rentEnd )
+         catch
+            case InvalidDateTime( msg ) =>
+               displayAlert( msgAlert, msg )
+               rentStart._2.setValue( LocalDate.now )
+      } )
+   rentStart._3
+      .valueProperty()
+      .addListener( ( observable, oldDate, newDate ) => {
+         try totalCost.value = rentalRatePerHour * calculateRentalDuration( rentStart, rentEnd )
+         catch
+            case InvalidDateTime( msg ) =>
+               displayAlert( msgAlert, msg )
+               rentStart._3.setValue( String.format( "%02d" + ":00", LocalDateTime.now().getHour ) )
+      } )
+
+   // Calculate and update total cost when end date and time change
    rentEnd._2
       .valueProperty()
       .addListener( ( observable, oldDate, newDate ) => {
-         totalCost.value = calculateRentalDuration( rentStart, rentEnd ).toInt
-
+         try totalCost.value = rentalRatePerHour * calculateRentalDuration( rentStart, rentEnd )
+         catch
+            case InvalidDateTime( msg ) =>
+               displayAlert( msgAlert, msg )
+               rentEnd._2.setValue( LocalDate.now )
+      } )
+   rentEnd._3
+      .valueProperty()
+      .addListener( ( observable, oldDate, newDate ) => {
+         try totalCost.value = rentalRatePerHour * calculateRentalDuration( rentStart, rentEnd )
+         catch
+            case InvalidDateTime( msg ) =>
+               displayAlert( msgAlert, msg )
+               rentEnd._3.setValue( String.format( "%02d" + ":00", LocalDateTime.now().getHour ) )
       } )
 
    totalCost.onChange { ( source, oldValue, newValue ) =>
@@ -66,7 +103,7 @@ object RentItem:
    costLabel.margin = Insets( 10, 0, 0, 0 )
 
    /** Booking button */
-   val msgAlert = new Alert( Information )
+   val msgAlert = new Alert( Alert.AlertType.Information )
    val bookingBtn = Button( "Book Rental" )
    bookingBtn.onAction = ( ( e ) => displayAlert( msgAlert, "Rental is confirmed" ) )
 
@@ -85,7 +122,12 @@ object RentItem:
 
    def renderSavedItems =
       val savedItems = getSavedItems
-      val itemElements = savedItems.map( item => Label( item.itemId + " - " + item.rentQuantity ) )
+      val allItems = getAvailableItems
+      val itemElements = savedItems.map( savedItem =>
+         allItems.find( i => i.itemId == savedItem.itemId ) match
+            case Some( i ) => Label( "• " + i.name + " - Quantity: " + savedItem.rentQuantity )
+            case None      => Label( null )
+      )
 
       val label = Label( "Items added:" )
       label.font = Font( null, FontWeight( Bold ), 14 )

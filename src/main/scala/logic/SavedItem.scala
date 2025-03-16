@@ -1,6 +1,7 @@
 package logic
 
 import logic.IOHandler.{getDataFromFile, writeSavedItems}
+import logic.RentalStore.getAvailableItems
 import ujson.IncompleteParseException
 import upickle.default.*
 
@@ -14,6 +15,8 @@ object SavedItems:
       catch
          case IncompleteParseException( msg ) =>
             mutable.Buffer.empty
+
+   def getSavedItems = savedItems
 
    def addToCart( requestItem: Item, requestQuantity: Int ) =
       val existingItem =
@@ -29,4 +32,12 @@ object SavedItems:
 
       writeSavedItems( savedItems )
 
-   def getSavedItems = savedItems
+   def rentalRatePerHour =
+      val allItems = getAvailableItems
+      this.getSavedItems
+         .map( savedItem =>
+            allItems.find( i => i.itemId == savedItem.itemId ) match
+               case Some( i ) => i.ratePerHour * savedItem.rentQuantity
+               case None      => 0
+         )
+         .sum
