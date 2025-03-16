@@ -91,18 +91,14 @@ object Helper:
    ) =
       if start._2.getValue == null || end._2.getValue == null then
          throw InvalidDateTime( "Date and time cannot be empty" )
-      else if start._3.getValue.split( ":" ).head.toInt < LocalDateTime.now.getHour
-         || end._3.getValue.split( ":" ).head.toInt < LocalDateTime.now.getHour
-      then throw InvalidDateTime( "Time cannot be before current time" )
       else
-         val startStr = start._2.getValue.toString + " " + start._3.getValue
-         val endStr = end._2.getValue.toString + " " + end._3.getValue
-
-         val startDT =
-            LocalDateTime.parse( startStr, DateTimeFormatter.ofPattern( "yyyy-MM-d H:m" ) )
-         val endDT =
-            LocalDateTime.parse( endStr, DateTimeFormatter.ofPattern( "yyyy-MM-d H:m" ) )
+         val startDT = getDateTime( start._2, start._3 )
+         val endDT = getDateTime( end._2, end._3 )
 
          if startDT.isAfter( endDT ) then
             throw InvalidDateTime( "End date and time cannot be before start date and time " )
          else Duration.between( startDT, endDT ).toHours.toDouble
+
+   def getDateTime( date: DatePicker, time: ChoiceBox[String] ) =
+      val dateTimeStr = date.getValue.toString + " " + time.getValue
+      LocalDateTime.parse( dateTimeStr, DateTimeFormatter.ofPattern( "yyyy-MM-d H:m" ) )
