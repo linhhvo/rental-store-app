@@ -1,14 +1,15 @@
 package ui
 
 import logic.SavedItems.getSavedItems
+import scalafx.beans.property.IntegerProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType.Information
-import scalafx.scene.layout.{ColumnConstraints, GridPane, VBox}
+import scalafx.scene.layout.VBox
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
-import ui.Helper.displayAlert
+import ui.Helper.*
 
 object RentItem:
    // Container to enable scrolling if page is long
@@ -48,8 +49,19 @@ object RentItem:
 //      spacing = 5
 
    /** Total rental cost container */
-   val totalCost = 123.45
-   val costLabel = Label( s"Rental Total Cost: ${totalCost}" )
+   var totalCost = IntegerProperty( 0 )
+   rentEnd._2
+      .valueProperty()
+      .addListener( ( observable, oldDate, newDate ) => {
+         totalCost.value = calculateRentalDuration( rentStart, rentEnd ).toInt
+
+      } )
+
+   totalCost.onChange { ( source, oldValue, newValue ) =>
+      println( totalCost.value )
+      costLabel.text = s"Rental Total Cost: ${totalCost.value}"
+   }
+   val costLabel = Label( "Update rental period to view total cost" )
    costLabel.font = Font( null, FontWeight( Bold ), 14 )
    costLabel.margin = Insets( 10, 0, 0, 0 )
 
@@ -82,27 +94,3 @@ object RentItem:
          children = Array( label ) ++ itemElements
 
       savedItemsContainer
-//      println(
-//                 rentStartDate.getValue.toString + " " + rentStartHour.getValue + ":" + rentStartMin.getValue
-//             )
-
-   def createDateTimePicker( labelText: String ) =
-      val hours = ObservableBuffer[Int]() ++ ( 0 to 23 ).toArray
-      val mins = ObservableBuffer[Int]() ++ ( 0 to 59 ).toArray
-      val date = new DatePicker()
-      date.maxWidth = 125
-      val hour = ChoiceBox( hours )
-      hour.maxWidth = 70
-      val min = ChoiceBox( mins )
-      min.maxWidth = 70
-      val container = GridPane()
-      container.add( Label( s"${labelText} Date" ), 0, 0 )
-      container.add( date, 0, 1 )
-      container.add( Label( s"${labelText} Hour" ), 1, 0 )
-      container.add( hour, 1, 1 )
-      container.add( Label( s"${labelText} Min" ), 2, 0 )
-      container.add( min, 2, 1 )
-      container.columnConstraints =
-         Array( ColumnConstraints( 135 ), ColumnConstraints( 80 ), ColumnConstraints( 80 ) )
-
-      ( container, date, hour, min )
