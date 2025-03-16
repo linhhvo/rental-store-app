@@ -1,16 +1,16 @@
 package logic
 
 import upickle.default.*
-
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-case class Booking( bookingId:        String = "booking1",
-                    items:            Set[String] = Set.empty,
+case class Booking( items:            Set[String] = Set.empty,
                     bookingStartTime: LocalDateTime,
                     bookingEndTime:   LocalDateTime,
                     totalCost:        Double,
-                    renter:           Renter
+                    renter:           String,
+                    bookingId:        String = randomNanoId()
 ) derives ReadWriter
 
 object Booking:

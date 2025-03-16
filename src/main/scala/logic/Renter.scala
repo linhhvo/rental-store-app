@@ -2,4 +2,7 @@ package logic
 
 import upickle.default.*
 
-case class Renter( name: String, email: String ) derives ReadWriter
+import scala.collection.mutable.SortedSet
+
+case class Renter( name: String, email: String, comments: SortedSet[String] = SortedSet.empty )
+    derives ReadWriter

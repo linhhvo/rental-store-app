@@ -1,8 +1,8 @@
 package ui
 
-import logic.InvalidDateTime
-import logic.RentalStore.getAvailableItems
-import logic.SavedItems.{getSavedItems, rentalRatePerHour}
+import logic.RentalStore.{addBooking, getAvailableItems}
+import logic.SavedItems.{getSavedItems, rentalRatePerHour, resetList}
+import logic.{Booking, InvalidDateTime}
 import scalafx.beans.property.DoubleProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
@@ -15,6 +15,8 @@ import ui.Helper.*
 import java.time.{LocalDate, LocalDateTime}
 
 object RentItem:
+   val savedItems = getSavedItems
+
    // Container to enable scrolling if page is long
    val rentItemScrollContainer = ScrollPane()
    rentItemScrollContainer.setVisible( false )
@@ -95,7 +97,6 @@ object RentItem:
       } )
 
    totalCost.onChange { ( source, oldValue, newValue ) =>
-      println( totalCost.value )
       costLabel.text = s"Rental Total Cost: ${totalCost.value}"
    }
    val costLabel = Label( "Update rental period to view total cost" )
@@ -105,7 +106,18 @@ object RentItem:
    /** Booking button */
    val msgAlert = new Alert( Alert.AlertType.Information )
    val bookingBtn = Button( "Book Rental" )
-   bookingBtn.onAction = ( ( e ) => displayAlert( msgAlert, "Rental is confirmed" ) )
+   bookingBtn.onAction = ( ( e ) =>
+      val newBooking = Booking( savedItems.map( _.itemId ).toSet,
+                                getDateTime( rentStart._2, rentStart._3 ),
+                                getDateTime( rentEnd._2, rentEnd._3 ),
+                                totalCost.toDouble,
+                                renterPicker.getValue
+      )
+      addBooking( newBooking )
+      resetList()
+      savedItems.clear()
+      displayAlert( msgAlert, "Rental is confirmed" )
+   )
 
    /** Combined container */
    val boxContainer = new VBox:
@@ -121,7 +133,6 @@ object RentItem:
    rentItemScrollContainer.setContent( boxContainer )
 
    def renderSavedItems =
-      val savedItems = getSavedItems
       val allItems = getAvailableItems
       val itemElements = savedItems.map( savedItem =>
          allItems.find( i => i.itemId == savedItem.itemId ) match
