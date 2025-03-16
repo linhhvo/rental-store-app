@@ -1,11 +1,9 @@
 package logic
 
-import logic.IOHandler.{getDataFromFile, writeItems}
-import logic.IncidentType.{Damage, Loss}
+import logic.IOHandler.*
 import ujson.IncompleteParseException
 import upickle.default.*
 
-import java.time.LocalDate
 import scala.collection.mutable.Buffer
 
 object RentalStore:
@@ -17,9 +15,15 @@ object RentalStore:
          case IncompleteParseException( msg ) =>
             Buffer.empty
 
-//   private val bookings: Set[Booking] = Set.empty
+   private val bookings =
+      try getDataFromFile( "bookings" ).arr.map( item => read[Booking]( item ) )
+      catch
+         case IncompleteParseException( msg ) =>
+            Buffer.empty
 
    private val itemCategoryList: Buffer[String] = ItemCategory.getItemCategoryList
+
+   def getAvailableItems = ownedItems
 
    def addItem( item: Item ) =
       if itemCategoryList.contains( item.category.toLowerCase ) then
@@ -32,7 +36,6 @@ object RentalStore:
          throw InvalidItemCategory( s"Item category ${item.category} doesn't exist in the system" )
 
    def deleteItem( item: Item ) =
-//      if ownedItems.exists( existingItem => existingItem( "name" ).str == item.name ) then
       val deletedItem =
          ownedItems.find( existingItem => existingItem.itemId == item.itemId )
       deletedItem match
@@ -40,8 +43,6 @@ object RentalStore:
             ownedItems -= itemValue
             writeItems( ownedItems )
          case None => throw ItemDoesNotExist( s"${item.name} does not exist in the system" )
-
-   def getAvailableItems = ownedItems
 
    def updateItemComment( targetItem: Item, newCmt: String ) =
       val newCmtFormatted = newCmt.trim
@@ -62,12 +63,16 @@ object RentalStore:
          case None              =>
             throw ItemDoesNotExist( s"${targetItem.name} does not exist in the system" )
 
-@main def tempFunc() =
-   val item0 = Item( "tent", "tent for camping", 3, "camping", 2.5 )
-   val item1 = Item( "sleeping bag", "one sleeper bag", 10, "camping", 1.0 )
-   RentalStore.addItem( item1 )
-   RentalStore.addItem( item0 )
-   val incident1 = Incident( LocalDate.parse( "2025-03-09" ), Damage, "damage on the side", 12.0 )
-   RentalStore.updateItemIncident( item1, incident1 )
-   val incident2 = Incident( LocalDate.parse( "2025-03-09" ), Loss, "damage on the side", 12.0 )
-   RentalStore.updateItemIncident( item1, incident2 )
+   def addBooking( newBooking: Booking ) =
+      bookings += newBooking
+      writeBookings( bookings )
+
+//@main def tempFunc() =
+//   val item0 = Item( "tent", "tent for camping", 3, "camping", 2.5 )
+//   val item1 = Item( "sleeping bag", "one sleeper bag", 10, "camping", 1.0 )
+//   RentalStore.addItem( item1 )
+//   RentalStore.addItem( item0 )
+//   val incident1 = Incident( LocalDate.parse( "2025-03-09" ), Damage, "damage on the side", 12.0 )
+//   RentalStore.updateItemIncident( item1, incident1 )
+//   val incident2 = Incident( LocalDate.parse( "2025-03-09" ), Loss, "damage on the side", 12.0 )
+//   RentalStore.updateItemIncident( item1, incident2 )
