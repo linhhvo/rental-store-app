@@ -7,7 +7,7 @@ import ui.BodyContainer.bodyStack
 import ui.Calendar.calendarPageContainer
 import ui.Helper.displayPage
 import ui.ItemList.{itemListPageScroll, renderItemListPage}
-import ui.RentItem.rentItemScrollContainer
+import ui.RentItem.{rentItemScrollContainer, resetSavedListPage}
 
 object MenuBar:
    /** MENU BAR */
@@ -51,4 +51,7 @@ object MenuBar:
       resetItemPage()
    )
 
-   createBookingItem.onAction = ( ( e ) => displayPage( bodyStack, rentItemScrollContainer ) )
+   createBookingItem.onAction = ( ( e ) =>
+      displayPage( bodyStack, rentItemScrollContainer )
+      resetSavedListPage()
+   )

@@ -1,9 +1,9 @@
 package ui
 
 import logic.RentalStore.{addBooking, getAvailableItems}
-import logic.SavedItems.{getSavedItems, rentalRatePerHour, resetList}
+import logic.SavedItems.{getSavedItems, rentalRatePerHour, resetSavedList}
 import logic.{Booking, InvalidDateTime}
-import scalafx.beans.property.DoubleProperty
+import scalafx.beans.property.{BooleanProperty, DoubleProperty}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
@@ -16,6 +16,7 @@ import java.time.{LocalDate, LocalDateTime}
 
 object RentItem:
    val savedItems = getSavedItems
+   var render = BooleanProperty( false )
 
    // Container to enable scrolling if page is long
    val rentItemScrollContainer = ScrollPane()
@@ -24,10 +25,13 @@ object RentItem:
 
    /** Rental period container */
    // Date and time controls for rental period start
-   val rentStart = createDateTimePicker( "Start" )
+   var rentStart = createDateTimePicker( "Start" )
 
    // Date and time controls for rental period end
-   val rentEnd = createDateTimePicker( "End" )
+   var rentEnd = createDateTimePicker( "End" )
+   rentEnd._3.setValue(
+       String.format( "%02d" + ":00", LocalDateTime.now().plusHours( 1 ).getHour )
+   )
 
    val periodLabel = Label( "Select rental period" )
    periodLabel.font = Font( null, FontWeight( Bold ), 14 )
@@ -54,7 +58,9 @@ object RentItem:
 //      spacing = 5
 
    /** Total rental cost container */
-   var totalCost = DoubleProperty( 0 )
+   var totalCost = DoubleProperty(
+       rentalRatePerHour * calculateRentalDuration( rentStart, rentEnd )
+   )
 
    // Calculate and update total cost when start date and time change
    rentStart._2
@@ -93,46 +99,46 @@ object RentItem:
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
-               rentEnd._3.setValue( String.format( "%02d" + ":00", LocalDateTime.now().getHour ) )
+               rentEnd._3.setValue(
+                   String.format( "%02d" + ":00", LocalDateTime.now().plusHours( 1 ).getHour )
+               )
       } )
+
+   val costLabel = Label( s"Rental Total Cost: ${totalCost.value}" )
+   costLabel.font = Font( null, FontWeight( Bold ), 14 )
+   costLabel.margin = Insets( 10, 0, 0, 0 )
 
    totalCost.onChange { ( source, oldValue, newValue ) =>
       costLabel.text = s"Rental Total Cost: ${totalCost.value}"
    }
-   val costLabel = Label( "Update rental period to view total cost" )
-   costLabel.font = Font( null, FontWeight( Bold ), 14 )
-   costLabel.margin = Insets( 10, 0, 0, 0 )
 
    /** Booking button */
    val msgAlert = new Alert( Alert.AlertType.Information )
    val bookingBtn = Button( "Book Rental" )
-   bookingBtn.onAction = ( ( e ) =>
-      val newBooking = Booking( savedItems.map( _.itemId ).toSet,
-                                getDateTime( rentStart._2, rentStart._3 ),
-                                getDateTime( rentEnd._2, rentEnd._3 ),
-                                totalCost.toDouble,
-                                renterPicker.getValue
-      )
-      addBooking( newBooking )
-      resetList()
-      savedItems.clear()
-      displayAlert( msgAlert, "Rental is confirmed" )
+
+   rentItemScrollContainer.setContent( renderPage )
+
+   bookingBtn.onAction = (
+       ( e ) =>
+          if renterPicker.getValue == null then displayAlert( msgAlert, "Please select a renter" )
+          else
+             val newBooking = Booking( savedItems.map( _.itemId ).toSet,
+                                       getDateTime( rentStart._2, rentStart._3 ),
+                                       getDateTime( rentEnd._2, rentEnd._3 ),
+                                       totalCost.toDouble,
+                                       renterPicker.getValue
+             )
+             addBooking( newBooking )
+             resetSavedList()
+             savedItems.clear()
+             displayAlert( msgAlert, "Rental is confirmed" )
+             rentItemScrollContainer.setContent(
+                 Label( "No items in the saved list. Add items to list to book a rental" )
+             )
    )
 
-   /** Combined container */
-   val boxContainer = new VBox:
-      children = Array( renderSavedItems,
-                        periodContainer,
-                        renterContainer,
-//                        cmtContainer,
-                        costLabel,
-                        bookingBtn
-      )
-      spacing = 10
-
-   rentItemScrollContainer.setContent( boxContainer )
-
-   def renderSavedItems =
+   def renderPage =
+      println( "render" )
       val allItems = getAvailableItems
       val itemElements = savedItems.map( savedItem =>
          allItems.find( i => i.itemId == savedItem.itemId ) match
@@ -146,4 +152,31 @@ object RentItem:
       val savedItemsContainer = new VBox():
          children = Array( label ) ++ itemElements
 
-      savedItemsContainer
+      /** Combined container */
+      val boxContainer = new VBox:
+         if savedItems.isEmpty then
+            children =
+               Array( Label( "No items in the saved list. Add items to list to book a rental" ) )
+         else
+            children = Array( savedItemsContainer,
+                              periodContainer,
+                              renterContainer,
+                              //                        cmtContainer,
+                              costLabel,
+                              bookingBtn
+            )
+         spacing = 10
+
+      boxContainer
+
+   def resetSavedListPage() =
+      rentItemScrollContainer.setContent( renderPage )
+      rentStart._2.setValue( LocalDate.now )
+      rentStart._3.setValue(
+          String.format( "%02d" + ":00", LocalDateTime.now().getHour )
+      )
+      rentEnd._2.setValue( LocalDate.now )
+      rentEnd._3.setValue(
+          String.format( "%02d" + ":00", LocalDateTime.now().plusHours( 1 ).getHour )
+      )
+      renterPicker.getSelectionModel.clearSelection()

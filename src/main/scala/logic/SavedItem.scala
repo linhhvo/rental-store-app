@@ -32,7 +32,7 @@ object SavedItems:
 
       writeSavedItems( savedItems )
 
-   def resetList() =
+   def resetSavedList() =
       savedItems.clear()
       writeSavedItems( Buffer.empty )
 

@@ -96,7 +96,11 @@ object Helper:
          val endDT = getDateTime( end._2, end._3 )
 
          if startDT.isAfter( endDT ) then
-            throw InvalidDateTime( "End date and time cannot be before start date and time " )
+            throw InvalidDateTime( "End date time cannot be before start date time " )
+         else if startDT.isEqual( endDT ) then
+            throw InvalidDateTime( "Start date time cannot be the same as end date time" )
+         else if start._3.getValue.split( ":" ).head.toInt < LocalDateTime.now.getHour then
+            throw InvalidDateTime( "Start date time cannot be before current date time" )
          else Duration.between( startDT, endDT ).toHours.toDouble
 
    def getDateTime( date: DatePicker, time: ChoiceBox[String] ) =
