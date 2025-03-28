@@ -21,11 +21,11 @@ object RentalStore:
          case IncompleteParseException( msg ) =>
             Buffer.empty
 
-   private val itemCategoryList: Buffer[String] = ItemCategory.getItemCategoryList
-
    def getAvailableItems = ownedItems
 
    def addItem( item: Item ) =
+      val itemCategoryList: Buffer[String] = ItemCategory.getItemCategoryList
+      println( itemCategoryList )
       if itemCategoryList.contains( item.category.toLowerCase ) then
          if ownedItems.exists( existingItem => existingItem.name == item.name ) then
             throw DuplicateItem( s"${item.name} already exists in the system" )

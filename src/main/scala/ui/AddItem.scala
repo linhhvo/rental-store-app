@@ -1,84 +1,117 @@
 package ui
 
 import logic.ItemCategory.getItemCategoryList
+import logic.RentalStore.getAvailableItems
 import logic.{DuplicateItem, InvalidItemCategory, Item, RentalStore}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType.Information
-import scalafx.scene.layout.VBox
+import scalafx.scene.layout.{GridPane, VBox}
 import ui.Helper.displayAlert
 
 object AddItem:
-   val longWidth = 350
-   val smallWidth = 150
+   // pre define sizes for formfields
+   val big = 350
+   val med = 155
+   val small = 60
 
+   /** ITEM NAME */
+
+   // text field to enter item name
    val nameTextField = TextField()
-   nameTextField.maxWidth = longWidth
+   nameTextField.maxWidth = big
 
+   // item name group with label
    val itemName = new VBox:
       spacing = 5
       children = Array( Label( "Name" ), nameTextField )
 
-   val descTextField = TextArea()
-   descTextField.maxWidth = longWidth
-   descTextField.maxHeight = smallWidth
+   /** ITEM DESCRIPTION */
 
+   // text field to enter item description
+   val descTextField = TextArea()
+   descTextField.maxWidth = big
+   descTextField.maxHeight = med
+
+   // item desc group with label
    val itemDesc = new VBox:
       spacing = 5
       children = Array( Label( "Description" ), descTextField )
 
+   /** ITEM QUANTITY */
+
+   // item quantity selection, initial amount is 1
    val qntSpinner = Spinner( 1, 100, 1, 1 )
-   qntSpinner.maxWidth = smallWidth
+   qntSpinner.maxWidth = med
    qntSpinner.editable = true
 
+   // item quanity group with label
    val itemQuantity = new VBox:
       spacing = 5
       children = Array( Label( "Quantity" ), qntSpinner )
 
-   val categoryList = new ObservableBuffer[String]()
-   categoryList ++= getItemCategoryList
-   val catChoiceBox = ChoiceBox( categoryList )
-   catChoiceBox.maxWidth = smallWidth
+   /** ITEM RENTAL RATE */
 
-   val itemCategory = new VBox:
-      spacing = 5
-      children = Array( Label( "Category" ), catChoiceBox )
+   // item rental rate per hour
+   val rphLabel = Label( "Rate Per Hour" )
+   val rphTextField = TextField()
+   rphTextField.maxWidth = small
 
-   val rateTextField = TextField()
-   rateTextField.maxWidth = smallWidth
+   // item rental rate per day
+   val rpdLabel = Label( "Rate Per Day" )
+   val rpdTextField = TextField()
+   rpdTextField.maxWidth = small
 
-   val itemRate = new VBox:
-      spacing = 5
-      children = Array( Label( "Rate Per Hour" ), rateTextField )
+   // item rental rate per week
+   val rpwLabel = Label( "Rate Per Week" )
+   val rpwTextField = TextField()
+   rpwTextField.maxWidth = small
 
-//   val itemDependencies = new VBox:
-//      spacing = 5
-//      val depList = new ObservableBuffer[String]()
-//      depList ++= getAvailableItems.map( item => item( "name" ).str )
-//      val depChoiceBox = ChoiceBox( depList )
-//      depChoiceBox.maxWidth = smallWidth
-//      children = Array( Label( "Dependent Item" ), depChoiceBox )
+   // container for all rental rates
+   val itemRate = GridPane()
+   itemRate.add( rphLabel, 0, 0 )
+   itemRate.add( rphTextField, 1, 0 )
+   itemRate.add( rpdLabel, 0, 1 )
+   itemRate.add( rpdTextField, 1, 1 )
+   itemRate.add( rpwLabel, 0, 2 )
+   itemRate.add( rpwTextField, 1, 2 )
+   itemRate.hgap = 5
+   itemRate.vgap = 5
+   itemRate.margin = Insets( 5, 0, 0, 0 )
+
+   /** ADD BUTTON */
 
    val addItemBtn = Button( "Add Item" )
    addItemBtn.margin = Insets( 15, 0, 0, 0 )
 
+   // set up alert to display user messages
    val messageAlert = new Alert( Information )
 
+   // get category list, parent item list, and container
+   var dataToReset = renderAddItemPage
+
+   // action to add new item to system
    addItemBtn.onAction = (
        ( e ) =>
+          // check that all information is entered
           if nameTextField.getText.nonEmpty
              && descTextField.getText.nonEmpty
-             && catChoiceBox.getSelectionModel.getSelectedItem != null
-             && rateTextField.getText.nonEmpty
-          then
-             val newItem = Item( nameTextField.getText,
-                                 descTextField.getText,
-                                 qntSpinner.getValue,
-                                 catChoiceBox.getValue,
-                                 rateTextField.getText.toDouble
+             && dataToReset._1.getSelectionModel.getSelectedItem != null
+             && rphTextField.getText.nonEmpty
+             && rpdTextField.getText.nonEmpty
+             && rpwTextField.getText.nonEmpty
+          then // create new item
+             val newItem = Item(
+                 nameTextField.getText,
+                 descTextField.getText,
+                 qntSpinner.getValue,
+                 dataToReset._1.getValue,
+                 rphTextField.getText.toDouble,
+                 rpdTextField.getText.toDouble,
+                 rpwTextField.getText.toDouble
              )
-             try
+             try // add item then clear all fields
                 RentalStore.addItem( newItem )
                 displayAlert( messageAlert, "Item added to the system" )
                 resetItemPage()
@@ -93,14 +126,66 @@ object AddItem:
 //      spacing = 5
 //      val imageChooser = FileChooser()
 
-   val addItemContainer = new VBox:
-      children = Array( itemName, itemDesc, itemQuantity, itemCategory, itemRate, addItemBtn )
-      visible = false
-      margin = Insets( 20 )
-      spacing = 10
+   // Scroll container for add item page
+   val addItemScroll = ScrollPane()
+   addItemScroll.setContent( dataToReset._3 )
+   addItemScroll.visible = false
+   addItemScroll.padding = Insets( 20 )
 
+   /** function to render page; update item category list data and parent item list data when there
+     * are changes from adding/deleting category or adding/deleting item; render container
+     */
+   def renderAddItemPage =
+      /** ITEM CATEGORY */
+
+      // drop down menu to select item category
+      var categoryList = new ObservableBuffer[String]()
+      categoryList ++= getItemCategoryList
+      var catChoiceBox = ChoiceBox( categoryList )
+      catChoiceBox.maxWidth = med
+
+      // item category list group with label
+      val itemCategory = new VBox:
+         spacing = 5
+         children = Array( Label( "Category" ), catChoiceBox )
+
+      /** ITEM DEPENDENCY */
+
+      // get a list of existing item names as potential parent item
+      var parentList = new ObservableBuffer[String]()
+      parentList ++= getAvailableItems.map( item => item.name )
+      // drop down menu
+      val depChoiceBox = ChoiceBox( parentList )
+      depChoiceBox.maxWidth = med
+
+      // group drop down parent item list menu and label
+      val itemDependencies = new VBox:
+         spacing = 5
+         children = Array( Label( "Parent Item" ), depChoiceBox )
+
+      // overall container
+      val addItemContainer = new VBox:
+         children = Array( itemName,
+                           itemDesc,
+                           itemQuantity,
+                           itemCategory,
+                           itemRate,
+                           itemDependencies,
+                           addItemBtn
+         )
+         spacing = 10
+
+      ( catChoiceBox, depChoiceBox, addItemContainer )
+
+   /** function to reset page clear entered information from input fields; update data and re-render
+     * container
+     */
    def resetItemPage() =
+      println( "reset page" )
       nameTextField.clear()
       descTextField.clear()
-      rateTextField.clear()
-      catChoiceBox.getSelectionModel.clearSelection()
+      rphTextField.clear()
+      rpdTextField.clear()
+      rpwTextField.clear()
+      dataToReset = renderAddItemPage
+      addItemScroll.setContent( dataToReset._3 )
