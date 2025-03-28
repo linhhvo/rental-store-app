@@ -58,7 +58,6 @@ object Helper:
       val hours = ObservableBuffer[String]() ++ ( 0 to 23 ).toArray.map( num =>
          String.format( "%02d" + ":00", num )
       )
-//      val mins = ObservableBuffer[Int]() ++ ( 0 to 59 ).toArray
 
       val date = new DatePicker()
       date.maxWidth = 125
@@ -70,17 +69,12 @@ object Helper:
       val hour = ChoiceBox( hours )
       hour.maxWidth = 70
       hour.setValue( String.format( "%02d" + ":00", LocalDateTime.now().getHour ) )
-//      val min = ChoiceBox( mins )
-//      min.maxWidth = 70
-//      min.setValue( LocalDateTime.now().getMinute )
 
       val container = GridPane()
       container.add( Label( s"${labelText} Date" ), 0, 0 )
       container.add( date, 0, 1 )
       container.add( Label( s"${labelText} Time" ), 1, 0 )
       container.add( hour, 1, 1 )
-//      container.add( Label( s"${labelText} Min" ), 2, 0 )
-//      container.add( min, 2, 1 )
       container.columnConstraints =
          Array( ColumnConstraints( 135 ), ColumnConstraints( 80 ), ColumnConstraints( 80 ) )
 

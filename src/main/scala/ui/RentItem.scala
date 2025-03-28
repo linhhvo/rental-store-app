@@ -29,6 +29,7 @@ object RentItem:
 
    // Date and time controls for rental period end
    var rentEnd = createDateTimePicker( "End" )
+   rentEnd._2.setValue( LocalDateTime.now().plusHours( 1 ).toLocalDate )
    rentEnd._3.setValue(
        String.format( "%02d" + ":00", LocalDateTime.now().plusHours( 1 ).getHour )
    )
@@ -175,7 +176,7 @@ object RentItem:
       rentStart._3.setValue(
           String.format( "%02d" + ":00", LocalDateTime.now().getHour )
       )
-      rentEnd._2.setValue( LocalDate.now )
+      rentEnd._2.setValue( LocalDateTime.now().plusHours( 1 ).toLocalDate )
       rentEnd._3.setValue(
           String.format( "%02d" + ":00", LocalDateTime.now().plusHours( 1 ).getHour )
       )
