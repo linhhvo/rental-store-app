@@ -9,6 +9,7 @@ object ItemCategory:
    val dataFilePath = "src/main/resources/data/itemCategories.json"
 
    def getItemCategoryList =
+      println( "get new list" )
       try IOHandler.getDataFromFile( "itemCategories" ).arr.map( value => value.str )
       catch
          case IncompleteParseException( msg ) =>
@@ -37,3 +38,8 @@ object ItemCategory:
    def itemInCategoryCount( category: String ) =
       val ownedItems = RentalStore.getAvailableItems
       ownedItems.count( item => item.category == category )
+
+   /** retrieve items that belong to an item category */
+   def getItemsInCategory( category: String ) =
+      val ownedItems = RentalStore.getAvailableItems
+      ownedItems.filter( item => item.category == category )
