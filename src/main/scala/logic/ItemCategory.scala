@@ -21,3 +21,19 @@ object ItemCategory:
 
          os.write.over( os.pwd / os.RelPath( dataFilePath ), write( existingCategories.toSet ) )
       else throw DuplicateItemCategory( "Category already exists" )
+
+   def deleteItemCategory( target: String ) =
+      println( "removing " + target )
+      val existingCategories = this.getItemCategoryList
+      existingCategories.find( c => c == target.toLowerCase ) match
+         case Some( category ) =>
+            existingCategories -= target.toLowerCase
+            os.write.over( os.pwd / os.RelPath( dataFilePath ), write( existingCategories.toSet ) )
+         case None             =>
+            throw InvalidItemCategory(
+                s"Item category ${target} doesn't exist in the system"
+            )
+
+   def itemInCategoryCount( category: String ) =
+      val ownedItems = RentalStore.getAvailableItems
+      ownedItems.count( item => item.category == category )

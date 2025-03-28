@@ -2,7 +2,7 @@ package ui
 
 import scalafx.scene.control.{Menu, MenuBar, MenuItem}
 import ui.AddItem.{addItemContainer, resetItemPage}
-import ui.AddItemCategory.{actionMsg, addItemCatContainer, itemCatTextField}
+import ui.AddItemCategory.*
 import ui.BodyContainer.bodyStack
 import ui.Calendar.calendarPageContainer
 import ui.Helper.displayPage
@@ -44,7 +44,6 @@ object MenuBar:
    addItemCategoryMenuItem.onAction = ( ( e ) =>
       displayPage( bodyStack, addItemCatContainer )
       itemCatTextField.clear()
-      actionMsg.setText( null )
    )
    addItemMenuItem.onAction = ( ( e ) =>
       displayPage( bodyStack, addItemContainer )
