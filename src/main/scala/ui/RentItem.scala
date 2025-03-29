@@ -177,7 +177,11 @@ object RentItem:
 
    /** method to clear input fields and reset initial datetime picker values */
    def resetSavedListPage() =
+      // recalculate cost in case new item is added to saved list
+      totalCost.value = calculateRentalCost
+      // render page container to get updated saved items list
       rentItemScrollContainer.setContent( renderPage )
+      // reset input fields to default values
       rentStart._2.setValue( LocalDate.now )
       rentStart._3.setValue(
           String.format( "%02d" + ":00", LocalDateTime.now().getHour )
@@ -220,7 +224,4 @@ object RentItem:
 
    /** method to calculate the total rental cost of saved items */
    def calculateRentalCost =
-      val cost =
-         combinedRatePerWeek * calculateRentalDuration._1 + combinedRatePerDay * calculateRentalDuration._2 + combinedRatePerHour * calculateRentalDuration._3
-      println( "calculate cost: " + cost )
-      cost
+      combinedRatePerWeek * calculateRentalDuration._1 + combinedRatePerDay * calculateRentalDuration._2 + combinedRatePerHour * calculateRentalDuration._3
