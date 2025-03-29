@@ -36,7 +36,7 @@ object Helper:
    def createDateTimePicker( labelText: String ) =
       // Change how date format is displayed
       val converter = new StringConverter[LocalDate]:
-         val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern( "d-MM-yyyy" )
+         val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern( "dd-MM-yyyy" )
 
          override def toString( date: LocalDate ): String =
             if date != null then dateFormatter.format( date ) else ""
@@ -80,23 +80,7 @@ object Helper:
 
       ( container, date, hour )
 
-   def calculateRentalDuration( start: ( GridPane, DatePicker, ChoiceBox[String] ),
-                                end:   ( GridPane, DatePicker, ChoiceBox[String] )
-   ) =
-      if start._2.getValue == null || end._2.getValue == null then
-         throw InvalidDateTime( "Date and time cannot be empty" )
-      else
-         val startDT = getDateTime( start._2, start._3 )
-         val endDT = getDateTime( end._2, end._3 )
-
-         if startDT.isAfter( endDT ) then
-            throw InvalidDateTime( "End date time cannot be before start date time " )
-         else if startDT.isEqual( endDT ) then
-            throw InvalidDateTime( "Start date time cannot be the same as end date time" )
-         else if start._3.getValue.split( ":" ).head.toInt < LocalDateTime.now.getHour then
-            throw InvalidDateTime( "Start date time cannot be before current date time" )
-         else Duration.between( startDT, endDT ).toHours.toDouble
-
+   /** method to combine date and time inputs and convert to LocalDateTime */
    def getDateTime( date: DatePicker, time: ChoiceBox[String] ) =
       val dateTimeStr = date.getValue.toString + " " + time.getValue
-      LocalDateTime.parse( dateTimeStr, DateTimeFormatter.ofPattern( "yyyy-MM-d H:m" ) )
+      LocalDateTime.parse( dateTimeStr, DateTimeFormatter.ofPattern( "yyyy-MM-dd H:m" ) )

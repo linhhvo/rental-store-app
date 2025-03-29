@@ -1,18 +1,18 @@
 package ui
 
-import logic.RentalStore.{addBooking, getAllItems, ownedItems}
-import logic.SavedItems.{getSavedItems, rentalRatePerHour, resetSavedList, savedItems}
+import logic.RentalStore.{addBooking, ownedItems}
+import logic.SavedItems.*
 import logic.{Booking, InvalidDateTime}
 import scalafx.beans.property.DoubleProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
-import scalafx.scene.layout.VBox
+import scalafx.scene.layout.{GridPane, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
 import ui.Helper.*
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{Duration, LocalDate, LocalDateTime}
 
 object RentItem:
    // retrieve saved items list from external file
@@ -62,15 +62,13 @@ object RentItem:
 //      spacing = 5
 
    /** Total rental cost container */
-   var totalCost = DoubleProperty(
-       rentalRatePerHour * calculateRentalDuration( rentStart, rentEnd )
-   )
+   var totalCost = DoubleProperty( calculateRentalCost )
 
    // Calculate and update total cost when start date and time change
    rentStart._2
       .valueProperty()
       .addListener( ( observable, oldDate, newDate ) => {
-         try totalCost.value = rentalRatePerHour * calculateRentalDuration( rentStart, rentEnd )
+         try totalCost.value = calculateRentalCost
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
@@ -79,7 +77,7 @@ object RentItem:
    rentStart._3
       .valueProperty()
       .addListener( ( observable, oldDate, newDate ) => {
-         try totalCost.value = rentalRatePerHour * calculateRentalDuration( rentStart, rentEnd )
+         try totalCost.value = calculateRentalCost
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
@@ -90,7 +88,7 @@ object RentItem:
    rentEnd._2
       .valueProperty()
       .addListener( ( observable, oldDate, newDate ) => {
-         try totalCost.value = rentalRatePerHour * calculateRentalDuration( rentStart, rentEnd )
+         try totalCost.value = calculateRentalCost
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
@@ -99,7 +97,7 @@ object RentItem:
    rentEnd._3
       .valueProperty()
       .addListener( ( observable, oldDate, newDate ) => {
-         try totalCost.value = rentalRatePerHour * calculateRentalDuration( rentStart, rentEnd )
+         try totalCost.value = calculateRentalCost
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
@@ -149,12 +147,8 @@ object RentItem:
    // set content to scroll pane container
    rentItemScrollContainer.setContent( renderPage )
 
-   /** function to update data and update GUI content */
+   /** method to update data and update GUI content */
    def renderPage =
-      // get store's items list and updated saved items list
-//      val allItems = getAllItems
-//      savedItems = getSavedItems
-
       // generate GUI elements to display saved items list
       val itemElements = savedItems.map( savedItem =>
          ownedItems.find( i => i.itemId == savedItem.itemId ) match
@@ -181,7 +175,7 @@ object RentItem:
 
       boxContainer
 
-   /** function to clear input fields and reset initial datetime picker values */
+   /** method to clear input fields and reset initial datetime picker values */
    def resetSavedListPage() =
       rentItemScrollContainer.setContent( renderPage )
       rentStart._2.setValue( LocalDate.now )
@@ -193,3 +187,40 @@ object RentItem:
           String.format( "%02d" + ":00", LocalDateTime.now().plusHours( 1 ).getHour )
       )
       renterPicker.getSelectionModel.clearSelection()
+
+   /** method to calculate rental period based on selected start and end datetimes */
+   def calculateRentalDuration =
+      // initialize duration values
+      var durationInWeeks = 0
+      var durationInDays = 0
+      var durationInHours = 0
+
+      // check that start date and end date are not empty
+      if rentStart._2.getValue == null || rentEnd._2.getValue == null then
+         throw InvalidDateTime( "Date and time cannot be empty" )
+      else
+         // transform datetimes to LocalDateTime type
+         val startDT = getDateTime( rentStart._2, rentStart._3 )
+         val endDT = getDateTime( rentEnd._2, rentEnd._3 )
+
+         // check that user selected a valid rental period
+         if startDT.isAfter( endDT ) then
+            throw InvalidDateTime( "End date time cannot be before start date time " )
+         else if startDT.isEqual( endDT ) then
+            throw InvalidDateTime( "Start date time cannot be the same as end date time" )
+         else if rentStart._3.getValue.split( ":" ).head.toInt < LocalDateTime.now.getHour then
+            throw InvalidDateTime( "Start date time cannot be before current date time" )
+         // if valid period is selected, calculate duration
+         else
+            durationInWeeks = Duration.between( startDT, endDT ).toDays.toInt / 7
+            durationInDays = Duration.between( startDT, endDT ).toDays.toInt   % 7
+            durationInHours = Duration.between( startDT, endDT ).toHours.toInt % 24
+
+         ( durationInWeeks, durationInDays, durationInHours )
+
+   /** method to calculate the total rental cost of saved items */
+   def calculateRentalCost =
+      val cost =
+         combinedRatePerWeek * calculateRentalDuration._1 + combinedRatePerDay * calculateRentalDuration._2 + combinedRatePerHour * calculateRentalDuration._3
+      println( "calculate cost: " + cost )
+      cost

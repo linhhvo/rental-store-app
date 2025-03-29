@@ -1,7 +1,7 @@
 package logic
 
 import logic.IOHandler.{getDataFromFile, writeSavedItems}
-import logic.RentalStore.getAllItems
+import logic.RentalStore.ownedItems
 import ujson.IncompleteParseException
 import upickle.default.*
 
@@ -54,12 +54,32 @@ object SavedItems:
       savedItems.clear()
       writeSavedItems( Buffer.empty )
 
-   def rentalRatePerHour =
-      val allItems = getAllItems
+   /** method to calculate total rate per hour for all saved items */
+   def combinedRatePerHour =
       this.savedItems
-         .map( savedItem =>
-            allItems.find( i => i.itemId == savedItem.itemId ) match
-               case Some( i ) => i.ratePerHour * savedItem.rentQuantity
+         .map( si =>
+            ownedItems.find( i => i.itemId == si.itemId ) match
+               case Some( i ) => i.ratePerHour * si.rentQuantity
+               case None      => 0
+         )
+         .sum
+
+   /** method to calculate total rate per day for all saved items */
+   def combinedRatePerDay =
+      this.savedItems
+         .map( si =>
+            ownedItems.find( i => i.itemId == si.itemId ) match
+               case Some( i ) => i.ratePerDay * si.rentQuantity
+               case None      => 0
+         )
+         .sum
+
+   /** method to calculate total rate per week for all saved items */
+   def combinedRatePerWeek =
+      this.savedItems
+         .map( si =>
+            ownedItems.find( i => i.itemId == si.itemId ) match
+               case Some( i ) => i.ratePerWeek * si.rentQuantity
                case None      => 0
          )
          .sum
