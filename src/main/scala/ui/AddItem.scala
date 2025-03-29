@@ -13,6 +13,9 @@ import scalafx.stage.FileChooser.ExtensionFilter
 import ui.Helper.displayAlert
 import ui.Main.stage
 
+import java.io.File
+import java.nio.file.{Files, Paths}
+
 object AddItem:
    // pre define sizes for formfields
    val big = 350
@@ -88,10 +91,15 @@ object AddItem:
    val imageChooser = FileChooser()
    imageChooser.title = "Select an image"
    imageChooser.extensionFilters.add( ExtensionFilter( "JPG", "*.jpg" ) )
+
    val uploadImageBtn = Button( "Upload an image" )
    uploadImageBtn.onAction = ( ( e ) =>
-      val image = imageChooser.showOpenDialog( stage )
-      if image != null then println( "image name: " + image.getName )
+      val newImage = File( nameTextField.getText + ".jpg" )
+      val selectedImage = imageChooser.showOpenDialog( stage )
+      if selectedImage != null then
+         Files.copy( selectedImage.toPath,
+                     Paths.get( "src/main/resources/images/" + newImage.getName )
+         )
       else println( "no image selected" )
    )
 
