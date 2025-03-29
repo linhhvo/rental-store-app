@@ -9,7 +9,6 @@ object ItemCategory:
    val dataFilePath = "src/main/resources/data/itemCategories.json"
 
    def getItemCategoryList =
-      println( "get new list" )
       try IOHandler.getDataFromFile( "itemCategories" ).arr.map( value => value.str )
       catch
          case IncompleteParseException( msg ) =>
@@ -24,7 +23,6 @@ object ItemCategory:
       else throw DuplicateItemCategory( "Category already exists" )
 
    def deleteItemCategory( target: String ) =
-      println( "removing " + target )
       val existingCategories = this.getItemCategoryList
       existingCategories.find( c => c == target.toLowerCase ) match
          case Some( category ) =>

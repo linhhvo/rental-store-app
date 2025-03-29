@@ -73,7 +73,7 @@ object ItemDetails:
                    catch
                       case ItemDoesNotExist( msg ) =>
                          displayAlert( messageAlert, msg )
-                case _                      => println( "cancel" )
+                case _                      => // Do nothing
       )
 
       /** Add item comment */

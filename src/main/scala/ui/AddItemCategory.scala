@@ -112,7 +112,7 @@ object AddItemCategory:
                                        "Selected category doesn't exist in the system"
                          )
                 // if user selects No button, do nothing
-                case _                      => println( "cancel" )
+                case _                      => //Do nothing
    )
 
    // Overall container of the page

@@ -183,7 +183,6 @@ object AddItem:
      * container
      */
    def resetItemPage() =
-      println( "reset page" )
       nameTextField.clear()
       descTextField.clear()
       rphTextField.clear()
