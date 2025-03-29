@@ -61,9 +61,9 @@ object SavedItems:
    def combinedRatePerHour =
       this.savedItems
          .map( si =>
-            ownedItems.find( i => i.itemId == si.itemId ) match
-               case Some( i ) => i.ratePerHour * si.rentQuantity
-               case None      => 0
+            ownedItems
+               .find( i => i.itemId == si.itemId )
+               .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerHour * si.rentQuantity ) )
          )
          .sum
 
@@ -71,9 +71,9 @@ object SavedItems:
    def combinedRatePerDay =
       this.savedItems
          .map( si =>
-            ownedItems.find( i => i.itemId == si.itemId ) match
-               case Some( i ) => i.ratePerDay * si.rentQuantity
-               case None      => 0
+            ownedItems
+               .find( i => i.itemId == si.itemId )
+               .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerDay * si.rentQuantity ) )
          )
          .sum
 
@@ -81,8 +81,8 @@ object SavedItems:
    def combinedRatePerWeek =
       this.savedItems
          .map( si =>
-            ownedItems.find( i => i.itemId == si.itemId ) match
-               case Some( i ) => i.ratePerWeek * si.rentQuantity
-               case None      => 0
+            ownedItems
+               .find( i => i.itemId == si.itemId )
+               .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerWeek * si.rentQuantity ) )
          )
          .sum
