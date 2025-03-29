@@ -1,8 +1,7 @@
 package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
-import logic.IOHandler.writeItems
-import logic.RentalStore.{getAllItems, ownedItems}
+import logic.RentalStore.{getAllItems, updateItemsDataSource}
 import upickle.default.*
 
 import scala.collection.mutable.{Set, SortedSet}
@@ -50,20 +49,21 @@ case class Item( name:               String,
       rentedQuantity -= 1
 
    /** method to add a new comment to an item */
-   def addComment(newCmt: String ) =
+   def addComment( newCmt: String ) =
       val newCmtFormatted = newCmt.trim
-//      val ownedItems = getAllItems
       // check that comment is not null
       if newCmtFormatted.nonEmpty then
          this.comments += newCmtFormatted
+
          // update items list in external file
-         writeItems( ownedItems )
+         updateItemsDataSource()
       else throw MissingData( "Comment can't be empty" )
 
    /** method to add incident to an item */
-   def reportIncident(newIncident: Incident ) =
+   def reportIncident( newIncident: Incident ) =
       this.incidents += newIncident
       if newIncident.incidentType == IncidentType.Loss
       then lostQuantity += 1
-      
-      writeItems( ownedItems )
+
+      // update items list in external file
+      updateItemsDataSource()

@@ -47,7 +47,7 @@ object RentalStore:
                   case Some( pi ) =>
                      ownedItems += item
                      pi.addChildren( item.itemId )
-                     writeItems( ownedItems )
+                     updateItemsDataSource()
                   // if parent item not found
                   case None       =>
                      throw ItemDoesNotExist(
@@ -56,7 +56,7 @@ object RentalStore:
             // if no parent item is passed, only add new item to items list
             case None           =>
                ownedItems += item
-               writeItems( ownedItems )
+               updateItemsDataSource()
 
    /** delete item from store */
    def deleteItem( item: Item ) =
@@ -69,13 +69,18 @@ object RentalStore:
             ownedItems.find( _.children.exists( _ == di.itemId ) ) match
                case Some( pi ) => // if parent item found, delete item from children list
                   pi.deleteChildren( di.itemId )
-                  writeItems( ownedItems )
+                  updateItemsDataSource()
                   // if parent item not found, only update items list
-               case None       => writeItems( ownedItems )
+               case None       => updateItemsDataSource()
          // if item is not found in the items list, throw error
          case None       => throw ItemDoesNotExist( s"${item.name} does not exist in the system" )
 
+   /** record rental booking */
    def addBooking( newBooking: Booking ) =
       bookings += newBooking
-      writeItems( ownedItems )
+      updateItemsDataSource()
       writeBookings( bookings )
+      
+   /** update items list in external file */
+   def updateItemsDataSource() = writeItems(ownedItems)  
+   
