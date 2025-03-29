@@ -11,7 +11,7 @@ case class SavedItem( itemId: String, var rentQuantity: Int ) derives ReadWriter
 
 object SavedItems:
    // retrieve saved items list from external file
-   private val savedItems =
+   val savedItems =
       try getDataFromFile( "savedItems" ).arr.map( item => read[SavedItem]( item ) )
       catch
          case IncompleteParseException( msg ) =>
@@ -26,13 +26,27 @@ object SavedItems:
       savedItems.find( existingItem => existingItem.itemId == requestItem.itemId ) match
          // if the item is already in the saved list, add the requested quantity to the saved quantity
          case Some( i ) =>
-            i.rentQuantity += requestQuantity
+            // check if item has enough quantity
+            if requestItem.hasEnoughQuantity( requestQuantity ) then
+               // add the requested quantity to saved list quantity
+               i.rentQuantity += requestQuantity
+               // reduce item's available quantity
+               requestItem.reserve( requestQuantity )
+            else
+               throw ItemNotAvailable(
+                   s"Item ${requestItem.name} doesn't have enough quantity for rent"
+               )
          // if the item is not already in the saved list
          case None      =>
-            // add requested item to the saved list
-            savedItems += SavedItem( requestItem.itemId, requestQuantity )
-            // add children item, if any, to saved list as well with the same requested quantity
-            requestItem.children.foreach( d => savedItems += ( SavedItem( d, requestQuantity ) ) )
+            if requestItem.hasEnoughQuantity( requestQuantity ) then
+               // add requested item to the saved list
+               savedItems += SavedItem( requestItem.itemId, requestQuantity )
+               // reduce item's available quantity
+               requestItem.reserve( requestQuantity )
+            else
+               throw ItemNotAvailable(
+                   s"Item ${requestItem.name} doesn't have enough quantity for rent"
+               )
 
       writeSavedItems( savedItems )
 
@@ -42,13 +56,10 @@ object SavedItems:
 
    def rentalRatePerHour =
       val allItems = getAllItems
-      this.getSavedItems
+      this.savedItems
          .map( savedItem =>
             allItems.find( i => i.itemId == savedItem.itemId ) match
                case Some( i ) => i.ratePerHour * savedItem.rentQuantity
                case None      => 0
          )
          .sum
-      
-   def checkItemAvailability(requestedItem: Item, requestedQuantity: Int) = 
-      
