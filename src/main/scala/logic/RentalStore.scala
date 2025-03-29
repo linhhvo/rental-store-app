@@ -9,7 +9,7 @@ import scala.collection.mutable.Buffer
 object RentalStore:
    private val dataResourcePath = "src/main/resources/data"
 
-   private val ownedItems =
+   val ownedItems =
       try getDataFromFile( "items" ).arr.map( item => read[Item]( item ) )
       catch
          case IncompleteParseException( msg ) =>

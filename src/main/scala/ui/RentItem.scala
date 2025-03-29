@@ -1,7 +1,7 @@
 package ui
 
-import logic.RentalStore.{addBooking, getAllItems}
-import logic.SavedItems.{getSavedItems, rentalRatePerHour, resetSavedList}
+import logic.RentalStore.{addBooking, getAllItems, ownedItems}
+import logic.SavedItems.{getSavedItems, rentalRatePerHour, resetSavedList, savedItems}
 import logic.{Booking, InvalidDateTime}
 import scalafx.beans.property.DoubleProperty
 import scalafx.collections.ObservableBuffer
@@ -16,7 +16,7 @@ import java.time.{LocalDate, LocalDateTime}
 
 object RentItem:
    // retrieve saved items list from external file
-   var savedItems = getSavedItems
+//   var savedItems = getSavedItems
 
    // Container to enable scrolling if page is long
    val rentItemScrollContainer = ScrollPane()
@@ -152,12 +152,12 @@ object RentItem:
    /** function to update data and update GUI content */
    def renderPage =
       // get store's items list and updated saved items list
-      val allItems = getAllItems
-      savedItems = getSavedItems
+//      val allItems = getAllItems
+//      savedItems = getSavedItems
 
       // generate GUI elements to display saved items list
       val itemElements = savedItems.map( savedItem =>
-         allItems.find( i => i.itemId == savedItem.itemId ) match
+         ownedItems.find( i => i.itemId == savedItem.itemId ) match
             case Some( i ) => Label( "• " + i.name + " - Quantity: " + savedItem.rentQuantity )
             case None      => Label( null )
       )
