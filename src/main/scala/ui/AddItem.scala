@@ -8,7 +8,10 @@ import scalafx.geometry.Insets
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType.Information
 import scalafx.scene.layout.{GridPane, VBox}
+import scalafx.stage.FileChooser
+import scalafx.stage.FileChooser.ExtensionFilter
 import ui.Helper.displayAlert
+import ui.Main.stage
 
 object AddItem:
    // pre define sizes for formfields
@@ -80,6 +83,18 @@ object AddItem:
    itemRate.vgap = 5
    itemRate.margin = Insets( 5, 0, 0, 0 )
 
+   /** ITEM IMAGE */
+
+   val imageChooser = FileChooser()
+   imageChooser.title = "Select an image"
+   imageChooser.extensionFilters.add( ExtensionFilter( "JPG", "*.jpg" ) )
+   val uploadImageBtn = Button( "Upload an image" )
+   uploadImageBtn.onAction = ( ( e ) =>
+      val image = imageChooser.showOpenDialog( stage )
+      if image != null then println( "image name: " + image.getName )
+      else println( "no image selected" )
+   )
+
    /** ADD BUTTON */
 
    val addItemBtn = Button( "Add Item" )
@@ -124,9 +139,6 @@ object AddItem:
           // if any of the fields is missing input
           else displayAlert( messageAlert, "Missing item data" )
    )
-//   val itemImage = new VBox:
-//      spacing = 5
-//      val imageChooser = FileChooser()
 
    // Scroll container for add item page
    val addItemScroll = ScrollPane()
@@ -155,7 +167,7 @@ object AddItem:
 
       // get a list of existing item names as potential parent item
       val parentList = new ObservableBuffer[String]()
-      parentList ++= getAllItems.map(item => item.name)
+      parentList ++= getAllItems.map( item => item.name )
       // drop down menu
       val depChoiceBox = ChoiceBox( parentList )
       depChoiceBox.maxWidth = med
@@ -173,6 +185,7 @@ object AddItem:
                            itemCategory,
                            itemRate,
                            itemDependencies,
+                           uploadImageBtn,
                            addItemBtn
          )
          spacing = 10
