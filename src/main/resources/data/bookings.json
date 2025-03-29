@@ -1,35 +1,19 @@
 [
   {
     "items": [
-      "QsYhna7VvmwMGK84Q9JgH",
-      "WgnFXN00y3Mibxc256QNZ"
+      {
+        "itemId": "IgVYshhi_aL2M5hoXkqk_",
+        "rentQuantity": 4
+      },
+      {
+        "itemId": "KFurDI27EumE---z3hb4N",
+        "rentQuantity": 4
+      }
     ],
-    "bookingStartTime": "16-03-2025 22:00",
-    "bookingEndTime": "18-03-2025 15:00",
-    "totalCost": 922.5,
-    "renter": "cookie2",
-    "bookingId": "ySPPCWP6rgo9DoxgFzvBb"
-  },
-  {
-    "items": [
-      "QsYhna7VvmwMGK84Q9JgH",
-      "WgnFXN00y3Mibxc256QNZ"
-    ],
-    "bookingStartTime": "16-03-2025 22:00",
-    "bookingEndTime": "16-03-2025 23:00",
-    "totalCost": 22.5,
+    "bookingStartTime": "29-03-2025 18:00",
+    "bookingEndTime": "29-03-2025 20:00",
+    "totalCost": 16,
     "renter": "cookie1",
-    "bookingId": "caXduOdgY7fTE9cOneB1n"
-  },
-  {
-    "items": [
-      "QsYhna7VvmwMGK84Q9JgH",
-      "WgnFXN00y3Mibxc256QNZ"
-    ],
-    "bookingStartTime": "16-03-2025 22:00",
-    "bookingEndTime": "17-03-2025 22:00",
-    "totalCost": 540,
-    "renter": "cookie1",
-    "bookingId": "pvI-OKbu3LnwuGeSzwqpf"
+    "bookingId": "Gyc-JTNk-ylSZ8ACl7O7O"
   }
 ]
