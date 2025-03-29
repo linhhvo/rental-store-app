@@ -26,9 +26,7 @@ object SavedItems:
             throw DuplicateItem( "Item has already been added to the saved list" )
          case None              =>
             savedItems += SavedItem( requestItem.itemId, requestQuantity )
-            requestItem.dependencies.foreach( d =>
-               savedItems += ( SavedItem( d.itemId, requestQuantity ) )
-            )
+            requestItem.children.foreach( d => savedItems += ( SavedItem( d, requestQuantity ) ) )
 
       writeSavedItems( savedItems )
 

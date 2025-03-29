@@ -25,7 +25,7 @@ object AddItem:
    // item name group with label
    val itemName = new VBox:
       spacing = 5
-      children = Array( Label( "Name" ), nameTextField )
+      children = Array( Label( "Name*" ), nameTextField )
 
    /** ITEM DESCRIPTION */
 
@@ -37,7 +37,7 @@ object AddItem:
    // item desc group with label
    val itemDesc = new VBox:
       spacing = 5
-      children = Array( Label( "Description" ), descTextField )
+      children = Array( Label( "Description*" ), descTextField )
 
    /** ITEM QUANTITY */
 
@@ -49,22 +49,22 @@ object AddItem:
    // item quanity group with label
    val itemQuantity = new VBox:
       spacing = 5
-      children = Array( Label( "Quantity" ), qntSpinner )
+      children = Array( Label( "Quantity*" ), qntSpinner )
 
    /** ITEM RENTAL RATE */
 
    // item rental rate per hour
-   val rphLabel = Label( "Rate Per Hour" )
+   val rphLabel = Label( "Rate Per Hour*" )
    val rphTextField = TextField()
    rphTextField.maxWidth = small
 
    // item rental rate per day
-   val rpdLabel = Label( "Rate Per Day" )
+   val rpdLabel = Label( "Rate Per Day*" )
    val rpdTextField = TextField()
    rpdTextField.maxWidth = small
 
    // item rental rate per week
-   val rpwLabel = Label( "Rate Per Week" )
+   val rpwLabel = Label( "Rate Per Week*" )
    val rpwTextField = TextField()
    rpwTextField.maxWidth = small
 
@@ -95,12 +95,7 @@ object AddItem:
    addItemBtn.onAction = (
        ( e ) =>
           // check that all information is entered
-          if nameTextField.getText.nonEmpty
-             && descTextField.getText.nonEmpty
-             && dataToReset._1.getSelectionModel.getSelectedItem != null
-             && rphTextField.getText.nonEmpty
-             && rpdTextField.getText.nonEmpty
-             && rpwTextField.getText.nonEmpty
+          if isAllFieldsNotEmpty
           then // create new item
              val newItem = Item(
                  nameTextField.getText,
@@ -112,7 +107,10 @@ object AddItem:
                  rpwTextField.getText.toDouble
              )
              try // add item then clear all fields
-                RentalStore.addItem( newItem )
+                if dataToReset._2.getValue == null then
+                   RentalStore.addItem( newItem, None )
+                else 
+                   RentalStore.addItem(newItem, Some(dataToReset._2.getValue))
                 displayAlert( messageAlert, "Item added to the system" )
                 resetItemPage()
              catch
@@ -139,20 +137,20 @@ object AddItem:
       /** ITEM CATEGORY */
 
       // drop down menu to select item category
-      var categoryList = new ObservableBuffer[String]()
+      val categoryList = new ObservableBuffer[String]()
       categoryList ++= getItemCategoryList
-      var catChoiceBox = ChoiceBox( categoryList )
+      val catChoiceBox = ChoiceBox( categoryList )
       catChoiceBox.maxWidth = med
 
       // item category list group with label
       val itemCategory = new VBox:
          spacing = 5
-         children = Array( Label( "Category" ), catChoiceBox )
+         children = Array( Label( "Category*" ), catChoiceBox )
 
       /** ITEM DEPENDENCY */
 
       // get a list of existing item names as potential parent item
-      var parentList = new ObservableBuffer[String]()
+      val parentList = new ObservableBuffer[String]()
       parentList ++= getAvailableItems.map( item => item.name )
       // drop down menu
       val depChoiceBox = ChoiceBox( parentList )
@@ -189,3 +187,7 @@ object AddItem:
       rpwTextField.clear()
       dataToReset = renderAddItemPage
       addItemScroll.setContent( dataToReset._3 )
+
+   /** function to check if all input fields have information */
+   def isAllFieldsNotEmpty =
+      nameTextField.getText.nonEmpty && descTextField.getText.nonEmpty && dataToReset._1.getSelectionModel.getSelectedItem != null && rphTextField.getText.nonEmpty && rpdTextField.getText.nonEmpty && rpwTextField.getText.nonEmpty

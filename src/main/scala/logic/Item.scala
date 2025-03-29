@@ -15,7 +15,7 @@ case class Item( name:               String,
                  ratePerWeek:        Double,
                  itemId:             String = randomNanoId(),
                  incidents:          Set[Incident] = Set.empty,
-                 dependencies:       Set[Item] = Set.empty,
+                 children:           Set[String] = Set.empty,
                  var images:         String = "",
                  comments:           SortedSet[String] = SortedSet.empty,
                  var lostQuantity:   Int = 0,
@@ -32,8 +32,11 @@ case class Item( name:               String,
       if newIncident.incidentType == IncidentType.Loss
       then lostQuantity += 1
 
-   def addDependency( childItem: Item ) =
-      dependencies += childItem
+   def addChildren( childItemId: String ) =
+      children += childItemId
+
+   def deleteChildren( childItemId: String ) =
+      children -= childItemId
 
    def isAvailable: Boolean =
       ownedQuantity - lostQuantity - rentedQuantity > 0
