@@ -106,18 +106,22 @@ object AddItem:
                  rpdTextField.getText.toDouble,
                  rpwTextField.getText.toDouble
              )
-             try // add item then clear all fields
-                if dataToReset._2.getValue == null then
-                   RentalStore.addItem( newItem, None )
-                else 
-                   RentalStore.addItem(newItem, Some(dataToReset._2.getValue))
+             try
+                // if no parent item is selected, add item without parent
+                if dataToReset._2.getValue == null then RentalStore.addItem( newItem, None )
+                else // if parent item is selected
+                   RentalStore.addItem( newItem, Some( dataToReset._2.getValue ) )
+                // display success message to user and clear page
                 displayAlert( messageAlert, "Item added to the system" )
                 resetItemPage()
              catch
+                // if item category does not exist in the system
                 case InvalidItemCategory( msg ) =>
                    displayAlert( messageAlert, msg )
+                // if new item already exists in the system
                 case DuplicateItem( msg )       =>
                    displayAlert( messageAlert, msg )
+          // if any of the fields is missing input
           else displayAlert( messageAlert, "Missing item data" )
    )
 //   val itemImage = new VBox:

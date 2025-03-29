@@ -84,8 +84,10 @@ object AddItemCategory:
                   else s"There are no item in category ${c}\n" )
           )
 
-          if targetCategories.nonEmpty then // check that there are categories selected
-             new Alert( Confirmation ) { // display a confirmation alert with messsage warning about related items
+          // check that there are categories selected
+          if targetCategories.nonEmpty then
+             // display a confirmation alert with messsage warning about related items
+             new Alert( Confirmation ) {
                 headerText =
                    deleteCatMsg + "\nItems belonging to the selected categories will also be deleted. Do you want to proceed?"
                 buttonTypes = Seq( ButtonType.Yes, ButtonType.No )

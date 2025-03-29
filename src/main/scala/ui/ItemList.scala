@@ -26,7 +26,7 @@ object ItemList:
    def renderItemListPage =
       // Retrieve items data from json file
       val itemList = getAvailableItems
-
+      // Create UI element for each item
       val itemElements = itemList.map( item =>
          val itemImage =
             getClass.getResourceAsStream( "/images/" + item.images )
