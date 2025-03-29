@@ -10,22 +10,28 @@ import scala.collection.mutable.Buffer
 case class SavedItem( itemId: String, var rentQuantity: Int ) derives ReadWriter
 
 object SavedItems:
+   // retrieve saved items list from external file
    private val savedItems =
       try getDataFromFile( "savedItems" ).arr.map( item => read[SavedItem]( item ) )
       catch
          case IncompleteParseException( msg ) =>
             Buffer.empty
 
+   /** make saved items list available globally */
    def getSavedItems = savedItems
 
+   /** add item to saved items list to prepre for booking */
    def addToCart( requestItem: Item, requestQuantity: Int ) =
-      val existingItem =
-         savedItems.find( existingItem => existingItem.itemId == requestItem.itemId )
-      existingItem match
-         case Some( itemValue ) =>
-            throw DuplicateItem( "Item has already been added to the saved list" )
-         case None              =>
+      // check if the added item already exists in the saved list
+      savedItems.find( existingItem => existingItem.itemId == requestItem.itemId ) match
+         // if the item is already in the saved list, add the requested quantity to the saved quantity
+         case Some( i ) =>
+            i.rentQuantity += requestQuantity
+         // if the item is not already in the saved list
+         case None      =>
+            // add requested item to the saved list
             savedItems += SavedItem( requestItem.itemId, requestQuantity )
+            // add children item, if any, to saved list as well with the same requested quantity
             requestItem.children.foreach( d => savedItems += ( SavedItem( d, requestQuantity ) ) )
 
       writeSavedItems( savedItems )
@@ -43,3 +49,6 @@ object SavedItems:
                case None      => 0
          )
          .sum
+      
+   def checkItemAvailability(requestedItem: Item, requestedQuantity: Int) = 
+      

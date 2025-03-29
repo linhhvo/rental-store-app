@@ -1,11 +1,13 @@
 package logic
 
-import upickle.default.*
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
+import upickle.default.*
+
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import scala.collection.mutable.Buffer
 
-case class Booking( items:            Set[String] = Set.empty,
+case class Booking( items:            Buffer[SavedItem] = Buffer.empty,
                     bookingStartTime: LocalDateTime,
                     bookingEndTime:   LocalDateTime,
                     totalCost:        Double,
