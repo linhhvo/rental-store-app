@@ -1,7 +1,8 @@
 package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
-import logic.RentalStore.getAllItems
+import logic.IOHandler.writeItems
+import logic.RentalStore.{getAllItems, ownedItems}
 import upickle.default.*
 
 import scala.collection.mutable.{Set, SortedSet}
@@ -25,14 +26,6 @@ case class Item( name:               String,
 
    images = s"${this.name}.jpg"
 
-   def addComment( newComment: String ) =
-      comments += newComment
-
-   def reportIncident( newIncident: Incident ) =
-      incidents += newIncident
-      if newIncident.incidentType == IncidentType.Loss
-      then lostQuantity += 1
-
    def addChildren( childItemId: String ) =
       children += childItemId
 
@@ -49,9 +42,28 @@ case class Item( name:               String,
    def hasEnoughQuantity( requestQuantity: Int ): Boolean =
       this.availableQuantity - requestQuantity >= 0
 
-   def rented() =
-      rentedQuantity += 1
+   def reserve( quantity: Int ) =
+      rentedQuantity += quantity
 
    //   increase quantity when item is returned
    def free() =
       rentedQuantity -= 1
+
+   /** method to add a new comment to an item */
+   def addComment(newCmt: String ) =
+      val newCmtFormatted = newCmt.trim
+//      val ownedItems = getAllItems
+      // check that comment is not null
+      if newCmtFormatted.nonEmpty then
+         this.comments += newCmtFormatted
+         // update items list in external file
+         writeItems( ownedItems )
+      else throw MissingData( "Comment can't be empty" )
+
+   /** method to add incident to an item */
+   def reportIncident(newIncident: Incident ) =
+      this.incidents += newIncident
+      if newIncident.incidentType == IncidentType.Loss
+      then lostQuantity += 1
+      
+      writeItems( ownedItems )

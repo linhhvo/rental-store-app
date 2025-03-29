@@ -75,25 +75,7 @@ object RentalStore:
          // if item is not found in the items list, throw error
          case None       => throw ItemDoesNotExist( s"${item.name} does not exist in the system" )
 
-   def updateItemComment( targetItem: Item, newCmt: String ) =
-      val newCmtFormatted = newCmt.trim
-      if newCmtFormatted.nonEmpty then
-         ownedItems.find( existingItem => existingItem.itemId == targetItem.itemId ) match
-            case Some( itemValue ) =>
-               itemValue.addComment( newCmtFormatted )
-               writeItems( ownedItems )
-            case None              =>
-               throw ItemDoesNotExist( s"${targetItem.name} does not exist in the system" )
-      else throw MissingData( "Comment can't be empty" )
-
-   def updateItemIncident( targetItem: Item, newIncident: Incident ) =
-      ownedItems.find( existingItem => existingItem.itemId == targetItem.itemId ) match
-         case Some( itemValue ) =>
-            itemValue.reportIncident( newIncident )
-            writeItems( ownedItems )
-         case None              =>
-            throw ItemDoesNotExist( s"${targetItem.name} does not exist in the system" )
-
    def addBooking( newBooking: Booking ) =
       bookings += newBooking
+      writeItems( ownedItems )
       writeBookings( bookings )
