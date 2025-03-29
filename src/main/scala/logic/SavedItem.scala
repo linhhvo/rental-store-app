@@ -51,6 +51,9 @@ object SavedItems:
       writeSavedItems( savedItems )
 
    def resetSavedList() =
+      savedItems.foreach( si =>
+         ownedItems.find( i => i.itemId == si.itemId ).foreach( _.free( si.rentQuantity ) )
+      )
       savedItems.clear()
       writeSavedItems( Buffer.empty )
 

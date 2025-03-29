@@ -7,6 +7,7 @@ import scalafx.beans.property.DoubleProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
+import scalafx.scene.control.Alert.AlertType.Confirmation
 import scalafx.scene.layout.{GridPane, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
@@ -120,9 +121,8 @@ object RentItem:
    // set up alert to display user message
    val msgAlert = new Alert( Alert.AlertType.Information )
 
+   // button to confirm booking and add new rental
    val bookingBtn = Button( "Book Rental" )
-
-   // add event when booking button is triggered
    bookingBtn.onAction = (
        ( e ) =>
           // display error message if renter is not selected
@@ -139,9 +139,23 @@ object RentItem:
              resetSavedList() // update saved item list in external file to be empty
              displayAlert( msgAlert, "Rental is confirmed" )
              // update page to display user message
-             rentItemScrollContainer.setContent(
-                 Label( "No items in the saved list. Add items to list to book a rental" )
-             )
+             rentItemScrollContainer.setContent( renderPage )
+   )
+
+   /** Clear list button */
+
+   // button to delete all items in saved list and clear saved list
+   val clearBtn = Button( "Delete All Items" )
+   clearBtn.onAction = (
+       ( e ) =>
+          new Alert( Confirmation ) {
+             headerText = "Do you want to remove all items from the saved list?"
+             buttonTypes = Seq( ButtonType.Yes, ButtonType.No )
+          }.showAndWait() match
+             case Some( ButtonType.Yes ) =>
+                resetSavedList()
+                rentItemScrollContainer.setContent( renderPage )
+             case _                      => // Do nothing
    )
 
    // set content to scroll pane container
@@ -169,8 +183,13 @@ object RentItem:
             children =
                Array( Label( "No items in the saved list. Add items to list to book a rental" ) )
          else
-            children =
-               Array( savedItemsContainer, periodContainer, renterContainer, costLabel, bookingBtn )
+            children = Array( savedItemsContainer,
+                              periodContainer,
+                              renterContainer,
+                              costLabel,
+                              bookingBtn,
+                              clearBtn
+            )
          spacing = 10
 
       boxContainer
