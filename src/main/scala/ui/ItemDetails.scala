@@ -129,10 +129,14 @@ object ItemDetails:
                                         incidentCmt.getText,
                                         repairCostField.getText.toDouble
             )
-            try updateItemIncident( item, newIncident )
+            try
+               updateItemIncident( item, newIncident )
+               displayAlert( messageAlert, "Incident has been reported" )
             catch case ItemDoesNotExist( msg ) => displayAlert( messageAlert, msg )
+
             incidentCmt.clear()
          else displayAlert( messageAlert, "Missing information" )
+
          repairCostField.clear()
          incTypeChoiceBox.getSelectionModel.clearSelection()
          incidentDatePicker.setValue( null )
