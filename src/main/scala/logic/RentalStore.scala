@@ -22,7 +22,7 @@ object RentalStore:
             Buffer.empty
 
    /** make list of all items available globally */
-   def getAvailableItems = ownedItems
+   def getAllItems = ownedItems
 
    /** add new item to the store */
    def addItem( item: Item, parentItem: Option[String] ) =

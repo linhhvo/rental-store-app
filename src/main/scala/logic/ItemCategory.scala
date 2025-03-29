@@ -36,10 +36,10 @@ object ItemCategory:
             )
 
    def itemInCategoryCount( category: String ) =
-      val ownedItems = RentalStore.getAvailableItems
+      val ownedItems = RentalStore.getAllItems
       ownedItems.count( item => item.category == category )
 
    /** retrieve items that belong to an item category */
    def getItemsInCategory( category: String ) =
-      val ownedItems = RentalStore.getAvailableItems
+      val ownedItems = RentalStore.getAllItems
       ownedItems.filter( item => item.category == category )

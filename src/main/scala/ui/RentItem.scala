@@ -1,6 +1,6 @@
 package ui
 
-import logic.RentalStore.{addBooking, getAvailableItems}
+import logic.RentalStore.{addBooking, getAllItems}
 import logic.SavedItems.{getSavedItems, rentalRatePerHour, resetSavedList}
 import logic.{Booking, InvalidDateTime}
 import scalafx.beans.property.DoubleProperty
@@ -152,7 +152,7 @@ object RentItem:
    /** function to update data and update GUI content */
    def renderPage =
       // get store's items list and updated saved items list
-      val allItems = getAvailableItems
+      val allItems = getAllItems
       savedItems = getSavedItems
 
       // generate GUI elements to display saved items list

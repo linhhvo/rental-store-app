@@ -1,7 +1,7 @@
 package logic
 
 import logic.IOHandler.{getDataFromFile, writeSavedItems}
-import logic.RentalStore.getAvailableItems
+import logic.RentalStore.getAllItems
 import ujson.IncompleteParseException
 import upickle.default.*
 
@@ -41,7 +41,7 @@ object SavedItems:
       writeSavedItems( Buffer.empty )
 
    def rentalRatePerHour =
-      val allItems = getAvailableItems
+      val allItems = getAllItems
       this.getSavedItems
          .map( savedItem =>
             allItems.find( i => i.itemId == savedItem.itemId ) match
