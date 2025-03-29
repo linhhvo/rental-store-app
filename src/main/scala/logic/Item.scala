@@ -1,6 +1,7 @@
 package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
+import logic.RentalStore.getAllItems
 import upickle.default.*
 
 import scala.collection.mutable.{Set, SortedSet}
@@ -38,8 +39,15 @@ case class Item( name:               String,
    def deleteChildren( childItemId: String ) =
       children -= childItemId
 
-   def isAvailable: Boolean =
-      ownedQuantity - lostQuantity - rentedQuantity > 0
+   /** method to retrieve children items details */
+   def getChildrenDetails =
+      this.children.flatMap( c => getAllItems.filter( i => i.itemId == c ) )
+
+   def availableQuantity: Int =
+      ownedQuantity - lostQuantity - rentedQuantity
+
+   def hasEnoughQuantity( requestQuantity: Int ): Boolean =
+      this.availableQuantity - requestQuantity >= 0
 
    def rented() =
       rentedQuantity += 1
