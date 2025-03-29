@@ -20,14 +20,14 @@ object MenuBar:
 
    // Menu to perform actions
    val actionsMenu = Menu( "Actions" )
-   val addItemCategoryMenuItem = MenuItem( "Add Item Category" )
+   val addItemCategoryMenuItem = MenuItem( "Manage Item Category" )
    val addItemMenuItem = MenuItem( "Add Item" )
    val returnItemMenuItem = MenuItem( "Return Item" )
-   val createBookingItem = MenuItem( "Rent Items" )
-   actionsMenu.getItems.addAll( addItemCategoryMenuItem,
-                                addItemMenuItem,
+   val createBookingMenuItem = MenuItem( "Rent Item" )
+   actionsMenu.getItems.addAll( createBookingMenuItem,
                                 returnItemMenuItem,
-                                createBookingItem
+                                addItemCategoryMenuItem,
+                                addItemMenuItem
    )
 
    val menuBar = new MenuBar:
@@ -40,17 +40,20 @@ object MenuBar:
       displayPage( bodyStack, itemListPageScroll )
       itemListPageScroll.setContent( renderItemListPage )
    )
+
    calendarMenuItem.onAction = ( ( event ) => displayPage( bodyStack, calendarPageContainer ) )
+
    addItemCategoryMenuItem.onAction = ( ( e ) =>
       displayPage( bodyStack, addItemCatContainer )
       itemCatTextField.clear()
    )
+
    addItemMenuItem.onAction = ( ( e ) =>
       displayPage( bodyStack, addItemScroll )
       resetItemPage()
    )
 
-   createBookingItem.onAction = ( ( e ) =>
+   createBookingMenuItem.onAction = ( ( e ) =>
       displayPage( bodyStack, rentItemScrollContainer )
       resetSavedListPage()
    )
