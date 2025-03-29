@@ -45,8 +45,8 @@ case class Item( name:               String,
       rentedQuantity += quantity
 
    //   increase quantity when item is returned
-   def free() =
-      rentedQuantity -= 1
+   def free(quantity: Int) =
+      rentedQuantity -= quantity
 
    /** method to add a new comment to an item */
    def addComment( newCmt: String ) =
