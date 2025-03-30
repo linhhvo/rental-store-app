@@ -15,7 +15,7 @@ object RentalStore:
          case IncompleteParseException( msg ) =>
             Buffer.empty
 
-   private val bookings =
+   val bookings =
       try getDataFromFile( "bookings" ).arr.map( item => read[Booking]( item ) )
       catch
          case IncompleteParseException( msg ) =>

@@ -3,7 +3,7 @@ package ui
 import com.calendarfx.model.*
 import com.calendarfx.view.SourceView
 import com.calendarfx.view.page.{MonthPage, WeekPage}
-import logic.RentalStore.ownedItems
+import logic.RentalStore.{bookings, ownedItems}
 import scalafx.scene.control.ControlIncludes.jfxControl2sfx
 import scalafx.scene.control.{Tab, TabPane}
 import scalafx.scene.layout.{ColumnConstraints, GridPane, RowConstraints}
@@ -16,22 +16,31 @@ object CalendarPage:
    val weekView = WeekPage()
 
    monthView.bind( weekView, true )
+
    // add calendar source to store item reservations
    val rentalReservations = CalendarSource( "Reservations" )
 
    // create calendar for each item
-   ownedItems.foreach( i =>
-      val itemCalendar = Calendar( i.name )
-//      itemCalendar.setReadOnly( true )
-      rentalReservations.getCalendars.add( itemCalendar )
-   )
+   val itemCalendar = ownedItems.map( i => i.itemId -> new Calendar( i.name ) ).toMap
+   itemCalendar.foreach( c => rentalReservations.getCalendars.add( c._2 ) )
 
    // add calendar source to calendar view
    monthView.getCalendarSources.addAll( rentalReservations )
    // set rental reservations as the only calendar source; remove Default calendar source
    monthView.getCalendarSources.setAll( rentalReservations )
 
-   // sidebar
+   // add calendar entries
+   bookings.foreach( b =>
+      val bookingEntry = new Entry[String]( b.bookingId )
+      bookingEntry.setInterval( Interval( b.bookingStartTime, b.bookingEndTime ) )
+
+      println( s"booking entry ${b.bookingId} multiday is ${bookingEntry.isMultiDay}" )
+
+      val matchedCalendars = b.items.flatMap( bi => itemCalendar.get( bi.itemId ) )
+      matchedCalendars.foreach( c => c.addEntry( bookingEntry ) )
+   )
+
+   // sidebar to show list of rental items
    val sideBar = SourceView()
    sideBar.bind( monthView )
 
@@ -49,12 +58,11 @@ object CalendarPage:
 
    // overall container of the page
    val calendarContainer = GridPane()
-
    calendarContainer.add( sideBar, 0, 0 )
    calendarContainer.add( calendarTabPane, 1, 0 )
    calendarContainer.visible = false
 
-   // set column contraints
+   // set column and row contraints
    val column0 = new ColumnConstraints:
       percentWidth = 20
 
