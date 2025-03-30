@@ -9,8 +9,8 @@ import ui.MenuBar.menuBar
 
 object Main extends JFXApp3:
    def start() =
-      val bodyHeight = 700
-      val bodyWidth = 900
+      val bodyHeight = 950
+      val bodyWidth = 1100
       stage = new PrimaryStage:
          title = "Cookie Rental Company"
          height = bodyHeight
