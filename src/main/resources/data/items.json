@@ -7,73 +7,61 @@
     "ratePerHour": 10,
     "ratePerDay": 100,
     "ratePerWeek": 1000,
-    "itemId": "IgVYshhi_aL2M5hoXkqk_",
-    "incidents": [
-      {
-        "incidentDate": "4-03-2025",
-        "incidentType": "Loss",
-        "comment": "loss incident reported",
-        "repairCost": 123,
-        "incidentId": "NlSXv8DFbNicJFKkN6XR9"
-      }
-    ],
+    "itemId": "cX9g8D8z8C2nCUCO2Nodv",
+    "incidents": [],
     "children": [
-      "HDzvYKw8TBSx5Au-GGkyW",
-      "KFurDI27EumE---z3hb4N"
+      "JgZ3f8K1Ql806-P6DSpW_",
+      "Rirlecd7FNSlJmKA4B5ax"
     ],
     "images": "tent.jpg",
-    "comments": [
-      "new comment for tent"
-    ],
-    "lostQuantity": 1,
-    "rentedQuantity": 4
-  },
-  {
-    "name": "tent1",
-    "desc": "tent",
-    "ownedQuantity": 5,
-    "category": "camping",
-    "ratePerHour": 10,
-    "ratePerDay": 100,
-    "ratePerWeek": 1000,
-    "itemId": "KFurDI27EumE---z3hb4N",
-    "incidents": [],
-    "children": [],
-    "images": "tent1.jpg",
     "comments": [],
     "lostQuantity": 0,
-    "rentedQuantity": 4
+    "rentedQuantity": 0
   },
   {
     "name": "sleeping bag",
     "desc": "bag",
-    "ownedQuantity": 1,
+    "ownedQuantity": 10,
     "category": "camping",
     "ratePerHour": 10,
     "ratePerDay": 100,
     "ratePerWeek": 1000,
-    "itemId": "HDzvYKw8TBSx5Au-GGkyW",
+    "itemId": "6gTcS4Efk3sBywwIW8lxL",
     "incidents": [],
-    "children": [
-      "WZO2BWABtoY2Ow4QhYzQS"
-    ],
+    "children": [],
     "images": "sleeping bag.jpg",
     "comments": [],
     "lostQuantity": 0,
     "rentedQuantity": 0
   },
   {
-    "name": "sleeping bag1",
-    "desc": "bag",
-    "ownedQuantity": 12,
+    "name": "tent2",
+    "desc": "tent",
+    "ownedQuantity": 4,
     "category": "camping",
-    "ratePerHour": 10,
-    "ratePerDay": 100,
-    "ratePerWeek": 1000,
-    "itemId": "WZO2BWABtoY2Ow4QhYzQS",
+    "ratePerHour": 1,
+    "ratePerDay": 2,
+    "ratePerWeek": 3,
+    "itemId": "RzUPgMWkk1Q0QCCrB8Iu5",
     "incidents": [],
     "children": [],
-    "images": "sleeping bag1.jpg",
+    "images": "tent2.jpg",
+    "comments": [],
+    "lostQuantity": 0,
+    "rentedQuantity": 0
+  },
+  {
+    "name": "tent1",
+    "desc": "tent",
+    "ownedQuantity": 1,
+    "category": "camping",
+    "ratePerHour": 1,
+    "ratePerDay": 2,
+    "ratePerWeek": 3,
+    "itemId": "Rirlecd7FNSlJmKA4B5ax",
+    "incidents": [],
+    "children": [],
+    "images": "tent1.jpg",
     "comments": [],
     "lostQuantity": 0,
     "rentedQuantity": 0
