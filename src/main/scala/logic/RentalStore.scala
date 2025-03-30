@@ -65,6 +65,8 @@ object RentalStore:
          // if item exists, remove item from items list and from parent item dependency if any
          case Some( di ) =>
             ownedItems -= di
+            // remove associated item image from resources folder
+            os.remove(os.pwd / os.RelPath( "src/main/resources/images/" + di.images ))
             // check if deleted item is any other item's child
             ownedItems.find( _.children.exists( _ == di.itemId ) ) match
                case Some( pi ) => // if parent item found, delete item from children list
