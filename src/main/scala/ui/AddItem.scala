@@ -15,8 +15,6 @@ import ui.Helper.displayAlert
 import ui.Main.stage
 
 import java.io.File
-import java.nio.file.StandardCopyOption.REPLACE_EXISTING
-import java.nio.file.{Files, Paths}
 
 object AddItem:
    // pre define sizes for formfields
@@ -150,9 +148,8 @@ object AddItem:
 
                 // copy selected image to resources folder
                 val newImage = File( nameTextField.getText + ".jpg" )
-                Files.copy( selectedImage.toPath,
-                            Paths.get( "src/main/resources/images/" + newImage.getName ),
-                            REPLACE_EXISTING
+                os.copy.over( os.Path( selectedImage ),
+                              os.pwd / os.RelPath( "src/main/resources/images/" + newImage.getName )
                 )
                 // display success message to user and clear page
                 displayAlert( messageAlert, "Item added to the system" )
@@ -231,6 +228,7 @@ object AddItem:
       rpwTextField.clear()
       dataToReset = renderAddItemPage
       addItemScroll.setContent( dataToReset._3 )
+      imageLabel.text = null
 
    /** function to check if all input fields have information */
    def isAllFieldsNotEmpty =
