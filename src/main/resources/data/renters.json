@@ -1,0 +1,17 @@
+[
+  {
+    "name": "renter1",
+    "email": "renter1@email.com",
+    "comments": []
+  },
+  {
+    "name": "renter2",
+    "email": "renter2@email.com",
+    "comments": []
+  },
+  {
+    "name": "renter3",
+    "email": "renter3@email.com",
+    "comments": []
+  }
+]
