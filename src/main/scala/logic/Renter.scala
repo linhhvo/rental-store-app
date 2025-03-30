@@ -1,12 +1,21 @@
 package logic
 
+import logic.IOHandler.getDataFromFile
+import ujson.IncompleteParseException
 import upickle.default.*
 
-import scala.collection.mutable.SortedSet
+import scala.collection.mutable.{Buffer, SortedSet}
 
 @upickle.implicits.serializeDefaults( true )
 case class Renter( name: String, email: String, comments: SortedSet[String] = SortedSet.empty )
     derives ReadWriter
+
+object Renter:
+   val renters =
+      try getDataFromFile( "renters" ).arr.map( r => read[Renter]( r ) )
+      catch
+         case IncompleteParseException( msg ) =>
+            Buffer.empty
 
 @main def addRenter() =
    val renter1 = Renter( "renter1", "renter1@email.com" )

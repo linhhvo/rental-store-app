@@ -1,6 +1,7 @@
 package ui
 
 import logic.RentalStore.{addBooking, ownedItems}
+import logic.Renter.renters
 import logic.SavedItems.*
 import logic.{Booking, InvalidDateTime}
 import scalafx.beans.property.DoubleProperty
@@ -46,8 +47,12 @@ object RentItem:
    /** Renter Container */
    val renterLabel = Label( "Select renter" )
    renterLabel.font = Font( null, FontWeight( Bold ), 14 )
-   val renterList = ObservableBuffer[String]( "cookie1", "cookie2" )
+   // get list of renters
+   val renterList = new ObservableBuffer[String]()
+   renterList ++= renters.map( r => r.name )
+   // dropdown menu to select renter
    val renterPicker = ChoiceBox( renterList )
+   // group renter selection with label
    val renterContainer = new VBox:
       children = Array( renterLabel, renterPicker )
       spacing = 5
