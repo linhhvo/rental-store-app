@@ -15,6 +15,7 @@ import ui.Helper.displayAlert
 import ui.Main.stage
 
 import java.io.File
+import java.nio.file.Paths
 
 object AddItem:
    // pre define sizes for formfields
@@ -151,6 +152,7 @@ object AddItem:
                 os.copy.over( os.Path( selectedImage ),
                               os.pwd / os.RelPath( "src/main/resources/images/" + newImage.getName )
                 )
+                
                 // display success message to user and clear page
                 displayAlert( messageAlert, "Item added to the system" )
                 resetItemPage()
