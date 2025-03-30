@@ -68,36 +68,36 @@ object RentItem:
    // Calculate and update total cost when start date and time change
    rentStart._2
       .valueProperty()
-      .addListener( ( observable, oldDate, newDate ) => {
+      .addListener( ( observable, oldDate, newDate ) =>
          try totalCost.value = calculateRentalCost
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
                rentStart._2.setValue( LocalDate.now )
-      } )
+      )
    rentStart._3
       .valueProperty()
-      .addListener( ( observable, oldDate, newDate ) => {
+      .addListener( ( observable, oldDate, newDate ) =>
          try totalCost.value = calculateRentalCost
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
                rentStart._3.setValue( String.format( "%02d" + ":00", LocalDateTime.now().getHour ) )
-      } )
+      )
 
    // Calculate and update total cost when end date and time change
    rentEnd._2
       .valueProperty()
-      .addListener( ( observable, oldDate, newDate ) => {
+      .addListener( ( observable, oldDate, newDate ) =>
          try totalCost.value = calculateRentalCost
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
                rentEnd._2.setValue( LocalDate.now )
-      } )
+      )
    rentEnd._3
       .valueProperty()
-      .addListener( ( observable, oldDate, newDate ) => {
+      .addListener( ( observable, oldDate, newDate ) =>
          try totalCost.value = calculateRentalCost
          catch
             case InvalidDateTime( msg ) =>
@@ -105,7 +105,7 @@ object RentItem:
                rentEnd._3.setValue(
                    String.format( "%02d" + ":00", LocalDateTime.now().plusHours( 1 ).getHour )
                )
-      } )
+      )
 
    val costLabel = Label( s"Rental Total Cost: ${totalCost.value}" )
    costLabel.font = Font( null, FontWeight( Bold ), 14 )
