@@ -5,15 +5,17 @@ import logic.RentalStore.getAllItems
 import logic.{DuplicateItem, InvalidItemCategory, Item, RentalStore}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
+import scalafx.geometry.Pos.BaselineLeft
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType.Information
-import scalafx.scene.layout.{GridPane, VBox}
+import scalafx.scene.layout.{GridPane, HBox, VBox}
 import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 import ui.Helper.displayAlert
 import ui.Main.stage
 
 import java.io.File
+import java.nio.file.StandardCopyOption.REPLACE_EXISTING
 import java.nio.file.{Files, Paths}
 
 object AddItem:
@@ -31,7 +33,7 @@ object AddItem:
    // item name group with label
    val itemName = new VBox:
       spacing = 5
-      children = Array( Label( "Name*" ), nameTextField )
+      children = Array( Label( "Name" ), nameTextField )
 
    /** ITEM DESCRIPTION */
 
@@ -43,7 +45,7 @@ object AddItem:
    // item desc group with label
    val itemDesc = new VBox:
       spacing = 5
-      children = Array( Label( "Description*" ), descTextField )
+      children = Array( Label( "Description" ), descTextField )
 
    /** ITEM QUANTITY */
 
@@ -55,22 +57,22 @@ object AddItem:
    // item quanity group with label
    val itemQuantity = new VBox:
       spacing = 5
-      children = Array( Label( "Quantity*" ), qntSpinner )
+      children = Array( Label( "Quantity" ), qntSpinner )
 
    /** ITEM RENTAL RATE */
 
    // item rental rate per hour
-   val rphLabel = Label( "Rate Per Hour*" )
+   val rphLabel = Label( "Rate Per Hour" )
    val rphTextField = TextField()
    rphTextField.maxWidth = small
 
    // item rental rate per day
-   val rpdLabel = Label( "Rate Per Day*" )
+   val rpdLabel = Label( "Rate Per Day" )
    val rpdTextField = TextField()
    rpdTextField.maxWidth = small
 
    // item rental rate per week
-   val rpwLabel = Label( "Rate Per Week*" )
+   val rpwLabel = Label( "Rate Per Week" )
    val rpwTextField = TextField()
    rpwTextField.maxWidth = small
 
@@ -92,16 +94,27 @@ object AddItem:
    imageChooser.title = "Select an image"
    imageChooser.extensionFilters.add( ExtensionFilter( "JPG", "*.jpg" ) )
 
-   val uploadImageBtn = Button( "Upload an image" )
+   // initialize the selected image file
+   var selectedImage = File( "placeholder" )
+
+   // label to show user message if selecting image was successful or not
+   val imageLabel = Label( null )
+
+   val uploadImageBtn = Button( "Select image" )
    uploadImageBtn.onAction = ( ( e ) =>
-      val newImage = File( nameTextField.getText + ".jpg" )
-      val selectedImage = imageChooser.showOpenDialog( stage )
-      if selectedImage != null then
-         Files.copy( selectedImage.toPath,
-                     Paths.get( "src/main/resources/images/" + newImage.getName )
-         )
-      else println( "no image selected" )
+      // prompt user to select an image from local storage
+      selectedImage = imageChooser.showOpenDialog( stage )
+      // display user message
+      if selectedImage != null && selectedImage.getName != "placeholder" then
+         imageLabel.text = s"Image ${selectedImage.getName} has been added"
+      else imageLabel.text = "No image has been added"
    )
+
+   // group image chooser and label in container
+   val itemImage = new HBox( uploadImageBtn, imageLabel )
+   itemImage.spacing = 5
+   itemImage.alignment = BaselineLeft
+   itemImage.margin = Insets( 10, 0, 0, 0 )
 
    /** ADD BUTTON */
 
@@ -134,6 +147,13 @@ object AddItem:
                 if dataToReset._2.getValue == null then RentalStore.addItem( newItem, None )
                 else // if parent item is selected
                    RentalStore.addItem( newItem, Some( dataToReset._2.getValue ) )
+
+                // copy selected image to resources folder
+                val newImage = File( nameTextField.getText + ".jpg" )
+                Files.copy( selectedImage.toPath,
+                            Paths.get( "src/main/resources/images/" + newImage.getName ),
+                            REPLACE_EXISTING
+                )
                 // display success message to user and clear page
                 displayAlert( messageAlert, "Item added to the system" )
                 resetItemPage()
@@ -169,7 +189,7 @@ object AddItem:
       // item category list group with label
       val itemCategory = new VBox:
          spacing = 5
-         children = Array( Label( "Category*" ), catChoiceBox )
+         children = Array( Label( "Category" ), catChoiceBox )
 
       /** ITEM DEPENDENCY */
 
@@ -193,7 +213,7 @@ object AddItem:
                            itemCategory,
                            itemRate,
                            itemDependencies,
-                           uploadImageBtn,
+                           itemImage,
                            addItemBtn
          )
          spacing = 10
@@ -214,4 +234,10 @@ object AddItem:
 
    /** function to check if all input fields have information */
    def isAllFieldsNotEmpty =
-      nameTextField.getText.nonEmpty && descTextField.getText.nonEmpty && dataToReset._1.getSelectionModel.getSelectedItem != null && rphTextField.getText.nonEmpty && rpdTextField.getText.nonEmpty && rpwTextField.getText.nonEmpty
+      nameTextField.getText.nonEmpty
+         && descTextField.getText.nonEmpty
+         && dataToReset._1.getSelectionModel.getSelectedItem != null
+         && rphTextField.getText.nonEmpty
+         && rpdTextField.getText.nonEmpty
+         && rpwTextField.getText.nonEmpty
+         && selectedImage != null && selectedImage.getName != "placeholder"
