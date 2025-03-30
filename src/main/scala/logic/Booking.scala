@@ -7,6 +7,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import scala.collection.mutable.Buffer
 
+@upickle.implicits.serializeDefaults( true )
 case class Booking( items:            Buffer[SavedItem] = Buffer.empty,
                     bookingStartTime: LocalDateTime,
                     bookingEndTime:   LocalDateTime,

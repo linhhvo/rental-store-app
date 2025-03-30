@@ -6,6 +6,7 @@ import upickle.default.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+@upickle.implicits.serializeDefaults( true )
 case class Incident( incidentDate: LocalDate,
                      incidentType: IncidentType,
                      comment:      String,
