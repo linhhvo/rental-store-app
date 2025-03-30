@@ -1,7 +1,7 @@
 package logic
 
 import logic.IOHandler.{getDataFromFile, writeSavedItems}
-import logic.RentalStore.ownedItems
+import logic.RentalStore.{ownedItems, updateItemsDataSource}
 import ujson.IncompleteParseException
 import upickle.default.*
 
@@ -24,7 +24,8 @@ object SavedItems:
    def addToCart( requestItem: Item, requestQuantity: Int ) =
       // check if the added item already exists in the saved list
       savedItems.find( existingItem => existingItem.itemId == requestItem.itemId ) match
-         // if the item is already in the saved list, add the requested quantity to the saved quantity
+         /* if the item is already in the saved list, add the requested quantity to the saved
+          * quantity */
          case Some( i ) =>
             // check if item has enough quantity
             if requestItem.hasEnoughQuantity( requestQuantity ) then
@@ -48,6 +49,7 @@ object SavedItems:
                    s"Item ${requestItem.name} doesn't have enough quantity for rent"
                )
 
+      updateItemsDataSource()
       writeSavedItems( savedItems )
 
    def resetSavedList() =
@@ -55,6 +57,7 @@ object SavedItems:
          ownedItems.find( i => i.itemId == si.itemId ).foreach( _.free( si.rentQuantity ) )
       )
       savedItems.clear()
+      updateItemsDataSource()
       writeSavedItems( Buffer.empty )
 
    /** method to calculate total rate per hour for all saved items */
