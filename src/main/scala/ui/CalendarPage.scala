@@ -13,19 +13,19 @@ object CalendarPage:
    /** CALENDAR PAGE */
 
    // initialize calendar views
-   val monthView = MonthPage()
-   val weekView = WeekPage()
+   private val monthView = MonthPage()
+   private val weekView = WeekPage()
 
    monthView.bind( weekView, true )
 
    // add calendar source to store item reservations
-   val rentalReservations = CalendarSource( "Reservations" )
+   private val rentalReservations = CalendarSource( "Reservations" )
 
    // create calendar for each item
-   val itemCalendar = ownedItems.map( i => i.itemId -> new Calendar( i.name ) ).toMap
-   var styleNum = 1
+   private val itemCalendar = ownedItems.map( i => i.itemId -> new Calendar( i.name ) ).toMap
+   private var styleNum = 1
    itemCalendar.foreach( c =>
-      c._2.setStyle( Style.values()(styleNum % 7) )
+      c._2.setStyle( Style.values()( styleNum % 7 ) )
       styleNum += 1
       rentalReservations.getCalendars.add( c._2 )
    )
@@ -46,16 +46,16 @@ object CalendarPage:
    )
 
    // sidebar to show list of rental items
-   val sideBar = SourceView()
+   private val sideBar = SourceView()
    sideBar.bind( monthView )
 
    // tab pane to toggle between week view and month view
-   val calendarTabPane = TabPane()
-   val weekTab = Tab()
+   private val calendarTabPane = TabPane()
+   private val weekTab = Tab()
    weekTab.text = "Week"
    weekTab.content = weekView
 
-   val monthTab = Tab()
+   private val monthTab = Tab()
    monthTab.text = "Month"
    monthTab.content = monthView
 
@@ -68,13 +68,13 @@ object CalendarPage:
    calendarContainer.visible = false
 
    // set column and row contraints
-   val column0 = new ColumnConstraints:
+   private val column0 = new ColumnConstraints:
       percentWidth = 20
 
-   val column1 = new ColumnConstraints:
+   private val column1 = new ColumnConstraints:
       percentWidth = 80
 
-   val row0 = new RowConstraints:
+   private val row0 = new RowConstraints:
       percentHeight = 100
 
    calendarContainer.columnConstraints = Array( column0, column1 )
