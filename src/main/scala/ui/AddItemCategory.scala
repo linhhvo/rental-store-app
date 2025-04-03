@@ -129,5 +129,7 @@ object AddItemCategory:
    addItemCatContainer.setVisible( false )
 
    // retrieve list of categories and generate UI elements
-   def categoryElements = getItemCategoryList.map( c => CheckBox( c ) )
    private def categoryElements = getItemCategoryList.map( c => CheckBox( c ) )
+
+   def resetItemCatPage() =
+      itemCatTextField.clear()

@@ -48,7 +48,7 @@ object MenuBar:
 
    addItemCategoryMenuItem.onAction = ( ( e ) =>
       displayPage( bodyStack, addItemCatContainer )
-      itemCatTextField.clear()
+      resetItemCatPage()
    )
 
    addItemMenuItem.onAction = ( ( e ) =>
