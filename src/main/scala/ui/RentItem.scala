@@ -1,6 +1,6 @@
 package ui
 
-import logic.RentalStore.{addBooking, ownedItems}
+import logic.RentalStore.addBooking
 import logic.Renter.renters
 import logic.SavedItems.*
 import logic.{Booking, InvalidDateTime}
@@ -160,7 +160,7 @@ object RentItem:
    def renderPage =
       // generate GUI elements to display saved items list
       val itemElements = savedItems.map( savedItem =>
-         ownedItems.find( i => i.itemId == savedItem.itemId ) match
+         getDetailsFromItemList( savedItem ) match
             case Some( i ) => Label( "• " + i.name + " - Quantity: " + savedItem.rentQuantity )
             case None      => Label( null )
       )
