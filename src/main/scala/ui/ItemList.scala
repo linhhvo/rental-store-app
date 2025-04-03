@@ -28,7 +28,6 @@ object ItemList:
       // Create UI element for each item
       val itemElements = ownedItems.map( item =>
          val itemImage = FileInputStream( "src/main/resources/images/" + item.images )
-//            getClass.getResourceAsStream( "/images/" + item.images )
          val itemImageView = ImageView( Image( itemImage, 0, 200, true, true ) )
          val itemNameLabel = Label( item.name )
          itemNameLabel.font = Font( "Arial", 18 )
