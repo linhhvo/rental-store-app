@@ -14,22 +14,119 @@ import ui.Helper.{displayAlert, toggleDisplay}
 import upickle.default.*
 
 object ItemDetails:
-   val smallWidth = 240
-   val smallHeight = 75
+   private val smallWidth = 240
+   private val smallHeight = 75
 
+   /** User message alert */
+   private val messageAlert = new Alert( Information )
+
+   /** Rent item */
+
+   // select rent quantity to add to saved list
+   private val rentQuantity = Spinner( 1, 100, 1, 1 )
+   rentQuantity.maxWidth = 125
+   rentQuantity.editable = true
+
+   // button to add item to saved list
+   private val submitItemBtn = Button( "Add To List" )
+
+   // group rent item quantity and button with label
+   private val rentItemContainer = new VBox:
+      spacing = 7
+      children = Array( Label( "Quantity" ), rentQuantity, submitItemBtn )
+      margin = Insets( 5, 0, 5, 0 )
+
+   // button to show/hide input fields to add item to saved list
+   private val rentItemBtn = Button( "Rent Item" )
+   rentItemBtn.onAction = ( ( e ) => toggleDisplay( rentItemContainer ) )
+
+   /** Delete item button */
+
+   private val deleteItemBtn = Button( "Delete Item" )
+   deleteItemBtn.margin = Insets( 15, 0, 15, 0 )
+
+   /** Add item comment */
+
+   // input field to enter comment
+   private val cmtText = TextArea()
+   cmtText.promptText = "Enter comment"
+   cmtText.maxWidth = smallWidth
+   cmtText.maxHeight = smallHeight
+
+   // button to add comment to item
+   private val submitCmtBtn = Button( "Submit" )
+
+   // group comment text field and button
+   private val addCmtContainer = new VBox:
+      spacing = 10
+      children = Array( cmtText, submitCmtBtn )
+      margin = Insets( 5, 0, 5, 0 )
+
+   // button to show/hide comment field
+   private val addCmtBtn = Button( "Add Comment" )
+   addCmtBtn.onAction = ( ( e ) => toggleDisplay( addCmtContainer ) )
+
+   /** Report item incident */
+
+   // dropdown menu to select incident type
+   private val incTypeList =
+      ObservableBuffer[IncidentType]( IncidentType.Loss, IncidentType.Damage )
+   private val incTypeChoiceBox = ChoiceBox( incTypeList )
+   incTypeChoiceBox.maxWidth = smallWidth
+
+   // date picker to select incident date
+   private val incidentDatePicker = DatePicker()
+   incidentDatePicker.promptText = "Select incident date"
+   incidentDatePicker.maxWidth = smallWidth
+
+   // text field to add incident comment
+   private val incidentCmt = TextArea()
+   incidentCmt.maxWidth = smallWidth
+   incidentCmt.maxHeight = smallHeight
+   incidentCmt.promptText = "Enter incident detail"
+
+   // text field to add cost to repair
+   private val repairCostField = TextField()
+   repairCostField.maxWidth = smallWidth
+   repairCostField.promptText = "Enter repair cost"
+
+   // button to add incident to item
+   private val submitIncidentBtn = Button( "Submit" )
+
+   // group incident input fields with labels
+   private val incidentContainer = new VBox:
+      spacing = 7
+      children = Array(
+          Label( "Incident Type" ),
+          incTypeChoiceBox,
+          Label( "Incident Date" ),
+          incidentDatePicker,
+          Label( "Incident Detail" ),
+          incidentCmt,
+          Label( "Repair Cost" ),
+          repairCostField,
+          submitIncidentBtn
+      )
+      margin = Insets( 5, 0, 5, 0 )
+
+   // button to show/hide incident input fields
+   private val reportIncidentBtn = Button( "Report Incident" )
+   reportIncidentBtn.margin = Insets( 15, 0, 0, 0 )
+   reportIncidentBtn.onAction = ( ( e ) => toggleDisplay( incidentContainer ) )
+
+   /** Item details container */
+   private val itemDetailsContainer = VBox( 5 )
+   itemDetailsContainer.padding = Insets( 10, 0, 0, 0 )
+
+   /** Page container */
+   private val itemPageContainer = HBox( 20 )
+   itemPageContainer.padding = Insets( 20 )
+
+   /** method to display details specific to item passed in parameter */
    def displayItemPage( item: Item ) =
-      /** User message alert */
-      val messageAlert = new Alert( Information )
+      resetItemActionFields()
 
-      /** Rent item */
-
-      // select rent quantity to add to saved list
-      val rentQuantity = Spinner( 1, 100, 1, 1 )
-      rentQuantity.maxWidth = 125
-      rentQuantity.editable = true
-
-      // button to add item to saved list
-      val submitItemBtn = Button( "Add To List" )
+      // set action to rent item
       submitItemBtn.onAction = (
           ( e ) =>
              try
@@ -43,22 +140,7 @@ object ItemDetails:
                 case ItemNotAvailable( m ) => displayAlert( messageAlert, m )
       )
 
-      // group rent item quantity and button with label
-      val rentItemContainer = new VBox:
-         spacing = 7
-         children = Array( Label( "Quantity" ), rentQuantity, submitItemBtn )
-         visible = false
-         managed = false
-         margin = Insets( 5, 0, 5, 0 )
-
-      // button to show/hide input fields to add item to saved list
-      val rentItemBtn = Button( "Rent Item" )
-      rentItemBtn.onAction = ( ( e ) => toggleDisplay( rentItemContainer ) )
-
-      /** Delete item button */
-
-      val deleteItemBtn = Button( "Delete Item" )
-      deleteItemBtn.margin = Insets( 15, 0, 15, 0 )
+      // set action to delete item
       deleteItemBtn.onAction = (
           ( e ) =>
              // ask user to confirm that they want to delete the item
@@ -76,16 +158,7 @@ object ItemDetails:
                 case _                      => // Do nothing
       )
 
-      /** Add item comment */
-
-      // input field to enter comment
-      val cmtText = TextArea()
-      cmtText.promptText = "Enter comment"
-      cmtText.maxWidth = smallWidth
-      cmtText.maxHeight = smallHeight
-
-      // button to add comment to item
-      val submitCmtBtn = Button( "Submit" )
+      // set action to add comment to item
       submitCmtBtn.onAction = (
           ( e ) =>
              try
@@ -101,101 +174,39 @@ object ItemDetails:
                    displayAlert( messageAlert, msg )
       )
 
-      // group comment text field and button
-      val addCmtContainer = new VBox:
-         spacing = 10
-         children = Array( cmtText, submitCmtBtn )
-         visible = false
-         managed = false
-         margin = Insets( 5, 0, 5, 0 )
+      // set action to add incident to item
+      submitIncidentBtn.onAction = (
+          ( e ) =>
+             // check that all input fields have entered data
+             if incTypeChoiceBox.getSelectionModel.getSelectedItem != null
+                && incidentDatePicker.getValue != null
+                && incidentCmt.getText.nonEmpty
+                && repairCostField.getText.nonEmpty
+             then
+                // create new incident
+                val newIncident = Incident( incidentDatePicker.getValue,
+                                            incTypeChoiceBox.getValue,
+                                            incidentCmt.getText,
+                                            repairCostField.getText.toDouble
+                )
+                try
+                   // add incident to item
+                   item.reportIncident( newIncident )
+                   // display success message to user
+                   displayAlert( messageAlert, "Incident has been reported" )
 
-      // button to show/hide comment field
-      val addCmtBtn = Button( "Add Comment" )
-      addCmtBtn.onAction = ( ( e ) => toggleDisplay( addCmtContainer ) )
-
-      /** Report item incident */
-
-      // dropdown menu to select incident type
-      val incTypeList = ObservableBuffer[IncidentType]( IncidentType.Loss, IncidentType.Damage )
-      val incTypeChoiceBox = ChoiceBox( incTypeList )
-      incTypeChoiceBox.maxWidth = smallWidth
-
-      // date picker to select incident date
-      val incidentDatePicker = DatePicker()
-      incidentDatePicker.promptText = "Select incident date"
-      incidentDatePicker.maxWidth = smallWidth
-
-      // text field to add incident comment
-      val incidentCmt = TextArea()
-      incidentCmt.maxWidth = smallWidth
-      incidentCmt.maxHeight = smallHeight
-      incidentCmt.promptText = "Enter incident detail"
-
-      // text field to add cost to repair
-      val repairCostField = TextField()
-      repairCostField.maxWidth = smallWidth
-      repairCostField.promptText = "Enter repair cost"
-
-      // button to add incident to item
-      val submitIncidentBtn = Button( "Submit" )
-      submitIncidentBtn.onAction = ( ( e ) =>
-         // check that all input fields have entered data
-         if incTypeChoiceBox.getSelectionModel.getSelectedItem != null
-            && incidentDatePicker.getValue != null
-            && incidentCmt.getText.nonEmpty
-            && repairCostField.getText.nonEmpty
-         then
-            // create new incident
-            val newIncident = Incident( incidentDatePicker.getValue,
-                                        incTypeChoiceBox.getValue,
-                                        incidentCmt.getText,
-                                        repairCostField.getText.toDouble
-            )
-            try
-               // add incident to item
-               item.reportIncident( newIncident )
-               // display success message to user
-               displayAlert( messageAlert, "Incident has been reported" )
-            catch case ItemDoesNotExist( msg ) => displayAlert( messageAlert, msg )
-         else displayAlert( messageAlert, "Missing information" )
-
-         // reset and clear input fields
-         incidentCmt.clear()
-         repairCostField.clear()
-         incTypeChoiceBox.getSelectionModel.clearSelection()
-         incidentDatePicker.setValue( null )
+                   // reset and clear input fields
+                   incidentCmt.clear()
+                   repairCostField.clear()
+                   incTypeChoiceBox.getSelectionModel.clearSelection()
+                   incidentDatePicker.setValue( null )
+                catch case ItemDoesNotExist( msg ) => displayAlert( messageAlert, msg )
+             else displayAlert( messageAlert, "Missing information" )
       )
-
-      // group incident input fields with labels
-      val incidentContainer = new VBox:
-         spacing = 7
-         children = Array(
-             Label( "Incident Type" ),
-             incTypeChoiceBox,
-             Label( "Incident Date" ),
-             incidentDatePicker,
-             Label( "Incident Detail" ),
-             incidentCmt,
-             Label( "Repair Cost" ),
-             repairCostField,
-             submitIncidentBtn
-         )
-         visible = false
-         managed = false
-         margin = Insets( 5, 0, 5, 0 )
-
-      // button to show/hide incident input fields
-      val reportIncidentBtn = Button( "Report Incident" )
-      reportIncidentBtn.margin = Insets( 15, 0, 0, 0 )
-      reportIncidentBtn.onAction = ( ( e ) => toggleDisplay( incidentContainer ) )
-
-      /** Item details container */
 
       val itemNameLabel = Label( item.name )
 
-      val itemDetailsContainer = VBox( 5 )
-      itemDetailsContainer.padding = Insets( 10, 0, 0, 0 )
-      itemDetailsContainer.getChildren.addAll(
+      itemDetailsContainer.getChildren.setAll(
           itemNameLabel,
           Label( "Category: " + item.category ),
           Label( "Description: " + item.desc ),
@@ -212,14 +223,27 @@ object ItemDetails:
           incidentContainer
       )
 
-      /** Page container */
-
-      val itemPageContainer = HBox( 20 )
-
       val itemImage = getClass.getResourceAsStream( "/images/" + item.images )
       val itemImageView = ImageView( Image( itemImage, 0, 400, true, true ) )
 
-      itemPageContainer.getChildren.addAll( itemImageView, itemDetailsContainer )
-      itemPageContainer.padding = Insets( 20 )
+      itemPageContainer.getChildren.setAll( itemImageView, itemDetailsContainer )
 
       itemPageContainer
+
+   /** method to hide action details when an item details page is first generated */
+   private def resetItemActionFields() =
+      rentItemContainer.visible = false
+      rentItemContainer.managed = false
+
+      addCmtContainer.visible = false
+      addCmtContainer.managed = false
+
+      incidentContainer.visible = false
+      incidentContainer.managed = false
+
+      // clear all input fields
+      cmtText.clear()
+      incidentCmt.clear()
+      repairCostField.clear()
+      incTypeChoiceBox.getSelectionModel.clearSelection()
+      incidentDatePicker.setValue( null )
