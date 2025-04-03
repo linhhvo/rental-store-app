@@ -64,7 +64,7 @@ object SavedItems:
    /** remove all items from saved list */
    def resetSavedList() =
       savedItems.foreach( si =>
-         ownedItems.find( i => i.itemId == si.itemId ).foreach( _.free( si.rentQuantity ) )
+         ownedItems.find( _.itemId == si.itemId ).foreach( _.free( si.rentQuantity ) )
       )
       savedItems.clear()
       updateItemsDataSource()
@@ -75,7 +75,7 @@ object SavedItems:
       this.savedItems
          .map( si =>
             ownedItems
-               .find( i => i.itemId == si.itemId )
+               .find( _.itemId == si.itemId )
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerHour * si.rentQuantity ) )
          )
          .sum
@@ -85,7 +85,7 @@ object SavedItems:
       this.savedItems
          .map( si =>
             ownedItems
-               .find( i => i.itemId == si.itemId )
+               .find( _.itemId == si.itemId )
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerDay * si.rentQuantity ) )
          )
          .sum
@@ -95,7 +95,7 @@ object SavedItems:
       this.savedItems
          .map( si =>
             ownedItems
-               .find( i => i.itemId == si.itemId )
+               .find( _.itemId == si.itemId )
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerWeek * si.rentQuantity ) )
          )
          .sum

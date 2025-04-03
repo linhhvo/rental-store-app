@@ -33,7 +33,7 @@ case class Item( name:               String,
 
    /** method to retrieve children items details */
    def getChildrenDetails =
-      this.children.flatMap( c => getAllItems.filter( i => i.itemId == c ) )
+      this.children.flatMap( c => getAllItems.filter( _.itemId == c ) )
 
    def availableQuantity: Int =
       ownedQuantity - lostQuantity - rentedQuantity
@@ -45,7 +45,7 @@ case class Item( name:               String,
       rentedQuantity += quantity
 
    //   increase quantity when item is returned
-   def free(quantity: Int) =
+   def free( quantity: Int ) =
       rentedQuantity -= quantity
 
    /** method to add a new comment to an item */
