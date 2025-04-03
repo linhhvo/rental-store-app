@@ -15,68 +15,67 @@ import ui.Helper.displayAlert
 import ui.Main.stage
 
 import java.io.File
-import java.nio.file.Paths
 
 object AddItem:
    // pre define sizes for formfields
-   val big = 350
-   val med = 155
-   val small = 60
+   private val big = 350
+   private val med = 155
+   private val small = 60
 
    /** ITEM NAME */
 
    // text field to enter item name
-   val nameTextField = TextField()
+   private val nameTextField = TextField()
    nameTextField.maxWidth = big
 
    // item name group with label
-   val itemName = new VBox:
+   private val itemName = new VBox:
       spacing = 5
       children = Array( Label( "Name" ), nameTextField )
 
    /** ITEM DESCRIPTION */
 
    // text field to enter item description
-   val descTextField = TextArea()
+   private val descTextField = TextArea()
    descTextField.maxWidth = big
    descTextField.maxHeight = med
 
    // item desc group with label
-   val itemDesc = new VBox:
+   private val itemDesc = new VBox:
       spacing = 5
       children = Array( Label( "Description" ), descTextField )
 
    /** ITEM QUANTITY */
 
    // item quantity selection, initial amount is 1
-   val qntSpinner = Spinner( 1, 100, 1, 1 )
+   private val qntSpinner = Spinner( 1, 100, 1, 1 )
    qntSpinner.maxWidth = med
    qntSpinner.editable = true
 
    // item quanity group with label
-   val itemQuantity = new VBox:
+   private val itemQuantity = new VBox:
       spacing = 5
       children = Array( Label( "Quantity" ), qntSpinner )
 
    /** ITEM RENTAL RATE */
 
    // item rental rate per hour
-   val rphLabel = Label( "Rate Per Hour" )
-   val rphTextField = TextField()
+   private val rphLabel = Label( "Rate Per Hour" )
+   private val rphTextField = TextField()
    rphTextField.maxWidth = small
 
    // item rental rate per day
-   val rpdLabel = Label( "Rate Per Day" )
-   val rpdTextField = TextField()
+   private val rpdLabel = Label( "Rate Per Day" )
+   private val rpdTextField = TextField()
    rpdTextField.maxWidth = small
 
    // item rental rate per week
-   val rpwLabel = Label( "Rate Per Week" )
-   val rpwTextField = TextField()
+   private val rpwLabel = Label( "Rate Per Week" )
+   private val rpwTextField = TextField()
    rpwTextField.maxWidth = small
 
    // container for all rental rates
-   val itemRate = GridPane()
+   private val itemRate = GridPane()
    itemRate.add( rphLabel, 0, 0 )
    itemRate.add( rphTextField, 1, 0 )
    itemRate.add( rpdLabel, 0, 1 )
@@ -89,17 +88,17 @@ object AddItem:
 
    /** ITEM IMAGE */
 
-   val imageChooser = FileChooser()
+   private val imageChooser = FileChooser()
    imageChooser.title = "Select an image"
    imageChooser.extensionFilters.add( ExtensionFilter( "JPG", "*.jpg" ) )
 
    // initialize the selected image file
-   var selectedImage = File( "placeholder" )
+   private var selectedImage = File( "placeholder" )
 
    // label to show user message if selecting image was successful or not
-   val imageLabel = Label( null )
+   private val imageLabel = Label( null )
 
-   val uploadImageBtn = Button( "Select image" )
+   private val uploadImageBtn = Button( "Select image" )
    uploadImageBtn.onAction = ( ( e ) =>
       // prompt user to select an image from local storage
       selectedImage = imageChooser.showOpenDialog( stage )
@@ -110,21 +109,21 @@ object AddItem:
    )
 
    // group image chooser and label in container
-   val itemImage = new HBox( uploadImageBtn, imageLabel )
+   private val itemImage = new HBox( uploadImageBtn, imageLabel )
    itemImage.spacing = 5
    itemImage.alignment = BaselineLeft
    itemImage.margin = Insets( 10, 0, 0, 0 )
 
    /** ADD BUTTON */
 
-   val addItemBtn = Button( "Add Item" )
+   private val addItemBtn = Button( "Add Item" )
    addItemBtn.margin = Insets( 15, 0, 0, 0 )
 
    // set up alert to display user messages
-   val messageAlert = new Alert( Information )
+   private val messageAlert = new Alert( Information )
 
    // get category list, parent item list, and container
-   var dataToReset = renderAddItemPage
+   private var dataToReset = renderAddItemPage
 
    // action to add new item to system
    addItemBtn.onAction = (
@@ -152,7 +151,7 @@ object AddItem:
                 os.copy.over( os.Path( selectedImage ),
                               os.pwd / os.RelPath( "src/main/resources/images/" + newImage.getName )
                 )
-                
+
                 // display success message to user and clear page
                 displayAlert( messageAlert, "Item added to the system" )
                 resetItemPage()
@@ -176,7 +175,7 @@ object AddItem:
    /** function to render page; update item category list data and parent item list data when there
      * are changes from adding/deleting category or adding/deleting item; render container
      */
-   def renderAddItemPage =
+   private def renderAddItemPage =
       /** ITEM CATEGORY */
 
       // drop down menu to select item category
@@ -233,7 +232,7 @@ object AddItem:
       imageLabel.text = null
 
    /** function to check if all input fields have information */
-   def isAllFieldsNotEmpty =
+   private def isAllFieldsNotEmpty =
       nameTextField.getText.nonEmpty
          && descTextField.getText.nonEmpty
          && dataToReset._1.getSelectionModel.getSelectedItem != null

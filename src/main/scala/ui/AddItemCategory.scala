@@ -14,21 +14,21 @@ import ui.Helper.displayAlert
 object AddItemCategory:
    /** ADD ITEM CATEGORY PAGE */
 
-   val addItemCatLabel = Label( "Enter new item category" )
+   private val addItemCatLabel = Label( "Enter new item category" )
    addItemCatLabel.font = Font( null, FontWeight( Bold ), 14 )
 
    // New item category text field
-   val itemCatTextField = TextField()
+   private val itemCatTextField = TextField()
    itemCatTextField.maxWidth = 200
 
    // Button to add category
-   val addItemCatBtn = Button( "Add Category" )
+   private val addItemCatBtn = Button( "Add Category" )
 
    // Set up alert pop up to display user message
-   val messageAlert = new Alert( Information )
+   private val messageAlert = new Alert( Information )
 
    // get existing category list and convert to checkbox elements
-   var existingCatList = categoryElements
+   private var existingCatList = categoryElements
 
    // Button action for add item category button
    addItemCatBtn.onAction = (
@@ -39,7 +39,8 @@ object AddItemCategory:
                 displayAlert( messageAlert,
                               s"Category ${itemCatTextField.getText} has been added."
                 )
-                // if successful, clear category text field and update existing category list displayed on GUI
+                /* if successful, clear category text field and update existing category list
+                 * displayed on GUI */
                 itemCatTextField.clear()
                 existingCatList = categoryElements
                 categoryListContainer.children = Array( textContainer ) ++ existingCatList
@@ -51,23 +52,23 @@ object AddItemCategory:
    )
 
    // label for existing category list and instructions for deleting categories
-   val existingCatLabel = Label( "Existing categories:" )
+   private val existingCatLabel = Label( "Existing categories:" )
    existingCatLabel.font = Font( null, FontWeight( Bold ), 14 )
 
-   val deleteInstruction = Label( "Select category to delete" )
+   private val deleteInstruction = Label( "Select category to delete" )
    deleteInstruction.font = Font( null, 12 )
 
    // Group label and isntruction to avoid spacing in between
-   val textContainer = VBox( existingCatLabel, deleteInstruction )
+   private val textContainer = VBox( existingCatLabel, deleteInstruction )
 
    // Container for displaying existing category list and delete button
-   val categoryListContainer = new VBox:
+   private val categoryListContainer = new VBox:
       children = Array( textContainer ) ++ existingCatList
       spacing = 5
       margin = Insets( 10, 0, 0, 0 )
 
    // Button to delete category
-   val deleteItemCatBtn = Button( "Delete Category" )
+   private val deleteItemCatBtn = Button( "Delete Category" )
    deleteItemCatBtn.onAction = (
        ( e ) =>
           val targetCategories = existingCatList
@@ -80,8 +81,8 @@ object AddItemCategory:
           targetCategories.foreach( c =>
              deleteCatMsg = deleteCatMsg +
                 ( if itemInCategoryCount( c ) > 0 then
-                     s"There are ${itemInCategoryCount( c )} items in category ${c}\n"
-                  else s"There are no item in category ${c}\n" )
+                     s"There are ${itemInCategoryCount( c )} items in category $c\n"
+                  else s"There are no item in category $c\n" )
           )
 
           // check that there are categories selected
@@ -112,7 +113,7 @@ object AddItemCategory:
                                        "Selected category doesn't exist in the system"
                          )
                 // if user selects No button, do nothing
-                case _                      => //Do nothing
+                case _                      => // Do nothing
    )
 
    // Overall container of the page
@@ -129,3 +130,4 @@ object AddItemCategory:
 
    // retrieve list of categories and generate UI elements
    def categoryElements = getItemCategoryList.map( c => CheckBox( c ) )
+   private def categoryElements = getItemCategoryList.map( c => CheckBox( c ) )

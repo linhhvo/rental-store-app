@@ -9,7 +9,7 @@ import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType.Confirmation
-import scalafx.scene.layout.{GridPane, VBox}
+import scalafx.scene.layout.VBox
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
 import ui.Helper.*
@@ -27,10 +27,10 @@ object RentItem:
 
    /** Rental period container */
    // Date and time controls for rental period start
-   private val rentStart = createDateTimePicker("Start")
+   private val rentStart = createDateTimePicker( "Start" )
 
    // Date and time controls for rental period end
-   private val rentEnd = createDateTimePicker("End")
+   private val rentEnd = createDateTimePicker( "End" )
    // end date should be initially set to 1 hour ahead of start time
    // if start time is 23:00, end date should be set to next day
    rentEnd._2.setValue( LocalDateTime.now().plusHours( 1 ).toLocalDate )
@@ -58,7 +58,7 @@ object RentItem:
       spacing = 5
 
    /** Total rental cost container */
-   private val totalCost = DoubleProperty(calculateRentalCost)
+   private val totalCost = DoubleProperty( calculateRentalCost )
 
    // Calculate and update total cost when start date and time change
    rentStart._2
@@ -207,7 +207,7 @@ object RentItem:
       renterPicker.getSelectionModel.clearSelection()
 
    /** method to calculate rental period based on selected start and end datetimes */
-   def calculateRentalDuration =
+   private def calculateRentalDuration =
       // initialize duration values
       var durationInWeeks = 0
       var durationInDays = 0
@@ -237,5 +237,5 @@ object RentItem:
          ( durationInWeeks, durationInDays, durationInHours )
 
    /** method to calculate the total rental cost of saved items */
-   def calculateRentalCost =
+   private def calculateRentalCost =
       combinedRatePerWeek * calculateRentalDuration._1 + combinedRatePerDay * calculateRentalDuration._2 + combinedRatePerHour * calculateRentalDuration._3

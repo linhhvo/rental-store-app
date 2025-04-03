@@ -13,19 +13,19 @@ import ui.ViewRenter.renterPageContainer
 object MenuBar:
    /** MENU BAR */
    // Menu to navigate pages
-   val navigationMenu = Menu( "Pages" )
-   val itemListMenuItem = MenuItem( "Items List" )
-   val calendarMenuItem = MenuItem( "Calendar" )
-   val reportsMenuItem = MenuItem( "Reports" )
+   private val navigationMenu = Menu( "Pages" )
+   private val itemListMenuItem = MenuItem( "Items List" )
+   private val calendarMenuItem = MenuItem( "Calendar" )
+   private val reportsMenuItem = MenuItem( "Reports" )
    navigationMenu.getItems.addAll( itemListMenuItem, calendarMenuItem, reportsMenuItem )
 
    // Menu to perform actions
-   val actionsMenu = Menu( "Actions" )
-   val addItemCategoryMenuItem = MenuItem( "Manage Item Category" )
-   val addItemMenuItem = MenuItem( "Add Item" )
-   val returnItemMenuItem = MenuItem( "Return Item" )
-   val createBookingMenuItem = MenuItem( "Rent Item" )
-   val viewRenterMenuItem = MenuItem( "Manage Renter" )
+   private val actionsMenu = Menu( "Actions" )
+   private val addItemCategoryMenuItem = MenuItem( "Manage Item Category" )
+   private val addItemMenuItem = MenuItem( "Add Item" )
+   private val returnItemMenuItem = MenuItem( "Return Item" )
+   private val createBookingMenuItem = MenuItem( "Rent Item" )
+   private val viewRenterMenuItem = MenuItem( "Manage Renter" )
    actionsMenu.getItems.addAll( createBookingMenuItem,
                                 returnItemMenuItem,
                                 addItemCategoryMenuItem,
