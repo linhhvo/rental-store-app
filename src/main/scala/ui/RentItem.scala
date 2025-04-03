@@ -27,10 +27,10 @@ object RentItem:
 
    /** Rental period container */
    // Date and time controls for rental period start
-   var rentStart = createDateTimePicker( "Start" )
+   private val rentStart = createDateTimePicker("Start")
 
    // Date and time controls for rental period end
-   var rentEnd = createDateTimePicker( "End" )
+   private val rentEnd = createDateTimePicker("End")
    // end date should be initially set to 1 hour ahead of start time
    // if start time is 23:00, end date should be set to next day
    rentEnd._2.setValue( LocalDateTime.now().plusHours( 1 ).toLocalDate )
@@ -39,36 +39,26 @@ object RentItem:
    )
 
    // group datetime pickers with label in container
-   val periodLabel = Label( "Select rental period" )
+   private val periodLabel = Label( "Select rental period" )
    periodLabel.font = Font( null, FontWeight( Bold ), 14 )
-   val periodContainer = VBox( periodLabel, rentStart._1, rentEnd._1 )
+   private val periodContainer = VBox( periodLabel, rentStart._1, rentEnd._1 )
    periodContainer.spacing = 5
 
    /** Renter Container */
-   val renterLabel = Label( "Select renter" )
+   private val renterLabel = Label( "Select renter" )
    renterLabel.font = Font( null, FontWeight( Bold ), 14 )
    // get list of renters
-   val renterList = new ObservableBuffer[String]()
+   private val renterList = new ObservableBuffer[String]()
    renterList ++= renters.map( r => r.name )
    // dropdown menu to select renter
-   val renterPicker = ChoiceBox( renterList )
+   private val renterPicker = ChoiceBox( renterList )
    // group renter selection with label
-   val renterContainer = new VBox:
+   private val renterContainer = new VBox:
       children = Array( renterLabel, renterPicker )
       spacing = 5
 
-//   /** Comment Container */
-//   val cmtLabel = Label( "Comment" )
-//   cmtLabel.font = Font( null, FontWeight( Bold ), 14 )
-//   val cmtText = TextArea()
-//   cmtText.maxWidth = 285
-//   cmtText.maxHeight = 50
-//   val cmtContainer = new VBox:
-//      children = Array( cmtLabel, cmtText )
-//      spacing = 5
-
    /** Total rental cost container */
-   var totalCost = DoubleProperty( calculateRentalCost )
+   private val totalCost = DoubleProperty(calculateRentalCost)
 
    // Calculate and update total cost when start date and time change
    rentStart._2
@@ -112,7 +102,7 @@ object RentItem:
                )
       )
 
-   val costLabel = Label( s"Rental Total Cost: ${totalCost.value}" )
+   private val costLabel = Label( s"Rental Total Cost: ${totalCost.value}" )
    costLabel.font = Font( null, FontWeight( Bold ), 14 )
    costLabel.margin = Insets( 10, 0, 0, 0 )
 
@@ -124,10 +114,10 @@ object RentItem:
    /** Booking button */
 
    // set up alert to display user message
-   val msgAlert = new Alert( Alert.AlertType.Information )
+   private val msgAlert = new Alert( Alert.AlertType.Information )
 
    // button to confirm booking and add new rental
-   val bookingBtn = Button( "Book Rental" )
+   private val bookingBtn = Button( "Book Rental" )
    bookingBtn.onAction = (
        ( e ) =>
           // display error message if renter is not selected
@@ -150,7 +140,7 @@ object RentItem:
    /** Clear list button */
 
    // button to delete all items in saved list and clear saved list
-   val clearBtn = Button( "Delete All Items" )
+   private val clearBtn = Button( "Delete All Items" )
    clearBtn.onAction = (
        ( e ) =>
           new Alert( Confirmation ) {
