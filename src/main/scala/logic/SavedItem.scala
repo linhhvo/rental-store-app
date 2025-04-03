@@ -23,7 +23,7 @@ object SavedItems:
    /** add item to saved items list to prepre for booking */
    def addToCart( requestItem: Item, requestQuantity: Int ) =
       // check if the added item already exists in the saved list
-      savedItems.find( existingItem => existingItem.itemId == requestItem.itemId ) match
+      savedItems.find( _.itemId == requestItem.itemId ) match
          /* if the item is already in the saved list, add the requested quantity to the saved
           * quantity */
          case Some( i ) =>
@@ -49,9 +49,19 @@ object SavedItems:
                    s"Item ${requestItem.name} doesn't have enough quantity for rent"
                )
 
-      updateItemsDataSource()
+      updateItemsDataSource() // to update available quantity for the item
       writeSavedItems( savedItems )
 
+   /** check if item is included in the saved item list. If yes, delete item from saved item list.
+     * If no, do nothing. Then update the saved list in external file
+     */
+   def removeFromCart( item: Item ) =
+      savedItems.find( _.itemId == item.itemId ) match
+         case Some( i ) =>
+            savedItems -= i
+            writeSavedItems( savedItems )
+         case _         => // Do nothing
+   /** remove all items from saved list */
    def resetSavedList() =
       savedItems.foreach( si =>
          ownedItems.find( i => i.itemId == si.itemId ).foreach( _.free( si.rentQuantity ) )

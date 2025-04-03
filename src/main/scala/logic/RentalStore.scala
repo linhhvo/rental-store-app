@@ -1,6 +1,7 @@
 package logic
 
 import logic.IOHandler.*
+import logic.SavedItems.removeFromCart
 import ujson.IncompleteParseException
 import upickle.default.*
 
@@ -67,8 +68,10 @@ object RentalStore:
          // if item exists, remove item from items list and from parent item dependency if any
          case Some( di ) =>
             ownedItems -= di
+
             // remove associated item image from resources folder
             os.remove( os.pwd / os.RelPath( "src/main/resources/images/" + di.images ) )
+
             // check if deleted item is any other item's child
             ownedItems.find( _.children.contains( di.itemId ) ) match
                case Some( pi ) => // if parent item found, delete item from children list
@@ -76,8 +79,12 @@ object RentalStore:
                   updateItemsDataSource()
                   // if parent item not found, only update items list
                case None       => updateItemsDataSource()
+
+            // remove item from saved list if it was added to saved list before deleting
+            removeFromCart( di )
+
          // if item is not found in the items list, throw error
-         case None       => throw ItemDoesNotExist( s"${item.name} does not exist in the system" )
+         case None => throw ItemDoesNotExist( s"${item.name} does not exist in the system" )
 
    /** record rental booking */
    def addBooking( newBooking: Booking ) =
