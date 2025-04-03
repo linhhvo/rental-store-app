@@ -37,13 +37,15 @@ object RentalStore:
       if ownedItems.exists( existingItem => existingItem.name == item.name ) then
          throw DuplicateItem( s"${item.name} already exists in the system" )
       else // if item doesn't already exist
-         // parent item is not required but if an item is passed, check that parent item exists in the system
+         /* parent item is not required but if an item is passed, check that parent item exists in
+          * the system */
          parentItem match
             // if parent item is passed
             case Some( parent ) =>
                // find parent item in items list
                ownedItems.find( i => i.name == parent ) match
-                  // if parent item found, add new item to items list and to parent's dependencies list
+                  /* if parent item found, add new item to items list and to parent's dependencies
+                   * list */
                   case Some( pi ) =>
                      ownedItems += item
                      pi.addChildren( item.itemId )
@@ -51,7 +53,7 @@ object RentalStore:
                   // if parent item not found
                   case None       =>
                      throw ItemDoesNotExist(
-                         s"Parent item ${parent} doesn't exist in the system"
+                         s"Parent item $parent doesn't exist in the system"
                      )
             // if no parent item is passed, only add new item to items list
             case None           =>
@@ -66,9 +68,9 @@ object RentalStore:
          case Some( di ) =>
             ownedItems -= di
             // remove associated item image from resources folder
-            os.remove(os.pwd / os.RelPath( "src/main/resources/images/" + di.images ))
+            os.remove( os.pwd / os.RelPath( "src/main/resources/images/" + di.images ) )
             // check if deleted item is any other item's child
-            ownedItems.find( _.children.exists( _ == di.itemId ) ) match
+            ownedItems.find( _.children.contains( di.itemId ) ) match
                case Some( pi ) => // if parent item found, delete item from children list
                   pi.deleteChildren( di.itemId )
                   updateItemsDataSource()
@@ -80,9 +82,11 @@ object RentalStore:
    /** record rental booking */
    def addBooking( newBooking: Booking ) =
       bookings += newBooking
+      newBooking.items.foreach( bi =>
+         ownedItems.find( i => i.itemId == bi.itemId ).foreach( _.reserve( bi.rentQuantity ) )
+      )
       updateItemsDataSource()
       writeBookings( bookings )
-      
+
    /** update items list in external file */
-   def updateItemsDataSource() = writeItems(ownedItems)  
-   
+   def updateItemsDataSource() = writeItems( ownedItems )
