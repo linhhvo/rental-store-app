@@ -63,39 +63,37 @@ object SavedItems:
          case _         => // Do nothing
    /** remove all items from saved list */
    def resetSavedList() =
-      savedItems.foreach( si =>
-         ownedItems.find( _.itemId == si.itemId ).foreach( _.free( si.rentQuantity ) )
-      )
+      savedItems.foreach( si => getDetailsFromItemList( si ).foreach( _.free( si.rentQuantity ) ) )
       savedItems.clear()
       updateItemsDataSource()
       writeSavedItems( Buffer.empty )
 
    /** method to calculate total rate per hour for all saved items */
    def combinedRatePerHour =
-      this.savedItems
+      savedItems
          .map( si =>
-            ownedItems
-               .find( _.itemId == si.itemId )
+            getDetailsFromItemList( si )
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerHour * si.rentQuantity ) )
          )
          .sum
 
    /** method to calculate total rate per day for all saved items */
    def combinedRatePerDay =
-      this.savedItems
+      savedItems
          .map( si =>
-            ownedItems
-               .find( _.itemId == si.itemId )
+            getDetailsFromItemList( si )
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerDay * si.rentQuantity ) )
          )
          .sum
 
    /** method to calculate total rate per week for all saved items */
    def combinedRatePerWeek =
-      this.savedItems
+      savedItems
          .map( si =>
-            ownedItems
-               .find( _.itemId == si.itemId )
+            getDetailsFromItemList( si )
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerWeek * si.rentQuantity ) )
          )
          .sum
+
+   def getDetailsFromItemList( si: SavedItem ) =
+      ownedItems.find( _.itemId == si.itemId )
