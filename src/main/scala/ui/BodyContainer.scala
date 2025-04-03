@@ -3,9 +3,10 @@ package ui
 import scalafx.scene.layout.StackPane
 import ui.AddItem.addItemScroll
 import ui.AddItemCategory.addItemCatContainer
-import ui.CalendarPage.{calendarContainer, monthView}
+import ui.CalendarPage.calendarContainer
 import ui.ItemList.{itemListPageScroll, itemPageContainer}
 import ui.RentItem.rentItemScrollContainer
+import ui.ViewRenter.renterPageContainer
 
 object BodyContainer:
    /** BODY CONTAINER */
@@ -18,5 +19,6 @@ object BodyContainer:
        addItemCatContainer,
        itemPageContainer,
        addItemScroll,
-       rentItemScrollContainer
+       rentItemScrollContainer,
+       renterPageContainer
    )

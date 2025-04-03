@@ -8,6 +8,7 @@ import ui.CalendarPage.calendarContainer
 import ui.Helper.displayPage
 import ui.ItemList.{itemListPageScroll, renderItemListPage}
 import ui.RentItem.{rentItemScrollContainer, resetSavedListPage}
+import ui.ViewRenter.renterPageContainer
 
 object MenuBar:
    /** MENU BAR */
@@ -24,10 +25,12 @@ object MenuBar:
    val addItemMenuItem = MenuItem( "Add Item" )
    val returnItemMenuItem = MenuItem( "Return Item" )
    val createBookingMenuItem = MenuItem( "Rent Item" )
+   val viewRenterMenuItem = MenuItem( "Manage Renter" )
    actionsMenu.getItems.addAll( createBookingMenuItem,
                                 returnItemMenuItem,
                                 addItemCategoryMenuItem,
-                                addItemMenuItem
+                                addItemMenuItem,
+                                viewRenterMenuItem
    )
 
    val menuBar = new MenuBar:
@@ -57,3 +60,5 @@ object MenuBar:
       displayPage( bodyStack, rentItemScrollContainer )
       resetSavedListPage()
    )
+
+   viewRenterMenuItem.onAction = ( ( e ) => displayPage( bodyStack, renterPageContainer ) )
