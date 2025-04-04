@@ -13,7 +13,7 @@ case class SavedItem( itemId: String, var rentQuantity: Int ) derives ReadWriter
 
 object SavedItems:
    // retrieve saved items list from external file
-   val savedItems =
+   var savedItems =
       try getDataFromFile( "savedItems" ).arr.map( item => read[SavedItem]( item ) )
       catch
          case IncompleteParseException( msg ) =>
@@ -66,7 +66,7 @@ object SavedItems:
    /** remove all items from saved list */
    def resetSavedList() =
       savedItems.foreach( si => si.getDetailsFromItemList.foreach( _.free( si.rentQuantity ) ) )
-      savedItems.clear()
+      savedItems = Buffer.empty
       updateItemsDataSource()
       writeSavedItems( Buffer.empty )
 
