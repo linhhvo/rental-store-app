@@ -14,7 +14,8 @@ case class Booking( items:            Buffer[SavedItem] = Buffer.empty,
                     totalCost:        Double,
                     renter:           String,
                     bookingId:        String = randomNanoId()
-) derives ReadWriter
+) derives ReadWriter:
+   def getItems = this.items.flatMap( _.getDetailsFromItemList )
 
 object Booking:
    implicit val dateTimeReadWrite: ReadWriter[LocalDateTime] =
