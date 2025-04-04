@@ -5,6 +5,7 @@ import logic.RentalStore.deleteItem
 import logic.SavedItems.addToCart
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
+import scalafx.geometry.Pos.BaselineLeft
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.Alert.AlertType.{Confirmation, Information}
@@ -143,6 +144,8 @@ object ItemDetails:
    avaiLabel.font = Font( null, FontWeight( Bold ), 14 )
    private val cmtLabel = Label( "Comments:" )
    cmtLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val childrenLabel = Label( "Bundle with: " )
+   childrenLabel.font = Font( null, FontWeight( Bold ), 14 )
 
    /** method to display details specific to item passed in parameter */
    def displayItemPage( item: Item ) =
@@ -227,14 +230,21 @@ object ItemDetails:
       )
 
       val itemName = HBox( nameLabel, Label( item.name ) )
+      itemName.alignment = BaselineLeft
       val itemCat = HBox( catLabel, Label( item.category ) )
+      itemCat.alignment = BaselineLeft
       val itemDesc = HBox( descLabel, Label( item.desc ) )
+      itemDesc.alignment = BaselineLeft
       val itemRate = HBox( rateLabel, Label( item.ratePerHour.toString ) )
+      itemRate.alignment = BaselineLeft
       val itemAvai = HBox( avaiLabel, Label( item.availableQuantity.toString ) )
+      itemAvai.alignment = BaselineLeft
       val itemCmt = VBox( cmtLabel, Label( "- " + item.comments.mkString( "\n- " ) ) )
       if item.comments.isEmpty then
          itemCmt.visible = false
          itemCmt.managed = false
+      val itemChildren =
+         HBox( childrenLabel, Label( item.getChildrenDetails.map( _.name ).mkString( ", " ) ) )
 
       val detailsGrid =
          itemDetailsContainer.getChildren.setAll(
@@ -244,6 +254,7 @@ object ItemDetails:
              itemRate,
              itemAvai,
              itemCmt,
+             itemChildren,
              rentItemBtn,
              rentItemContainer,
              deleteItemBtn,
