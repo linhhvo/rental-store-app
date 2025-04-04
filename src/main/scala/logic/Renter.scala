@@ -15,6 +15,7 @@ case class Renter( name: String, email: String, comments: SortedSet[String] = So
       bookings
          .filter( _.renter == this.name )
          .flatMap( _.items.flatMap( _.getDetailsFromItemList ) )
+         .toSet
 
 object Renter:
    val renters =
