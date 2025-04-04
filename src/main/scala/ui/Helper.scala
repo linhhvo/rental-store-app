@@ -2,15 +2,17 @@ package ui
 
 import javafx.scene.control.{DateCell as JFXDateCell, DatePicker as JFXDatePicker}
 import javafx.util.Callback
-import logic.InvalidDateTime
+import logic.Renter.renters
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.Node
 import scalafx.scene.control.*
-import scalafx.scene.layout.{ColumnConstraints, GridPane, Pane}
+import scalafx.scene.layout.{ColumnConstraints, GridPane, Pane, VBox}
+import scalafx.scene.text.FontWeight.Bold
+import scalafx.scene.text.{Font, FontWeight}
 import scalafx.util.StringConverter
 
 import java.time.format.DateTimeFormatter
-import java.time.{Duration, LocalDate, LocalDateTime}
+import java.time.{LocalDate, LocalDateTime}
 
 object Helper:
    // Function to show a page in the stack pane while hiding the rest
@@ -71,9 +73,9 @@ object Helper:
       hour.setValue( String.format( "%02d" + ":00", LocalDateTime.now().getHour ) )
 
       val container = GridPane()
-      container.add( Label( s"${labelText} Date" ), 0, 0 )
+      container.add( Label( s"$labelText Date" ), 0, 0 )
       container.add( date, 0, 1 )
-      container.add( Label( s"${labelText} Time" ), 1, 0 )
+      container.add( Label( s"$labelText Time" ), 1, 0 )
       container.add( hour, 1, 1 )
       container.columnConstraints =
          Array( ColumnConstraints( 135 ), ColumnConstraints( 80 ), ColumnConstraints( 80 ) )
@@ -84,3 +86,23 @@ object Helper:
    def getDateTime( date: DatePicker, time: ChoiceBox[String] ) =
       val dateTimeStr = date.getValue.toString + " " + time.getValue
       LocalDateTime.parse( dateTimeStr, DateTimeFormatter.ofPattern( "yyyy-MM-dd H:m" ) )
+
+   /** create components to select renter from a dropdown list */
+   def createRenterPicker =
+      val pickerLabel = Label( "Select renter" )
+      pickerLabel.font = Font( null, FontWeight( Bold ), 14 )
+
+      // get list of renters
+      val renterList = new ObservableBuffer[String]()
+      renterList ++= renters.map( r => r.name )
+
+      // dropdown menu to select renter
+      val renterPicker = ChoiceBox( renterList )
+      renterPicker.prefWidth = 125
+
+      // group renter selection with label
+      val pickerContainer = new VBox:
+         children = Array( pickerLabel, renterPicker )
+         spacing = 5
+
+      ( renterPicker, pickerContainer )

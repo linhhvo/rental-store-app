@@ -45,18 +45,7 @@ object RentItem:
    periodContainer.spacing = 5
 
    /** Renter Container */
-   private val renterLabel = Label( "Select renter" )
-   renterLabel.font = Font( null, FontWeight( Bold ), 14 )
-   // get list of renters
-   private val renterList = new ObservableBuffer[String]()
-   renterList ++= renters.map( r => r.name )
-   // dropdown menu to select renter
-   private val renterPicker = ChoiceBox( renterList )
-   renterPicker.prefWidth = med
-   // group renter selection with label
-   private val renterContainer = new VBox:
-      children = Array( renterLabel, renterPicker )
-      spacing = 5
+   private val renterPicker = createRenterPicker
 
    /** Total rental cost container */
    private val totalCost = DoubleProperty( calculateRentalCost )
@@ -124,14 +113,14 @@ object RentItem:
    bookingBtn.onAction = (
        ( e ) =>
           // display error message if renter is not selected
-          if renterPicker.getValue == null then displayAlert( msgAlert, "Please select a renter" )
+          if renterPicker._1.getValue == null then displayAlert( msgAlert, "Please select a renter" )
           // when all information is entered
           else
              val newBooking = Booking( savedItems,
                                        getDateTime( rentStart._2, rentStart._3 ),
                                        getDateTime( rentEnd._2, rentEnd._3 ),
                                        totalCost.toDouble,
-                                       renterPicker.getValue
+                                       renterPicker._1.getValue
              )
              addBooking( newBooking ) // add new booking to the store
              resetSavedList() // update saved item list in external file to be empty
@@ -184,7 +173,7 @@ object RentItem:
          else
             children = Array( savedItemsContainer,
                               periodContainer,
-                              renterContainer,
+                              renterPicker._2,
                               costLabel,
                               bookingBtn,
                               clearBtn
@@ -208,7 +197,7 @@ object RentItem:
       rentEnd._3.setValue(
           String.format( "%02d" + ":00", LocalDateTime.now().plusHours( 1 ).getHour )
       )
-      renterPicker.getSelectionModel.clearSelection()
+      renterPicker._1.getSelectionModel.clearSelection()
 
    /** method to calculate rental period based on selected start and end datetimes */
    private def calculateRentalDuration =

@@ -1,33 +1,18 @@
 package ui
 
 import logic.Renter.renters
-import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.BaselineLeft
 import scalafx.scene.control.{ChoiceBox, Label, ScrollPane}
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
+import ui.Helper.createRenterPicker
 
 import scala.collection.mutable.Buffer
 
 object ViewRenter:
-
-   private val pickerLabel = Label( "Select renter" )
-   pickerLabel.font = Font( null, FontWeight( Bold ), 14 )
-
-   // get list of renters
-   private val renterList = new ObservableBuffer[String]()
-   renterList ++= renters.map( r => r.name )
-
-   // dropdown menu to select renter
-   private val renterPicker = ChoiceBox( renterList )
-   renterPicker.prefWidth = 150
-
-   // group renter selection with label
-   private val pickerContainer = new VBox:
-      children = Array( pickerLabel, renterPicker )
-      spacing = 5
+   private val renterPicker = createRenterPicker
 
    // renter name
    private val nameLabel = Label( "Name: " )
@@ -47,10 +32,10 @@ object ViewRenter:
    detailsContainer.spacing = 5
 
    // group containers into one
-   private val pageContainer = VBox( pickerContainer, detailsContainer )
+   private val pageContainer = VBox( renterPicker._2, detailsContainer )
 
    // display relevant information as renter is selected
-   renterPicker
+   renterPicker._1
       .valueProperty()
       .addListener( ( observable, oldValue, newValue ) =>
          if newValue != null then renderRenterInfo( newValue )
@@ -90,4 +75,4 @@ object ViewRenter:
          case _         => detailsContainer.children = Label( "This user doesn't exist." )
 
    def resetRenterPage() =
-      renterPicker.getSelectionModel.clearSelection()
+      renterPicker._1.getSelectionModel.clearSelection()
