@@ -17,9 +17,6 @@ import ui.Helper.*
 import java.time.{Duration, LocalDate, LocalDateTime}
 
 object RentItem:
-   // retrieve saved items list from external file
-//   var savedItems = getSavedItems
-
    // Container to enable scrolling if page is long
    val rentItemScrollContainer = ScrollPane()
    rentItemScrollContainer.setVisible( false )
@@ -157,10 +154,10 @@ object RentItem:
    rentItemScrollContainer.setContent( renderPage )
 
    /** method to update data and update GUI content */
-   def renderPage =
+   private def renderPage =
       // generate GUI elements to display saved items list
       val itemElements = savedItems.map( savedItem =>
-         getDetailsFromItemList( savedItem ) match
+         savedItem.getDetailsFromItemList match
             case Some( i ) => Label( "• " + i.name + " - Quantity: " + savedItem.rentQuantity )
             case None      => Label( null )
       )
