@@ -8,6 +8,7 @@ import ui.CalendarPage.calendarContainer
 import ui.Helper.displayPage
 import ui.ItemList.{itemListPageScroll, renderItemListPage}
 import ui.RentItem.{rentItemScrollContainer, resetSavedListPage}
+import ui.ReturnItem.returnItemScrollContainer
 import ui.ViewRenter.{renterPageContainer, resetRenterPage}
 
 object MenuBar:
@@ -55,6 +56,9 @@ object MenuBar:
       displayPage( bodyStack, addItemScroll )
       resetItemPage()
    )
+   
+   returnItemMenuItem.onAction = ((e) =>
+      displayPage(bodyStack, returnItemScrollContainer))
 
    createBookingMenuItem.onAction = ( ( e ) =>
       displayPage( bodyStack, rentItemScrollContainer )
