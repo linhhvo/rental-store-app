@@ -21,6 +21,7 @@ object ViewRenter:
 
    // dropdown menu to select renter
    private val renterPicker = ChoiceBox( renterList )
+   renterPicker.prefWidth = 150
 
    // group renter selection with label
    private val pickerContainer = new VBox:
