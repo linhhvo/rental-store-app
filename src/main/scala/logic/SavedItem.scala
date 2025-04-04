@@ -7,7 +7,9 @@ import upickle.default.*
 
 import scala.collection.mutable.Buffer
 
-case class SavedItem( itemId: String, var rentQuantity: Int ) derives ReadWriter
+case class SavedItem( itemId: String, var rentQuantity: Int ) derives ReadWriter:
+   def getDetailsFromItemList =
+      ownedItems.find( _.itemId == this.itemId )
 
 object SavedItems:
    // retrieve saved items list from external file
@@ -63,7 +65,7 @@ object SavedItems:
          case _         => // Do nothing
    /** remove all items from saved list */
    def resetSavedList() =
-      savedItems.foreach( si => getDetailsFromItemList( si ).foreach( _.free( si.rentQuantity ) ) )
+      savedItems.foreach( si => si.getDetailsFromItemList.foreach( _.free( si.rentQuantity ) ) )
       savedItems.clear()
       updateItemsDataSource()
       writeSavedItems( Buffer.empty )
@@ -72,7 +74,7 @@ object SavedItems:
    def combinedRatePerHour =
       savedItems
          .map( si =>
-            getDetailsFromItemList( si )
+            si.getDetailsFromItemList
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerHour * si.rentQuantity ) )
          )
          .sum
@@ -81,7 +83,7 @@ object SavedItems:
    def combinedRatePerDay =
       savedItems
          .map( si =>
-            getDetailsFromItemList( si )
+            si.getDetailsFromItemList
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerDay * si.rentQuantity ) )
          )
          .sum
@@ -90,10 +92,7 @@ object SavedItems:
    def combinedRatePerWeek =
       savedItems
          .map( si =>
-            getDetailsFromItemList( si )
+            si.getDetailsFromItemList
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerWeek * si.rentQuantity ) )
          )
          .sum
-
-   def getDetailsFromItemList( si: SavedItem ) =
-      ownedItems.find( _.itemId == si.itemId )

@@ -1,6 +1,7 @@
 package logic
 
 import logic.IOHandler.getDataFromFile
+import logic.RentalStore.bookings
 import ujson.IncompleteParseException
 import upickle.default.*
 
@@ -8,7 +9,12 @@ import scala.collection.mutable.{Buffer, SortedSet}
 
 @upickle.implicits.serializeDefaults( true )
 case class Renter( name: String, email: String, comments: SortedSet[String] = SortedSet.empty )
-    derives ReadWriter
+    derives ReadWriter:
+
+   def getRentedItems =
+      bookings
+         .filter( _.renter == this.name )
+         .flatMap( _.items.flatMap( _.getDetailsFromItemList ) )
 
 object Renter:
    val renters =
