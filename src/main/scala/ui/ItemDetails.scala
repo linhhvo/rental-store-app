@@ -10,11 +10,14 @@ import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.Alert.AlertType.{Confirmation, Information}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{HBox, VBox}
+import scalafx.scene.text.FontWeight.Bold
+import scalafx.scene.text.{Font, FontWeight}
 import ui.Helper.{displayAlert, toggleDisplay}
 import upickle.default.*
 
 object ItemDetails:
    private val smallWidth = 240
+   private val btnWidth = 125
    private val smallHeight = 75
 
    /** User message alert */
@@ -32,17 +35,20 @@ object ItemDetails:
 
    // group rent item quantity and button with label
    private val rentItemContainer = new VBox:
-      spacing = 7
+      spacing = 10
       children = Array( Label( "Quantity" ), rentQuantity, submitItemBtn )
       margin = Insets( 5, 0, 5, 0 )
 
    // button to show/hide input fields to add item to saved list
    private val rentItemBtn = Button( "Rent Item" )
+   rentItemBtn.prefWidth = btnWidth
    rentItemBtn.onAction = ( ( e ) => toggleDisplay( rentItemContainer ) )
+   rentItemBtn.margin = Insets( 20, 0, 0, 0 )
 
    /** Delete item button */
 
    private val deleteItemBtn = Button( "Delete Item" )
+   deleteItemBtn.prefWidth = btnWidth
    deleteItemBtn.margin = Insets( 15, 0, 15, 0 )
 
    /** Add item comment */
@@ -60,10 +66,11 @@ object ItemDetails:
    private val addCmtContainer = new VBox:
       spacing = 10
       children = Array( cmtText, submitCmtBtn )
-      margin = Insets( 5, 0, 5, 0 )
+      margin = Insets( 10, 0, 5, 0 )
 
    // button to show/hide comment field
    private val addCmtBtn = Button( "Add Comment" )
+   addCmtBtn.prefWidth = btnWidth
    addCmtBtn.onAction = ( ( e ) => toggleDisplay( addCmtContainer ) )
 
    /** Report item incident */
@@ -112,6 +119,7 @@ object ItemDetails:
    // button to show/hide incident input fields
    private val reportIncidentBtn = Button( "Report Incident" )
    reportIncidentBtn.margin = Insets( 15, 0, 0, 0 )
+   reportIncidentBtn.prefWidth = btnWidth
    reportIncidentBtn.onAction = ( ( e ) => toggleDisplay( incidentContainer ) )
 
    /** Item details container */
@@ -121,6 +129,20 @@ object ItemDetails:
    /** Page container */
    private val itemPageContainer = HBox( 20 )
    itemPageContainer.padding = Insets( 20 )
+
+   // label fields for item details
+   private val nameLabel = Label( "Item:" )
+   nameLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val catLabel = Label( "Category:" )
+   catLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val descLabel = Label( "Description:" )
+   descLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val rateLabel = Label( "Rate Per Hour:" )
+   rateLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val avaiLabel = Label( "Quantity available for rent:" )
+   avaiLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val cmtLabel = Label( "Comments:" )
+   cmtLabel.font = Font( null, FontWeight( Bold ), 14 )
 
    /** method to display details specific to item passed in parameter */
    def displayItemPage( item: Item ) =
@@ -204,24 +226,32 @@ object ItemDetails:
              else displayAlert( messageAlert, "Missing information" )
       )
 
-      val itemNameLabel = Label( item.name )
+      val itemName = HBox( nameLabel, Label( " " + item.name ) )
+      val itemCat = HBox( catLabel, Label( " " + item.category ) )
+      val itemDesc = HBox( descLabel, Label( " " + item.desc ) )
+      val itemRate = HBox( rateLabel, Label( " " + item.ratePerHour.toString ) )
+      val itemAvai = HBox( avaiLabel, Label( " " + item.availableQuantity.toString ) )
+      val itemCmt = VBox( cmtLabel, Label( "- " + item.comments.mkString( "\n- " ) ) )
+      if item.comments.isEmpty then
+         itemCmt.visible = false
+         itemCmt.managed = false
 
-      itemDetailsContainer.getChildren.setAll(
-          itemNameLabel,
-          Label( "Category: " + item.category ),
-          Label( "Description: " + item.desc ),
-          Label( "Rate Per Hour: " + item.ratePerHour ),
-          Label( s"Available for rent: ${item.availableQuantity}" ),
-          if item.comments.nonEmpty then Label( "Comments:\n- " + item.comments.mkString( "\n- " ) )
-          else Label( null ),
-          rentItemBtn,
-          rentItemContainer,
-          deleteItemBtn,
-          addCmtBtn,
-          addCmtContainer,
-          reportIncidentBtn,
-          incidentContainer
-      )
+      val detailsGrid =
+         itemDetailsContainer.getChildren.setAll(
+             itemName,
+             itemCat,
+             itemDesc,
+             itemRate,
+             itemAvai,
+             itemCmt,
+             rentItemBtn,
+             rentItemContainer,
+             deleteItemBtn,
+             addCmtBtn,
+             addCmtContainer,
+             reportIncidentBtn,
+             incidentContainer
+         )
 
       val itemImage = getClass.getResourceAsStream( "/images/" + item.images )
       val itemImageView = ImageView( Image( itemImage, 0, 400, true, true ) )
