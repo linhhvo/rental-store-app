@@ -9,6 +9,8 @@ import scalafx.geometry.Pos.BaselineLeft
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType.Information
 import scalafx.scene.layout.{GridPane, HBox, VBox}
+import scalafx.scene.text.FontWeight.{Black, Bold}
+import scalafx.scene.text.{Font, FontWeight}
 import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 import ui.Helper.displayAlert
@@ -18,70 +20,80 @@ import java.io.File
 
 object AddItem:
    // pre define sizes for formfields
-   private val big = 350
-   private val med = 155
-   private val small = 60
+   private val lgWidth = 350
+   private val medWidth = 155
+   private val smWidth = 60
 
    /** ITEM NAME */
 
    // text field to enter item name
    private val nameTextField = TextField()
-   nameTextField.maxWidth = big
+   nameTextField.maxWidth = lgWidth
 
    // item name group with label
+   private val nameLabel = Label( "Name" )
+   nameLabel.font = Font( null, FontWeight( Black ), 14 )
    private val itemName = new VBox:
       spacing = 5
-      children = Array( Label( "Name" ), nameTextField )
+      children = Array( nameLabel, nameTextField )
 
    /** ITEM DESCRIPTION */
 
    // text field to enter item description
    private val descTextField = TextArea()
-   descTextField.maxWidth = big
-   descTextField.maxHeight = med
+   descTextField.maxWidth = lgWidth
+   descTextField.maxHeight = medWidth
 
    // item desc group with label
+   private val descLabel = Label( "Description" )
+   descLabel.font = Font( null, FontWeight( Bold ), 14 )
    private val itemDesc = new VBox:
       spacing = 5
-      children = Array( Label( "Description" ), descTextField )
+      children = Array( descLabel, descTextField )
 
    /** ITEM QUANTITY */
 
    // item quantity selection, initial amount is 1
    private val qntSpinner = Spinner( 1, 100, 1, 1 )
-   qntSpinner.maxWidth = med
+   qntSpinner.maxWidth = medWidth
    qntSpinner.editable = true
 
    // item quanity group with label
+   private val qntLabel = Label( "Quantity" )
+   qntLabel.font = Font( null, FontWeight( Bold ), 14 )
    private val itemQuantity = new VBox:
       spacing = 5
-      children = Array( Label( "Quantity" ), qntSpinner )
+      children = Array( qntLabel, qntSpinner )
 
    /** ITEM RENTAL RATE */
 
    // item rental rate per hour
    private val rphLabel = Label( "Rate Per Hour" )
    private val rphTextField = TextField()
-   rphTextField.maxWidth = small
+   rphTextField.maxWidth = smWidth
 
    // item rental rate per day
    private val rpdLabel = Label( "Rate Per Day" )
    private val rpdTextField = TextField()
-   rpdTextField.maxWidth = small
+   rpdTextField.maxWidth = smWidth
 
    // item rental rate per week
    private val rpwLabel = Label( "Rate Per Week" )
    private val rpwTextField = TextField()
-   rpwTextField.maxWidth = small
+   rpwTextField.maxWidth = smWidth
 
    // container for all rental rates
+   private val rateLabel = Label( "Rental Rate" )
+   rateLabel.font = Font( null, FontWeight( Bold ), 14 )
+
    private val itemRate = GridPane()
-   itemRate.add( rphLabel, 0, 0 )
-   itemRate.add( rphTextField, 1, 0 )
-   itemRate.add( rpdLabel, 0, 1 )
-   itemRate.add( rpdTextField, 1, 1 )
-   itemRate.add( rpwLabel, 0, 2 )
-   itemRate.add( rpwTextField, 1, 2 )
+   itemRate.add( rateLabel, 0, 0, 2, 1 )
+   itemRate.add( rphLabel, 0, 1 )
+   itemRate.add( rphTextField, 1, 1 )
+   itemRate.add( rpdLabel, 0, 2 )
+   itemRate.add( rpdTextField, 1, 2 )
+   itemRate.add( rpwLabel, 0, 3 )
+   itemRate.add( rpwTextField, 1, 3 )
    itemRate.hgap = 5
    itemRate.vgap = 5
    itemRate.margin = Insets( 5, 0, 0, 0 )
@@ -182,12 +194,14 @@ object AddItem:
       val categoryList = new ObservableBuffer[String]()
       categoryList ++= getItemCategoryList
       val catChoiceBox = ChoiceBox( categoryList )
-      catChoiceBox.maxWidth = med
+      catChoiceBox.maxWidth = medWidth
 
       // item category list group with label
+      val catLabel = Label( "Category" )
+      catLabel.font = Font( null, FontWeight( Bold ), 14 )
       val itemCategory = new VBox:
          spacing = 5
-         children = Array( Label( "Category" ), catChoiceBox )
+         children = Array( catLabel, catChoiceBox )
 
       /** ITEM DEPENDENCY */
 
@@ -196,12 +210,14 @@ object AddItem:
       parentList ++= getAllItems.map( item => item.name )
       // drop down menu
       val depChoiceBox = ChoiceBox( parentList )
-      depChoiceBox.maxWidth = med
+      depChoiceBox.maxWidth = medWidth
 
       // group drop down parent item list menu and label
+      val parentLabel = Label( "Parent Item" )
+      parentLabel.font = Font( null, FontWeight( Bold ), 14 )
       val itemDependencies = new VBox:
          spacing = 5
-         children = Array( Label( "Parent Item" ), depChoiceBox )
+         children = Array( parentLabel, depChoiceBox )
 
       // overall container
       val addItemContainer = new VBox:
