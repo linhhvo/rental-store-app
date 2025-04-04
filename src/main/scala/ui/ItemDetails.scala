@@ -131,15 +131,15 @@ object ItemDetails:
    itemPageContainer.padding = Insets( 20 )
 
    // label fields for item details
-   private val nameLabel = Label( "Item:" )
+   private val nameLabel = Label( "Item: " )
    nameLabel.font = Font( null, FontWeight( Bold ), 14 )
-   private val catLabel = Label( "Category:" )
+   private val catLabel = Label( "Category: " )
    catLabel.font = Font( null, FontWeight( Bold ), 14 )
-   private val descLabel = Label( "Description:" )
+   private val descLabel = Label( "Description: " )
    descLabel.font = Font( null, FontWeight( Bold ), 14 )
-   private val rateLabel = Label( "Rate Per Hour:" )
+   private val rateLabel = Label( "Rate Per Hour: " )
    rateLabel.font = Font( null, FontWeight( Bold ), 14 )
-   private val avaiLabel = Label( "Quantity available for rent:" )
+   private val avaiLabel = Label( "Quantity available for rent: " )
    avaiLabel.font = Font( null, FontWeight( Bold ), 14 )
    private val cmtLabel = Label( "Comments:" )
    cmtLabel.font = Font( null, FontWeight( Bold ), 14 )
@@ -226,11 +226,11 @@ object ItemDetails:
              else displayAlert( messageAlert, "Missing information" )
       )
 
-      val itemName = HBox( nameLabel, Label( " " + item.name ) )
-      val itemCat = HBox( catLabel, Label( " " + item.category ) )
-      val itemDesc = HBox( descLabel, Label( " " + item.desc ) )
-      val itemRate = HBox( rateLabel, Label( " " + item.ratePerHour.toString ) )
-      val itemAvai = HBox( avaiLabel, Label( " " + item.availableQuantity.toString ) )
+      val itemName = HBox( nameLabel, Label( item.name ) )
+      val itemCat = HBox( catLabel, Label( item.category ) )
+      val itemDesc = HBox( descLabel, Label( item.desc ) )
+      val itemRate = HBox( rateLabel, Label( item.ratePerHour.toString ) )
+      val itemAvai = HBox( avaiLabel, Label( item.availableQuantity.toString ) )
       val itemCmt = VBox( cmtLabel, Label( "- " + item.comments.mkString( "\n- " ) ) )
       if item.comments.isEmpty then
          itemCmt.visible = false

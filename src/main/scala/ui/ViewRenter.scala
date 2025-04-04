@@ -4,7 +4,7 @@ import logic.Renter.renters
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.{ChoiceBox, Label, ScrollPane}
-import scalafx.scene.layout.VBox
+import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
 
@@ -29,15 +29,15 @@ object ViewRenter:
       spacing = 5
 
    // renter name
-   private val nameLabel = Label( "Name" )
+   private val nameLabel = Label( "Name: " )
    nameLabel.font = Font( null, FontWeight( Bold ), 14 )
 
    // renter email
-   private val emailLabel = Label( "Email" )
+   private val emailLabel = Label( "Email: " )
    emailLabel.font = Font( null, FontWeight( Bold ), 14 )
 
    // renter's rented items
-   private val rentedLabel = Label( "Rented Items" )
+   private val rentedLabel = Label( "Rented Items:" )
    rentedLabel.font = Font( null, FontWeight( Bold ), 14 )
 
    // details container
@@ -64,12 +64,10 @@ object ViewRenter:
       renter match
          case Some( r ) =>
             // display renter name
-            val renterName = Label( r.name )
-            renterName.padding = Insets( 0, 0, 0, 10 )
+            val renterName = HBox( nameLabel, Label( r.name ) )
 
             // display renter email
-            val renterEmail = Label( r.email )
-            renterEmail.padding = Insets( 0, 0, 0, 10 )
+            val renterEmail = HBox( emailLabel, Label( r.email ) )
 
             // generate list of renter's rented items
             val rentedItems =
@@ -82,6 +80,5 @@ object ViewRenter:
                padding = Insets( 0, 0, 0, 10 )
 
             // add all label fields to container
-            detailsContainer.children =
-               Array( nameLabel, renterName, emailLabel, renterEmail, rentedLabel, itemsList )
+            detailsContainer.children = Array( renterName, renterEmail, rentedLabel, itemsList )
          case _         => detailsContainer.children = Label( "This user doesn't exist." )
