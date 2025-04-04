@@ -12,6 +12,8 @@ import scalafx.scene.text.{Font, FontWeight}
 import ui.Helper.displayAlert
 
 object AddItemCategory:
+   private val btnWidth = 125
+
    /** ADD ITEM CATEGORY PAGE */
 
    private val addItemCatLabel = Label( "Enter new item category" )
@@ -21,14 +23,15 @@ object AddItemCategory:
    private val itemCatTextField = TextField()
    itemCatTextField.maxWidth = 200
 
-   // Button to add category
-   private val addItemCatBtn = Button( "Add Category" )
-
    // Set up alert pop up to display user message
    private val messageAlert = new Alert( Information )
 
    // get existing category list and convert to checkbox elements
    private var existingCatList = categoryElements
+
+   // Button to add category
+   private val addItemCatBtn = Button( "Add Category" )
+   addItemCatBtn.prefWidth = btnWidth
 
    // Button action for add item category button
    addItemCatBtn.onAction = (
@@ -69,6 +72,8 @@ object AddItemCategory:
 
    // Button to delete category
    private val deleteItemCatBtn = Button( "Delete Category" )
+   deleteItemCatBtn.prefWidth = btnWidth
+
    deleteItemCatBtn.onAction = (
        ( e ) =>
           val targetCategories = existingCatList
