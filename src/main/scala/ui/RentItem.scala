@@ -17,6 +17,9 @@ import ui.Helper.*
 import java.time.{Duration, LocalDate, LocalDateTime}
 
 object RentItem:
+   // predefine size for element
+   private val med = 125
+
    // Container to enable scrolling if page is long
    val rentItemScrollContainer = ScrollPane()
    rentItemScrollContainer.setVisible( false )
@@ -49,6 +52,7 @@ object RentItem:
    renterList ++= renters.map( r => r.name )
    // dropdown menu to select renter
    private val renterPicker = ChoiceBox( renterList )
+   renterPicker.prefWidth = med
    // group renter selection with label
    private val renterContainer = new VBox:
       children = Array( renterLabel, renterPicker )
@@ -101,7 +105,7 @@ object RentItem:
 
    private val costLabel = Label( s"Rental Total Cost: ${totalCost.value}" )
    costLabel.font = Font( null, FontWeight( Bold ), 14 )
-   costLabel.margin = Insets( 10, 0, 0, 0 )
+   costLabel.margin = Insets( 10, 0, 10, 0 )
 
    // update cost label to display new cost when start or end datetime change
    totalCost.onChange { ( source, oldValue, newValue ) =>
@@ -115,6 +119,8 @@ object RentItem:
 
    // button to confirm booking and add new rental
    private val bookingBtn = Button( "Book Rental" )
+   bookingBtn.prefWidth = med
+
    bookingBtn.onAction = (
        ( e ) =>
           // display error message if renter is not selected
@@ -138,6 +144,7 @@ object RentItem:
 
    // button to delete all items in saved list and clear saved list
    private val clearBtn = Button( "Delete All Items" )
+   clearBtn.prefWidth = med
    clearBtn.onAction = (
        ( e ) =>
           new Alert( Confirmation ) {
