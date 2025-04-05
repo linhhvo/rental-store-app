@@ -67,7 +67,7 @@ object RentalStore:
       ownedItems.find( _.itemId == item.itemId ) match
          // if item exists, remove item from items list and from parent item dependency if any
          case Some( di ) =>
-            ownedItems -= di
+            di.hideItem()
 
             // remove associated item image from resources folder
             os.remove( os.pwd / os.RelPath( "src/main/resources/images/" + di.images ) )
@@ -91,6 +91,7 @@ object RentalStore:
       bookings += newBooking
       newBooking.items.foreach( bi =>
          ownedItems.find( i => i.itemId == bi.itemId ).foreach( _.reserve( bi.rentQuantity ) )
+         bi.confirmBooking()
       )
       updateItemsDataSource()
       writeBookings( bookings )

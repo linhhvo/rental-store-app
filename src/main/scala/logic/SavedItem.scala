@@ -2,14 +2,25 @@ package logic
 
 import logic.IOHandler.{getDataFromFile, writeSavedItems}
 import logic.RentalStore.{ownedItems, updateItemsDataSource}
+import logic.SavedItemStatus.*
 import ujson.IncompleteParseException
 import upickle.default.*
 
 import scala.collection.mutable.Buffer
 
-case class SavedItem( itemId: String, var rentQuantity: Int ) derives ReadWriter:
+case class SavedItem( itemId:              String,
+                      var rentQuantity:    Int,
+                      var savedItemStatus: SavedItemStatus = Pending
+) derives ReadWriter:
+
    def getDetailsFromItemList =
       ownedItems.find( _.itemId == this.itemId )
+
+   def confirmBooking() =
+      this.savedItemStatus = Booked
+
+   def returnFromBooking() =
+      this.savedItemStatus = Returned
 
 object SavedItems:
    // retrieve saved items list from external file
@@ -96,3 +107,5 @@ object SavedItems:
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerWeek * si.rentQuantity ) )
          )
          .sum
+
+

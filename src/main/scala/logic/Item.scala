@@ -14,6 +14,7 @@ case class Item( name:               String,
                  ratePerHour:        Double,
                  ratePerDay:         Double,
                  ratePerWeek:        Double,
+                 var status:         ItemStatus = ItemStatus.Active,
                  itemId:             String = randomNanoId(),
                  incidents:          Set[Incident] = Set.empty,
                  children:           Set[String] = Set.empty,
@@ -67,3 +68,7 @@ case class Item( name:               String,
 
       // update items list in external file
       updateItemsDataSource()
+
+   def hideItem() =
+      this.status = ItemStatus.Inactive
+
