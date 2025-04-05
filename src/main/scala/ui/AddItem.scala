@@ -102,7 +102,7 @@ object AddItem:
 
    private val imageChooser = FileChooser()
    imageChooser.title = "Select an image"
-   imageChooser.extensionFilters.add( ExtensionFilter( "JPG", "*.jpg" ) )
+   imageChooser.extensionFilters.add( ExtensionFilter( "Images", Seq( "*.jpg", "*.png" ) ) )
 
    // initialize the selected image file
    private var selectedImage = File( "placeholder" )

@@ -27,7 +27,7 @@ object ItemList:
    def renderItemListPage =
       // Create UI element for each item
       val itemElements = ownedItems.map( item =>
-         val itemImage = FileInputStream( "src/main/resources/images/" + item.images )
+         val itemImage = FileInputStream("src/main/resources/images/" + item.image)
          val itemImageView = ImageView( Image( itemImage, 0, 200, true, true ) )
          val itemNameLabel = Label( item.name )
          itemNameLabel.font = Font( "Arial", 18 )
