@@ -8,6 +8,8 @@ import scala.collection.mutable.Buffer
 /** test methods in Item class */
 class ItemSpec extends AnyFlatSpec with Matchers:
    val childItem1 = Item( "sleeping bag", "bag", 10, "camping", 10, 100, 1000 )
+   val childItem2 = Item( "tent", "tent", 10, "camping", 10, 100, 1000 )
+
    val targetItem = Item( "cooking pot",
                           "a good pot",
                           10,
@@ -19,7 +21,7 @@ class ItemSpec extends AnyFlatSpec with Matchers:
                           lostQuantity = 1,
                           rentedQuantity = 5
    )
-   val childItem2 = Item( "tent", "tent", 10, "camping", 10, 100, 1000 )
+   val allItems = Buffer( targetItem, childItem1, childItem2 )
 
    "addChildren" should "add a new child item ID to the children list of the target item" in {
       targetItem.addChildren( childItem2.itemId )
@@ -32,7 +34,6 @@ class ItemSpec extends AnyFlatSpec with Matchers:
    }
 
    "getChildrenDetails" should "return item instances of the children items" in {
-      val allItems = Buffer( targetItem, childItem1, childItem2 )
       targetItem.getChildrenDetails( allItems ) should equal( Set( childItem1 ) )
    }
 
@@ -76,4 +77,12 @@ class ItemSpec extends AnyFlatSpec with Matchers:
       targetItem.reportIncident( incident2 )
       targetItem.incidents should contain allOf ( incident1, incident2 )
       targetItem.availableQuantity shouldBe 4
+   }
+
+   "getAllChildren" should "return a list of the target item's children and children of children" in {
+      childItem1.addChildren( childItem2.itemId )
+      targetItem.getAllChildren( allItems ) should ( have size 2 and contain allOf ( childItem1,
+                                                                                     childItem2
+      ) )
+
    }

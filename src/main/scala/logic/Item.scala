@@ -45,7 +45,7 @@ case class Item( name:                       String,
    def reserve( quantity: Int ) =
       rentedQuantity += quantity
 
-   //   increase quantity when item is returned
+   /** decrease rented quantity to increase available quantity */
    def free( quantity: Int ) =
       rentedQuantity -= quantity
 
@@ -71,3 +71,11 @@ case class Item( name:                       String,
 
    def hideItem() =
       this.status = ItemStatus.Inactive
+
+   /** retrieve children items from all levels */
+   def getAllChildren( allItemsList: Buffer[Item] = ownedItems ): Set[Item] =
+      if this.children.isEmpty then Set[Item]()
+      else
+         this.getChildrenDetails( allItemsList ) ++ this
+            .getChildrenDetails( allItemsList )
+            .flatMap( c => c.getAllChildren( allItemsList ) )
