@@ -36,11 +36,11 @@ object SavedItems:
    /** make saved items list available globally */
    def getSavedItems = savedItems
 
-   /** add item to saved items list to prepre for booking */
+   /** add item to saved items list to prepare for booking */
    def addToCart( requestItem:     Item,
                   requestQuantity: Int,
                   savedList:       Buffer[SavedItem] = savedItems
-   ) =
+   ): Buffer[SavedItem] =
       // check if the added item already exists in the saved list
       savedList.find( _.itemId == requestItem.itemId ) match
          /* if the item is already in the saved list, add the requested quantity to the saved
@@ -69,51 +69,59 @@ object SavedItems:
                )
 
       updateItemsDataSource() // to update available quantity for the item
-//      writeSavedItems( savedList )
       savedList
 
    /** check if item is included in the saved item list. If yes, delete item from saved item list.
-     * If no, do nothing. Then update the saved list in external file
+     * If no, do nothing. This method is only used when an item is deleted from the system
      */
-   def removeFromCart( item: Item, savedList: Buffer[SavedItem] = savedItems ) =
+   def removeFromCart( item: Item, savedList: Buffer[SavedItem] = savedItems ): Buffer[SavedItem] =
       savedList.find( _.itemId == item.itemId ) match
          case Some( i ) =>
             savedList -= i
-//            writeSavedItems( savedList )
          case _         => // Do nothing
       savedList
 
    /** remove all items from saved list */
-   def resetSavedList( savedList: Buffer[SavedItem] = savedItems ) =
-      savedList.foreach( si => si.getDetailsFromItemList().foreach( _.free( si.rentQuantity ) ) )
+   def resetSavedList( savedList:    Buffer[SavedItem] = savedItems,
+                       allItemsList: Buffer[Item] = ownedItems
+   ): Buffer[SavedItem] =
+      savedList.foreach( si =>
+         si.getDetailsFromItemList( allItemsList ).foreach( _.free( si.rentQuantity ) )
+      )
 //      savedList = Buffer.empty
       updateItemsDataSource()
       writeSavedItems( Buffer.empty )
       Buffer[SavedItem]()
 
    /** method to calculate total rate per hour for all saved items */
-   def combinedRatePerHour( savedList: Buffer[SavedItem] = savedItems ): Double =
+   def combinedRatePerHour( savedList:    Buffer[SavedItem] = savedItems,
+                            allItemsList: Buffer[Item] = ownedItems
+   ): Double =
       savedList
          .map( si =>
-            si.getDetailsFromItemList()
+            si.getDetailsFromItemList( allItemsList )
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerHour * si.rentQuantity ) )
          )
          .sum
 
    /** method to calculate total rate per day for all saved items */
-   def combinedRatePerDay( savedList: Buffer[SavedItem] = savedItems ): Double =
+   def combinedRatePerDay( savedList:    Buffer[SavedItem] = savedItems,
+                           allItemsList: Buffer[Item] = ownedItems
+   ): Double =
       savedList
          .map( si =>
-            si.getDetailsFromItemList()
+            si.getDetailsFromItemList( allItemsList )
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerDay * si.rentQuantity ) )
          )
          .sum
 
    /** method to calculate total rate per week for all saved items */
-   def combinedRatePerWeek( savedList: Buffer[SavedItem] = savedItems ): Double =
+   def combinedRatePerWeek( savedList:    Buffer[SavedItem] = savedItems,
+                            allItemsList: Buffer[Item] = ownedItems
+   ): Double =
       savedList
          .map( si =>
-            si.getDetailsFromItemList()
+            si.getDetailsFromItemList( allItemsList )
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerWeek * si.rentQuantity ) )
          )
          .sum
