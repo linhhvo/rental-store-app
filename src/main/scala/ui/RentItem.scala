@@ -1,11 +1,9 @@
 package ui
 
-import logic.RentalStore.addBooking
-import logic.Renter.renters
+import logic.RentalStore.{addBooking, ownedItems}
 import logic.SavedItems.*
 import logic.{Booking, InvalidDateTime}
 import scalafx.beans.property.DoubleProperty
-import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType.Confirmation
@@ -113,7 +111,8 @@ object RentItem:
    bookingBtn.onAction = (
        ( e ) =>
           // display error message if renter is not selected
-          if renterPicker._1.getValue == null then displayAlert( msgAlert, "Please select a renter" )
+          if renterPicker._1.getValue == null then
+             displayAlert( msgAlert, "Please select a renter" )
           // when all information is entered
           else
              val newBooking = Booking( savedItems,
@@ -123,7 +122,7 @@ object RentItem:
                                        renterPicker._1.getValue
              )
              addBooking( newBooking ) // add new booking to the store
-             resetSavedList() // update saved item list in external file to be empty
+             savedItems = resetSavedList() // update saved item list in external file to be empty
              displayAlert( msgAlert, "Rental is confirmed" )
              // update page to display user message
              rentItemScrollContainer.setContent( renderPage )
@@ -141,7 +140,7 @@ object RentItem:
              buttonTypes = Seq( ButtonType.Yes, ButtonType.No )
           }.showAndWait() match
              case Some( ButtonType.Yes ) =>
-                resetSavedList()
+                savedItems = resetSavedList()
                 rentItemScrollContainer.setContent( renderPage )
              case _                      => // Do nothing
    )
@@ -153,7 +152,7 @@ object RentItem:
    private def renderPage =
       // generate GUI elements to display saved items list
       val itemElements = savedItems.map( savedItem =>
-         savedItem.getDetailsFromItemList match
+         savedItem.getDetailsFromItemList() match
             case Some( i ) => Label( "• " + i.name + " - Quantity: " + savedItem.rentQuantity )
             case None      => Label( null )
       )
@@ -231,4 +230,6 @@ object RentItem:
 
    /** method to calculate the total rental cost of saved items */
    private def calculateRentalCost =
-      combinedRatePerWeek * calculateRentalDuration._1 + combinedRatePerDay * calculateRentalDuration._2 + combinedRatePerHour * calculateRentalDuration._3
+      combinedRatePerWeek() * calculateRentalDuration._1 
+         + combinedRatePerDay() * calculateRentalDuration._2 
+         + combinedRatePerHour() * calculateRentalDuration._3

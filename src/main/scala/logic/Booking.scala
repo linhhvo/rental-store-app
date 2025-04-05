@@ -1,6 +1,7 @@
 package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
+import logic.RentalStore.ownedItems
 import upickle.default.*
 
 import java.time.LocalDateTime
@@ -15,7 +16,7 @@ case class Booking( items:            Buffer[SavedItem] = Buffer.empty,
                     renter:           String,
                     bookingId:        String = randomNanoId()
 ) derives ReadWriter:
-   def getItems = this.items.flatMap( _.getDetailsFromItemList )
+   def getItems = this.items.flatMap( _.getDetailsFromItemList() )
 
 object Booking:
    implicit val dateTimeReadWrite: ReadWriter[LocalDateTime] =

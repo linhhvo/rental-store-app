@@ -1,8 +1,9 @@
 package ui
 
 import logic.*
+import logic.IOHandler.writeSavedItems
 import logic.RentalStore.deleteItem
-import logic.SavedItems.addToCart
+import logic.SavedItems.{addToCart, savedItems}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.BaselineLeft
@@ -155,9 +156,15 @@ object ItemDetails:
       submitItemBtn.onAction = (
           ( e ) =>
              try
-                addToCart( item, rentQuantity.getValue )
+                savedItems = addToCart( item, rentQuantity.getValue )
+                writeSavedItems( savedItems )
                 // if item has children, also add child items to saved list with the same quantity
-                item.getChildrenDetails.foreach( c => addToCart( c, rentQuantity.getValue ) )
+                item
+                   .getChildrenDetails()
+                   .foreach( c =>
+                      savedItems = addToCart( c, rentQuantity.getValue )
+                      writeSavedItems( savedItems )
+                   )
                 // show user success message
                 displayAlert( messageAlert, "Added to saved list" )
              catch

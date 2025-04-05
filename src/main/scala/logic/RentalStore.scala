@@ -1,14 +1,13 @@
 package logic
 
 import logic.IOHandler.*
-import logic.SavedItems.removeFromCart
+import logic.SavedItems.{removeFromCart, savedItems}
 import ujson.IncompleteParseException
 import upickle.default.*
 
 import scala.collection.mutable.Buffer
 
 object RentalStore:
-   private val dataResourcePath = "src/main/resources/data"
 
    val ownedItems =
       try getDataFromFile( "items" ).arr.map( item => read[Item]( item ) )
@@ -70,7 +69,7 @@ object RentalStore:
             di.hideItem()
 
             // remove associated item image from resources folder
-            os.remove( os.pwd / os.RelPath( "src/main/resources/images/" + di.images ) )
+            os.remove(os.pwd / os.RelPath("src/main/resources/images/" + di.image))
 
             // check if deleted item is any other item's child
             ownedItems.find( _.children.contains( di.itemId ) ) match
@@ -81,7 +80,8 @@ object RentalStore:
                case None       => updateItemsDataSource()
 
             // remove item from saved list if it was added to saved list before deleting
-            removeFromCart( di )
+            savedItems = removeFromCart( di )
+            writeSavedItems(savedItems)
 
          // if item is not found in the items list, throw error
          case None => throw ItemDoesNotExist( s"${item.name} does not exist in the system" )
