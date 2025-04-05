@@ -1,30 +1,30 @@
 package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
-import logic.RentalStore.{getAllItems, updateItemsDataSource}
+import logic.RentalStore.{ownedItems, updateItemsDataSource}
 import upickle.default.*
 
-import scala.collection.mutable.{Set, SortedSet}
+import scala.collection.mutable.{Buffer, SortedSet}
 
 @upickle.implicits.serializeDefaults( true )
-case class Item( name:               String,
-                 desc:               String,
-                 ownedQuantity:      Int,
-                 category:           String,
-                 ratePerHour:        Double,
-                 ratePerDay:         Double,
-                 ratePerWeek:        Double,
-                 var status:         ItemStatus = ItemStatus.Active,
-                 itemId:             String = randomNanoId(),
-                 incidents:          Set[Incident] = Set.empty,
-                 children:           Set[String] = Set.empty,
-                 var images:         String = "",
-                 comments:           SortedSet[String] = SortedSet.empty,
-                 var lostQuantity:   Int = 0,
-                 var rentedQuantity: Int = 0
+case class Item( name:                       String,
+                 desc:                       String,
+                 ownedQuantity:              Int,
+                 category:                   String,
+                 ratePerHour:                Double,
+                 ratePerDay:                 Double,
+                 ratePerWeek:                Double,
+                 itemId:                     String = randomNanoId(),
+                 var incidents:              Set[Incident] = Set.empty,
+                 var children:               Set[String] = Set.empty,
+                 var image:                  String = "",
+                 comments:                   SortedSet[String] = SortedSet.empty,
+                 private var lostQuantity:   Int = 0,
+                 private var rentedQuantity: Int = 0,
+                 private var status:         ItemStatus = ItemStatus.Active
 ) derives ReadWriter:
 
-   images = s"${this.name}.jpg"
+   image = s"${this.name}.jpg"
 
    def addChildren( childItemId: String ) =
       children += childItemId
@@ -33,8 +33,8 @@ case class Item( name:               String,
       children -= childItemId
 
    /** method to retrieve children items details */
-   def getChildrenDetails =
-      this.children.flatMap( c => getAllItems.filter( _.itemId == c ) )
+   def getChildrenDetails( allItemsList: Buffer[Item] = ownedItems ): Set[Item] =
+      this.children.flatMap( c => allItemsList.filter( _.itemId == c ) )
 
    def availableQuantity: Int =
       ownedQuantity - lostQuantity - rentedQuantity
@@ -71,4 +71,3 @@ case class Item( name:               String,
 
    def hideItem() =
       this.status = ItemStatus.Inactive
-

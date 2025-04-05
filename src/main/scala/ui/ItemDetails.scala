@@ -244,7 +244,10 @@ object ItemDetails:
          itemCmt.visible = false
          itemCmt.managed = false
       val itemChildren =
-         HBox( childrenLabel, Label( item.getChildrenDetails.map( _.name ).mkString( ", " ) ) )
+         HBox( childrenLabel, Label( item.getChildrenDetails().map( _.name ).mkString( ", " ) ) )
+      if item.children.isEmpty then
+         itemChildren.visible = false
+         itemChildren.managed = false
 
       val detailsGrid =
          itemDetailsContainer.getChildren.setAll(
@@ -264,7 +267,7 @@ object ItemDetails:
              incidentContainer
          )
 
-      val itemImage = getClass.getResourceAsStream( "/images/" + item.images )
+      val itemImage = getClass.getResourceAsStream( "/images/" + item.image )
       val itemImageView = ImageView( Image( itemImage, 0, 400, true, true ) )
 
       itemPageContainer.getChildren.setAll( itemImageView, itemDetailsContainer )
