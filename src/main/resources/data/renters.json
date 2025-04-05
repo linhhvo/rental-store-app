@@ -13,5 +13,10 @@
     "name": "renter3",
     "email": "renter3@email.com",
     "comments": []
+  },
+  {
+    "name": "renter4",
+    "email": "renter4@email.com",
+    "comments": []
   }
 ]
