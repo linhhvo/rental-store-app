@@ -10,3 +10,4 @@ enum SavedItemStatus derives ReadWriter:
    case Pending
    case Booked
    case Returned
+   case Lost

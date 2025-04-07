@@ -13,7 +13,7 @@ case class Renter( name: String, email: String, comments: SortedSet[String] = So
    def getBookings = bookings.filter( _.renter == this.name )
 
    def getRentedItems =
-      this.getBookings.flatMap( _.getItems ).toSet
+      this.getBookings.flatMap(_.getItemDetails).toSet
 
 object Renter:
    val renters =
