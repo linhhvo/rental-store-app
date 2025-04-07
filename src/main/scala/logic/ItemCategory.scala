@@ -1,18 +1,12 @@
 package logic
 
-import ujson.IncompleteParseException
 import upickle.default.*
-
-import scala.collection.mutable.Buffer
 
 object ItemCategory:
    val dataFilePath = "src/main/resources/data/itemCategories.json"
 
    def getItemCategoryList =
-      try IOHandler.getDataFromFile( "itemCategories" ).arr.map( _.str )
-      catch
-         case IncompleteParseException( msg ) =>
-            Buffer.empty
+      IOHandler.getDataFromFile( "itemCategories" ).map( _.str )
 
    def addItemCategory( newCategory: String ) =
       val existingCategories = this.getItemCategoryList

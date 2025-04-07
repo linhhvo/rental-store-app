@@ -1,8 +1,8 @@
 package logic
 
 import logic.IOHandler.*
+import logic.ItemStatus.Active
 import logic.SavedItems.{removeFromCart, savedItems}
-import ujson.IncompleteParseException
 import upickle.default.*
 
 import scala.collection.mutable.Buffer
@@ -10,16 +10,10 @@ import scala.collection.mutable.Buffer
 object RentalStore:
 
    val ownedItems =
-      try getDataFromFile( "items" ).arr.map( item => read[Item]( item ) )
-      catch
-         case IncompleteParseException( msg ) =>
-            Buffer.empty
+      getDataFromFile( "items" ).map( item => read[Item]( item ) )
 
    val bookings =
-      try getDataFromFile( "bookings" ).arr.map( item => read[Booking]( item ) )
-      catch
-         case IncompleteParseException( msg ) =>
-            Buffer.empty
+      getDataFromFile( "bookings" ).arr.map( item => read[Booking]( item ) )
 
    /** make list of all items available globally */
    def getAllItems = ownedItems
@@ -69,7 +63,7 @@ object RentalStore:
             di.hideItem()
 
             // remove associated item image from resources folder
-            os.remove(os.pwd / os.RelPath("src/main/resources/images/" + di.image))
+            // os.remove(os.pwd / os.RelPath("src/main/resources/images/" + di.image))
 
             // check if deleted item is any other item's child
             ownedItems.find( _.children.contains( di.itemId ) ) match
@@ -81,7 +75,7 @@ object RentalStore:
 
             // remove item from saved list if it was added to saved list before deleting
             savedItems = removeFromCart( di )
-            writeSavedItems(savedItems)
+            writeSavedItems( savedItems )
 
          // if item is not found in the items list, throw error
          case None => throw ItemDoesNotExist( s"${item.name} does not exist in the system" )
@@ -98,3 +92,6 @@ object RentalStore:
 
    /** update items list in external file */
    def updateItemsDataSource() = writeItems( ownedItems )
+
+   /** get only active items */
+   def getActiveItems = ownedItems.filter( i => i.status == Active )

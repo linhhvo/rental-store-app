@@ -3,7 +3,6 @@ package logic
 import logic.IOHandler.{getDataFromFile, writeSavedItems}
 import logic.RentalStore.{ownedItems, updateItemsDataSource}
 import logic.SavedItemStatus.*
-import ujson.IncompleteParseException
 import upickle.default.*
 
 import scala.collection.mutable.Buffer
@@ -28,10 +27,7 @@ end SavedItem
 object SavedItems:
    // retrieve saved items list from external file
    var savedItems =
-      try getDataFromFile( "savedItems" ).arr.map( item => read[SavedItem]( item ) )
-      catch
-         case IncompleteParseException( msg ) =>
-            Buffer.empty
+      getDataFromFile( "savedItems" ).map( item => read[SavedItem]( item ) )
 
    /** make saved items list available globally */
    def getSavedItems = savedItems
