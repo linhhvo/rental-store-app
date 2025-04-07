@@ -21,7 +21,7 @@ case class Item( name:                       String,
                  comments:                   SortedSet[String] = SortedSet.empty,
                  private var lostQuantity:   Int = 0,
                  private var rentedQuantity: Int = 0,
-                 private var status:         ItemStatus = ItemStatus.Active
+                 var status:                 ItemStatus = ItemStatus.Active
 ) derives ReadWriter:
 
    image = s"${this.name}.jpg"
@@ -73,9 +73,10 @@ case class Item( name:                       String,
       this.status = ItemStatus.Inactive
 
    /** retrieve children items from all levels */
-   def getAllChildren( allItemsList: Buffer[Item] = ownedItems ): Set[Item] =
-      if this.children.isEmpty then Set[Item]()
+   def withAllChildren( allItemsList: Buffer[Item] = ownedItems ): Set[Item] =
+      if this.children.isEmpty then Set[Item](this)
       else
-         this.getChildrenDetails( allItemsList ) ++ this
+         val oneLevel = this.getChildrenDetails( allItemsList ) + this
+         oneLevel ++ this
             .getChildrenDetails( allItemsList )
-            .flatMap( c => c.getAllChildren( allItemsList ) )
+            .flatMap( c => c.withAllChildren( allItemsList ) )

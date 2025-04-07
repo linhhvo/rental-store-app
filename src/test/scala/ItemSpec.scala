@@ -79,9 +79,9 @@ class ItemSpec extends AnyFlatSpec with Matchers:
       targetItem.availableQuantity shouldBe 4
    }
 
-   "getAllChildren" should "return a list of the target item's children and children of children" in {
+   "withAllChildren" should "return a list of the target item's children and children of children" in {
       childItem1.addChildren( childItem2.itemId )
-      targetItem.getAllChildren( allItems ) should ( have size 2 and contain allOf ( childItem1,
+      targetItem.withAllChildren( allItems ) should ( have size 3 and contain allOf ( targetItem, childItem1,
                                                                                      childItem2
       ) )
 
