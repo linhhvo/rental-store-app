@@ -37,36 +37,29 @@ object SavedItems:
    def getSavedItems = savedItems
 
    /** add item to saved items list to prepare for booking */
-   def addToCart( requestItem:     Item,
+   def addToCart( requestItems:    Set[Item],
                   requestQuantity: Int,
                   savedList:       Buffer[SavedItem] = savedItems
    ): Buffer[SavedItem] =
-      // check if the added item already exists in the saved list
-      savedList.find( _.itemId == requestItem.itemId ) match
-         /* if the item is already in the saved list, add the requested quantity to the saved
-          * quantity */
-         case Some( i ) =>
-            // check if item has enough quantity
-            if requestItem.hasEnoughQuantity( requestQuantity ) then
-               // add the requested quantity to saved list quantity
-               i.rentQuantity += requestQuantity
-               // reduce item's available quantity
-               requestItem.reserve( requestQuantity )
-            else
-               throw ItemNotAvailable(
-                   s"Item ${requestItem.name} doesn't have enough quantity for rent"
-               )
-         // if the item is not already in the saved list
-         case None      =>
-            if requestItem.hasEnoughQuantity( requestQuantity ) then
-               // add requested item to the saved list
-               savedList += SavedItem( requestItem.itemId, requestQuantity )
-               // reduce item's available quantity
-               requestItem.reserve( requestQuantity )
-            else
-               throw ItemNotAvailable(
-                   s"Item ${requestItem.name} doesn't have enough quantity for rent"
-               )
+      // check if all requested items have enough quantity for rent
+      val isEnough = requestItems.forall( _.hasEnoughQuantity( requestQuantity ) )
+      if isEnough then
+         requestItems.foreach( item =>
+            // check if the added item already exists in the saved list
+            savedList.find( _.itemId == item.itemId ) match
+               case Some( i ) =>
+                  // add the requested quantity to saved list quantity
+                  i.rentQuantity += requestQuantity
+               case _         =>
+                  // add requested item to the saved list
+                  savedList += SavedItem( item.itemId, requestQuantity )
+
+            item.reserve( requestQuantity )
+         )
+      else
+         throw ItemNotAvailable(
+             s"Some item in this bundle doesn't have enough quantity for rent"
+         )
 
       updateItemsDataSource() // to update available quantity for the item
       savedList

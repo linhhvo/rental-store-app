@@ -17,6 +17,8 @@ import scalafx.scene.text.{Font, FontWeight}
 import ui.Helper.{displayAlert, toggleDisplay}
 import upickle.default.*
 
+import java.io.FileInputStream
+
 object ItemDetails:
    private val smallWidth = 240
    private val btnWidth = 125
@@ -156,15 +158,9 @@ object ItemDetails:
       submitItemBtn.onAction = (
           ( e ) =>
              try
-                savedItems = addToCart( item, rentQuantity.getValue )
-                writeSavedItems( savedItems )
                 // if item has children, also add child items to saved list with the same quantity
-                item
-                   .getChildrenDetails()
-                   .foreach( c =>
-                      savedItems = addToCart( c, rentQuantity.getValue )
-                      writeSavedItems( savedItems )
-                   )
+                addToCart( item.withAllChildren(), rentQuantity.getValue ) 
+                writeSavedItems( savedItems )
                 // show user success message
                 displayAlert( messageAlert, "Added to saved list" )
              catch
@@ -274,7 +270,7 @@ object ItemDetails:
              incidentContainer
          )
 
-      val itemImage = getClass.getResourceAsStream( "/images/" + item.image )
+      val itemImage = FileInputStream( "src/main/resources/images/" + item.image )
       val itemImageView = ImageView( Image( itemImage, 0, 400, true, true ) )
 
       itemPageContainer.getChildren.setAll( itemImageView, itemDetailsContainer )
