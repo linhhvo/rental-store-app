@@ -1,7 +1,7 @@
 package logic
 
 import logic.IOHandler.{getDataFromFile, writeSavedItems}
-import logic.RentalStore.{ownedItems, updateItemsDataSource}
+import logic.RentalStore.{inventory, updateItemsDataSource}
 import logic.SavedItemStatus.*
 import upickle.default.*
 
@@ -13,7 +13,7 @@ case class SavedItem( itemId:              String,
                       var savedItemStatus: SavedItemStatus = Pending
 ) derives ReadWriter:
 
-   def getDetailsFromItemList( allItemsList: Buffer[Item] = ownedItems ): Option[Item] =
+   def getDetailsFromItemList( allItemsList: Buffer[Item] = inventory ): Option[Item] =
       allItemsList.find( _.itemId == this.itemId )
 
    def confirmBooking() =
@@ -72,7 +72,7 @@ object SavedItems:
 
    /** remove all items from saved list */
    def resetSavedList( savedList:    Buffer[SavedItem] = savedItems,
-                       allItemsList: Buffer[Item] = ownedItems
+                       allItemsList: Buffer[Item] = inventory
    ): Buffer[SavedItem] =
       savedList.foreach( si =>
          si.getDetailsFromItemList( allItemsList ).foreach( _.free( si.rentQuantity ) )
@@ -84,7 +84,7 @@ object SavedItems:
 
    /** method to calculate total rate per hour for all saved items */
    def combinedRatePerHour( savedList:    Buffer[SavedItem] = savedItems,
-                            allItemsList: Buffer[Item] = ownedItems
+                            allItemsList: Buffer[Item] = inventory
    ): Double =
       savedList
          .map( si =>
@@ -95,7 +95,7 @@ object SavedItems:
 
    /** method to calculate total rate per day for all saved items */
    def combinedRatePerDay( savedList:    Buffer[SavedItem] = savedItems,
-                           allItemsList: Buffer[Item] = ownedItems
+                           allItemsList: Buffer[Item] = inventory
    ): Double =
       savedList
          .map( si =>
@@ -106,7 +106,7 @@ object SavedItems:
 
    /** method to calculate total rate per week for all saved items */
    def combinedRatePerWeek( savedList:    Buffer[SavedItem] = savedItems,
-                            allItemsList: Buffer[Item] = ownedItems
+                            allItemsList: Buffer[Item] = inventory
    ): Double =
       savedList
          .map( si =>

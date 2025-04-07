@@ -1,6 +1,6 @@
 package ui
 
-import logic.RentalStore.{addBooking, ownedItems}
+import logic.RentalStore.{addBooking, inventory}
 import logic.SavedItems.*
 import logic.{Booking, InvalidDateTime}
 import scalafx.beans.property.DoubleProperty

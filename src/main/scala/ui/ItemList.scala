@@ -1,6 +1,6 @@
 package ui
 
-import logic.RentalStore.getActiveItems
+import logic.RentalStore.activeItems
 import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, Label, ScrollPane}
 import scalafx.scene.image.{Image, ImageView}
@@ -26,7 +26,7 @@ object ItemList:
 
    def renderItemListPage =
       // Create UI element for each item
-      val itemElements = getActiveItems.map( item =>
+      val itemElements = activeItems.map( item =>
          val itemImageView =
             try
                val itemImage = FileInputStream( "src/main/resources/images/" + item.image )

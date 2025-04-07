@@ -1,7 +1,7 @@
 package ui
 
 import logic.ItemCategory.getItemCategoryList
-import logic.RentalStore.getActiveItems
+import logic.RentalStore.activeItems
 import logic.{DuplicateItem, InvalidItemCategory, Item, RentalStore}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
@@ -211,7 +211,7 @@ object AddItem:
 
       // get a list of existing item names as potential parent item
       val parentList = new ObservableBuffer[String]()
-      parentList ++= getActiveItems.map( item => item.name )
+      parentList ++= activeItems.map(item => item.name)
       // drop down menu
       val depChoiceBox = ChoiceBox( parentList )
       depChoiceBox.maxWidth = medWidth

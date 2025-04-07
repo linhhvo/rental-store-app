@@ -1,7 +1,7 @@
 package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
-import logic.RentalStore.{ownedItems, updateItemsDataSource}
+import logic.RentalStore.{inventory, updateItemsDataSource}
 import upickle.default.*
 
 import scala.collection.mutable.{Buffer, SortedSet}
@@ -31,7 +31,7 @@ case class Item( name:                       String,
       children -= childItemId
 
    /** method to retrieve children items details */
-   def getChildrenDetails( allItemsList: Buffer[Item] = ownedItems ): Set[Item] =
+   def getChildrenDetails( allItemsList: Buffer[Item] = inventory ): Set[Item] =
       this.children.flatMap( c => allItemsList.filter( _.itemId == c ) )
 
    def availableQuantity: Int =
@@ -71,7 +71,7 @@ case class Item( name:                       String,
       this.status = ItemStatus.Inactive
 
    /** retrieve children items from all levels */
-   def withAllChildren( allItemsList: Buffer[Item] = ownedItems ): Set[Item] =
+   def withAllChildren( allItemsList: Buffer[Item] = inventory ): Set[Item] =
       if this.children.isEmpty then Set[Item]( this )
       else
          val oneLevel = this.getChildrenDetails( allItemsList ) + this

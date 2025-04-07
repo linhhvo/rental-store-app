@@ -9,14 +9,17 @@ import scala.collection.mutable.Buffer
 
 object RentalStore:
 
-   val ownedItems =
+   val inventory =
       getDataFromFile( "items" ).map( item => read[Item]( item ) )
 
    val bookings =
       getDataFromFile( "bookings" ).arr.map( item => read[Booking]( item ) )
 
    /** make list of all items available globally */
-   def getAllItems = ownedItems
+   def getAllItems = inventory
+
+   /** get only active items */
+   def activeItems = inventory.filter( i => i.status == Active )
 
    /** add new item to the store */
    def addItem( item: Item, parentItem: Option[String] ) =
@@ -28,7 +31,7 @@ object RentalStore:
          throw InvalidItemCategory( s"Item category ${item.category} doesn't exist in the system" )
       else // if category exists
       // check that the same item doesn't already exist in the system
-      if ownedItems.exists( existingItem =>
+      if inventory.exists( existingItem =>
             existingItem.name == item.name && existingItem.status == Active
          )
       then throw DuplicateItem( s"${item.name} already exists in the system" )
@@ -39,11 +42,11 @@ object RentalStore:
             // if parent item is passed
             case Some( parent ) =>
                // find parent item in items list
-               ownedItems.find( i => i.name == parent && i.status == Active ) match
+               inventory.find( i => i.name == parent && i.status == Active ) match
                   /* if parent item found, add new item to items list and to parent's dependencies
                    * list */
                   case Some( pi ) =>
-                     ownedItems += item
+                     inventory += item
                      pi.addChildren( item.itemId )
                      updateItemsDataSource()
                   // if parent item not found
@@ -53,13 +56,13 @@ object RentalStore:
                      )
             // if no parent item is passed, only add new item to items list
             case None           =>
-               ownedItems += item
+               inventory += item
                updateItemsDataSource()
 
    /** delete item from store */
    def deleteItem( item: Item ) =
       // check that item exists in the system before deletion
-      ownedItems.find( _.itemId == item.itemId ) match
+      inventory.find( _.itemId == item.itemId ) match
          // if item exists, remove item from items list and from parent item dependency if any
          case Some( di ) =>
             di.hideItem()
@@ -71,7 +74,7 @@ object RentalStore:
             catch case _ => println( "cannot remove item image" )
 
             // check if deleted item is any other item's child
-            ownedItems.find( _.children.contains( di.itemId ) ) match
+            inventory.find( _.children.contains( di.itemId ) ) match
                case Some( pi ) => // if parent item found, delete item from children list
                   pi.deleteChildren( di.itemId )
                   updateItemsDataSource()
@@ -89,14 +92,11 @@ object RentalStore:
    def addBooking( newBooking: Booking ) =
       bookings += newBooking
       newBooking.items.foreach( bi =>
-         ownedItems.find( i => i.itemId == bi.itemId ).foreach( _.reserve( bi.rentQuantity ) )
+         inventory.find( i => i.itemId == bi.itemId ).foreach( _.reserve( bi.rentQuantity ) )
          bi.confirmBooking()
       )
       updateItemsDataSource()
       writeBookings( bookings )
 
    /** update items list in external file */
-   def updateItemsDataSource() = writeItems( ownedItems )
-
-   /** get only active items */
-   def getActiveItems = ownedItems.filter( i => i.status == Active )
+   def updateItemsDataSource() = writeItems( inventory )
