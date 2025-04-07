@@ -1,7 +1,7 @@
 package ui
 
 import logic.ItemCategory.getItemCategoryList
-import logic.RentalStore.getAllItems
+import logic.RentalStore.getActiveItems
 import logic.{DuplicateItem, InvalidItemCategory, Item, RentalStore}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
@@ -153,16 +153,19 @@ object AddItem:
                  rpwTextField.getText.toDouble
              )
              try
+                // copy selected image to resources folder
+                val newImage = File(
+                    nameTextField.getText + ".png"
+                )
+                os.copy.over( os.Path( selectedImage ),
+                              os.pwd / os.RelPath( "src/main/resources/images/" + newImage.getName )
+                )
+                newItem.image = newImage.getName
+
                 // if no parent item is selected, add item without parent
                 if dataToReset._2.getValue == null then RentalStore.addItem( newItem, None )
                 else // if parent item is selected
                    RentalStore.addItem( newItem, Some( dataToReset._2.getValue ) )
-
-                // copy selected image to resources folder
-                val newImage = File( nameTextField.getText + ".jpg" )
-                os.copy.over( os.Path( selectedImage ),
-                              os.pwd / os.RelPath( "src/main/resources/images/" + newImage.getName )
-                )
 
                 // display success message to user and clear page
                 displayAlert( messageAlert, "Item added to the system" )
@@ -174,6 +177,7 @@ object AddItem:
                 // if new item already exists in the system
                 case DuplicateItem( msg )       =>
                    displayAlert( messageAlert, msg )
+                case _                          => displayAlert( messageAlert, "Cannot add item" )
           // if any of the fields is missing input
           else displayAlert( messageAlert, "Missing item data" )
    )
@@ -207,7 +211,7 @@ object AddItem:
 
       // get a list of existing item names as potential parent item
       val parentList = new ObservableBuffer[String]()
-      parentList ++= getAllItems.map( item => item.name )
+      parentList ++= getActiveItems.map( item => item.name )
       // drop down menu
       val depChoiceBox = ChoiceBox( parentList )
       depChoiceBox.maxWidth = medWidth

@@ -24,8 +24,6 @@ case class Item( name:                       String,
                  var status:                 ItemStatus = ItemStatus.Active
 ) derives ReadWriter:
 
-   image = s"${this.name}.jpg"
-
    def addChildren( childItemId: String ) =
       children += childItemId
 
@@ -74,7 +72,7 @@ case class Item( name:                       String,
 
    /** retrieve children items from all levels */
    def withAllChildren( allItemsList: Buffer[Item] = ownedItems ): Set[Item] =
-      if this.children.isEmpty then Set[Item](this)
+      if this.children.isEmpty then Set[Item]( this )
       else
          val oneLevel = this.getChildrenDetails( allItemsList ) + this
          oneLevel ++ this

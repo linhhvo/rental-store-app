@@ -28,8 +28,10 @@ object RentalStore:
          throw InvalidItemCategory( s"Item category ${item.category} doesn't exist in the system" )
       else // if category exists
       // check that the same item doesn't already exist in the system
-      if ownedItems.exists( existingItem => existingItem.name == item.name ) then
-         throw DuplicateItem( s"${item.name} already exists in the system" )
+      if ownedItems.exists( existingItem =>
+            existingItem.name == item.name && existingItem.status == Active
+         )
+      then throw DuplicateItem( s"${item.name} already exists in the system" )
       else // if item doesn't already exist
          /* parent item is not required but if an item is passed, check that parent item exists in
           * the system */
@@ -37,7 +39,7 @@ object RentalStore:
             // if parent item is passed
             case Some( parent ) =>
                // find parent item in items list
-               ownedItems.find( i => i.name == parent ) match
+               ownedItems.find( i => i.name == parent && i.status == Active ) match
                   /* if parent item found, add new item to items list and to parent's dependencies
                    * list */
                   case Some( pi ) =>
@@ -63,7 +65,10 @@ object RentalStore:
             di.hideItem()
 
             // remove associated item image from resources folder
-            // os.remove(os.pwd / os.RelPath("src/main/resources/images/" + di.image))
+            try
+               os.remove( os.pwd / os.RelPath( "src/main/resources/images/" + di.image ) )
+               di.image = ""
+            catch case _ => println( "cannot remove item image" )
 
             // check if deleted item is any other item's child
             ownedItems.find( _.children.contains( di.itemId ) ) match
