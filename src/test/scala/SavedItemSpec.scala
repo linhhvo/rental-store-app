@@ -27,7 +27,7 @@ class SavedItemSpec extends AnyFlatSpec with Matchers:
    val allItems = Buffer( targetItem, childItem1, childItem2 )
 
    val savedItem1 = SavedItem( targetItem.itemId, 3 )
-   val savedItem2 = SavedItem( childItem1.itemId, 2 )
+   val savedItem2 = SavedItem( childItem1.itemId, 3 )
 
    val savedList: Buffer[SavedItem] = Buffer()
 
@@ -48,9 +48,10 @@ class SavedItemSpec extends AnyFlatSpec with Matchers:
    }
 
    "addToCart" should "add a saved item to the saved list if it isn't already included" in {
-      addToCart( childItem1, 2, savedList )
-      addToCart( targetItem, 3, savedList ) should have size 2
-      savedList should contain( SavedItem( targetItem.itemId, 3 ) )
+      addToCart( Set( targetItem, childItem1 ), 3, savedList ) should have size 2
+      savedList should contain allOf ( SavedItem( targetItem.itemId, 3 ),
+                                       SavedItem( childItem1.itemId, 3 )
+      )
    }
 
    it should "decrease target item's available quantity" in {
@@ -58,7 +59,7 @@ class SavedItemSpec extends AnyFlatSpec with Matchers:
    }
 
    it should "increase a saved item's quantity if the item already exists in saved list" in {
-      addToCart( targetItem, 1, savedList ) should have size 2
+      addToCart( Set( targetItem ), 1, savedList ) should have size 2
       savedList.find( _.itemId == targetItem.itemId ).get.rentQuantity shouldBe 4
    }
 
@@ -68,20 +69,20 @@ class SavedItemSpec extends AnyFlatSpec with Matchers:
 
    it should "throw exception if the target item doesn't have enough quantity for rent" in {
       the[ItemNotAvailable] thrownBy {
-         addToCart( targetItem, 1, savedList )
-      } should have message s"Item ${targetItem.name} doesn't have enough quantity for rent"
+         addToCart( Set( targetItem ), 1, savedList )
+      } should have message s"Some item in this bundle doesn't have enough quantity for rent"
    }
 
    "combinedRatePerHour" should "calculate the total rate per hour for all items in the saved list" in {
-      combinedRatePerHour( savedList, allItems ) shouldBe 60
+      combinedRatePerHour( savedList, allItems ) shouldBe 70
    }
 
    "combinedRatePerDay" should "calculate the total rate per day for all items in the saved list" in {
-      combinedRatePerDay( savedList, allItems ) shouldBe 600
+      combinedRatePerDay( savedList, allItems ) shouldBe 700
    }
 
    "combinedRatePerWeek" should "calculate the total rate per week for all items in the saved list" in {
-      combinedRatePerWeek( savedList, allItems ) shouldBe 6000
+      combinedRatePerWeek( savedList, allItems ) shouldBe 7000
    }
 
    "removeFromCart" should "keep the saved list inact if the target item is not in the saved list" in {
