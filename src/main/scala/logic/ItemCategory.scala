@@ -1,6 +1,10 @@
 package logic
 
+import logic.ItemStatus.Active
+import logic.RentalStore.inventory
 import upickle.default.*
+
+import scala.collection.mutable.Buffer
 
 object ItemCategory:
    val dataFilePath = "src/main/resources/data/itemCategories.json"
@@ -27,11 +31,9 @@ object ItemCategory:
                 s"Item category $target doesn't exist in the system"
             )
 
-   def itemInCategoryCount( category: String ) =
-      val ownedItems = RentalStore.getAllItems
-      ownedItems.count( _.category == category )
-
    /** retrieve items that belong to an item category */
-   def getItemsInCategory( category: String ) =
-      val ownedItems = RentalStore.getAllItems
-      ownedItems.filter( _.category == category )
+   def getItemsInCategory( category: String ): Buffer[Item] =
+      inventory.filter( _.category == category )
+
+   def itemInCategoryCount( category: String ): Int =
+      this.getItemsInCategory( category ).size
