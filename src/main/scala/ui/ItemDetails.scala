@@ -159,7 +159,7 @@ object ItemDetails:
           ( e ) =>
              try
                 // if item has children, also add child items to saved list with the same quantity
-                addToCart( item.withAllChildren(), rentQuantity.getValue ) 
+                addToCart( item.withAllChildren(), rentQuantity.getValue )
                 writeSavedItems( savedItems )
                 // show user success message
                 displayAlert( messageAlert, "Added to saved list" )
@@ -270,8 +270,13 @@ object ItemDetails:
              incidentContainer
          )
 
-      val itemImage = FileInputStream( "src/main/resources/images/" + item.image )
-      val itemImageView = ImageView( Image( itemImage, 0, 400, true, true ) )
+      val itemImageView =
+         try
+            val itemImage = FileInputStream( "src/main/resources/images/" + item.image )
+            ImageView( Image( itemImage, 0, 200, true, true ) )
+         catch
+            case _ =>
+               Label( s"Cannot find image for item ${item.name}" )
 
       itemPageContainer.getChildren.setAll( itemImageView, itemDetailsContainer )
 
