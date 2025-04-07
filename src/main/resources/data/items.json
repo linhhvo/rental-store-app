@@ -7,49 +7,13 @@
     "ratePerHour": 10,
     "ratePerDay": 100,
     "ratePerWeek": 1000,
-    "itemId": "BPlArMTPvh2ngb0HHR3g9",
+    "itemId": "5ArbcOEbCJperETuFqwwU",
     "incidents": [],
-    "children": [
-      "ylcvVUJXeztWffkEKCdYr"
-    ],
-    "image": "tent.jpg",
+    "children": [],
+    "image": "tent.png",
     "comments": [],
     "lostQuantity": 0,
     "rentedQuantity": 0,
-    "status": "Active"
-  },
-  {
-    "name": "sleeping bag",
-    "desc": "bag",
-    "ownedQuantity": 10,
-    "category": "camping",
-    "ratePerHour": 10,
-    "ratePerDay": 100,
-    "ratePerWeek": 1000,
-    "itemId": "ylcvVUJXeztWffkEKCdYr",
-    "incidents": [],
-    "children": [],
-    "image": "sleeping bag.jpg",
-    "comments": [],
-    "lostQuantity": 0,
-    "rentedQuantity": 1,
-    "status": "Active"
-  },
-  {
-    "name": "tent1",
-    "desc": "tent",
-    "ownedQuantity": 10,
-    "category": "camping",
-    "ratePerHour": 10,
-    "ratePerDay": 100,
-    "ratePerWeek": 1000,
-    "itemId": "w_gpy11hKGHBK6wQ2k-dp",
-    "incidents": [],
-    "children": [],
-    "image": "tent1.jpg",
-    "comments": [],
-    "lostQuantity": 0,
-    "rentedQuantity": 1,
     "status": "Active"
   }
 ]
