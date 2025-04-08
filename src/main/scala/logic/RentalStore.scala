@@ -90,13 +90,23 @@ object RentalStore:
 
    /** record rental booking */
    def addBooking( newBooking: Booking ) =
-      bookings += newBooking
-      newBooking.items.foreach( bi =>
-         inventory.find( i => i.itemId == bi.itemId ).foreach( _.reserve( bi.rentQuantity ) )
-         bi.confirmBooking()
-      )
-      updateItemsDataSource()
-      writeBookings( bookings )
+      val isEnough: Boolean =
+         newBooking.items.forall( si =>
+            si.getDetailsFromItemList().forall( i => i.hasEnoughQuantity( si.rentQuantity ) )
+         )
+      if isEnough then
+
+         bookings += newBooking
+         newBooking.items.foreach( bi =>
+            inventory.find( i => i.itemId == bi.itemId ).foreach( _.reserve( bi.rentQuantity ) )
+            bi.confirmBooking()
+         )
+         updateItemsDataSource()
+         writeBookings( bookings )
+      else
+         throw ItemNotAvailable(
+             s"Some item in this bundle doesn't have enough quantity for rent"
+         )
 
    /** update items list in external file */
    def updateItemsDataSource() = writeItems( inventory )
