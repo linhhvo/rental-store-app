@@ -1,7 +1,7 @@
 package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
-import logic.SavedItemStatus.{Booked, Lost, Returned}
+import logic.SavedItemStatus.{Booked, Returned}
 import upickle.default.*
 
 import java.time.LocalDateTime
@@ -23,7 +23,7 @@ case class Booking( items:            Buffer[SavedItem] = Buffer.empty,
    /** get items that are being rented out */
    def outstandingItems: Buffer[Item] =
       this.items
-         .filter( i => i.savedItemStatus == Booked)
+         .filter( i => i.savedItemStatus == Booked )
          .flatMap( _.getDetailsFromItemList() )
 
    /** return items in this booking */
@@ -41,9 +41,21 @@ case class Booking( items:            Buffer[SavedItem] = Buffer.empty,
                case None => throw ItemDoesNotExist( "This item doesn't exist or is not active" )
          )
 
+//   def checkItemAvailability(targetItem: SavedItem, bookingList: Buffer[Booking]= bookings): Boolean =
+//      val relevantBookings: Buffer[Booking] = bookingList.filter(b => b.items.map(_.itemId).contains(targetItem.itemId))
+//      val overlapBookings: Buffer[Booking] = relevantBookings.filter(b => b.bookingStartTime)
+//
+
 object Booking:
    implicit val dateTimeReadWrite: ReadWriter[LocalDateTime] =
       readwriter[String].bimap[LocalDateTime](
           dateTime => dateTime.format( DateTimeFormatter.ofPattern( "d-MM-yyyy HH:mm" ) ),
           str => LocalDateTime.parse( str, DateTimeFormatter.ofPattern( "d-MM-yyyy HH:mm" ) )
       )
+
+   def areDateRangeOverlapped( start1: LocalDateTime,
+                               end1:   LocalDateTime,
+                               start2: LocalDateTime,
+                               end2:   LocalDateTime
+   ): Boolean =
+      start1.isBefore( end2 ) && end1.isAfter( start2 )
