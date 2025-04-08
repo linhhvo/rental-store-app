@@ -70,13 +70,13 @@ class ItemSpec extends AnyFlatSpec with Matchers:
    "reportIncident" should "add a new incident to target item's incident list" in {
       val incident1 = Incident( LocalDate.now(), IncidentType.Loss, "lost item", 12.5 )
       val incident2 = Incident( LocalDate.now(), IncidentType.Damage, "damage item", 12.5 )
-      targetItem.reportIncident( incident1 )
+      targetItem.reportIncident( incident1, 2 )
       targetItem.incidents should contain( incident1 )
-      targetItem.availableQuantity shouldBe 4
+      targetItem.availableQuantity shouldBe 3
 
-      targetItem.reportIncident( incident2 )
+      targetItem.reportIncident( incident2, 1 )
       targetItem.incidents should contain allOf ( incident1, incident2 )
-      targetItem.availableQuantity shouldBe 4
+      targetItem.availableQuantity shouldBe 3
    }
 
    "withAllChildren" should "return a list of the target item's children and children of children" in {
