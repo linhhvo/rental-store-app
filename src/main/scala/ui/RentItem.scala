@@ -1,8 +1,8 @@
 package ui
 
-import logic.RentalStore.{addBooking, inventory}
+import logic.RentalStore.addBooking
 import logic.SavedItems.*
-import logic.{Booking, InvalidDateTime}
+import logic.{Booking, InvalidDateTime, ItemNotAvailable}
 import scalafx.beans.property.DoubleProperty
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
@@ -121,11 +121,15 @@ object RentItem:
                                        totalCost.toDouble,
                                        renterPicker._1.getValue
              )
-             addBooking( newBooking ) // add new booking to the store
-             savedItems = resetSavedList() // update saved item list in external file to be empty
-             displayAlert( msgAlert, "Rental is confirmed" )
-             // update page to display user message
-             rentItemScrollContainer.setContent( renderPage )
+
+             // add new booking to the store
+             try
+                addBooking( newBooking )
+                savedItems = resetSavedList() // update saved item list in external file to be empty
+                displayAlert( msgAlert, "Rental is confirmed" )
+                // update page to display user message
+                rentItemScrollContainer.setContent( renderPage )
+             catch case ItemNotAvailable( m ) => displayAlert( msgAlert, m )
    )
 
    /** Clear list button */
@@ -218,8 +222,9 @@ object RentItem:
             throw InvalidDateTime( "End date time cannot be before start date time " )
          else if startDT.isEqual( endDT ) then
             throw InvalidDateTime( "Start date time cannot be the same as end date time" )
-         else if rentStart._3.getValue.split( ":" ).head.toInt < LocalDateTime.now.getHour then
-            throw InvalidDateTime( "Start date time cannot be before current date time" )
+         else if startDT.toLocalDate.isEqual( LocalDate.now() )
+            && rentStart._3.getValue.split( ":" ).head.toInt < LocalDateTime.now.getHour
+         then throw InvalidDateTime( "Start date time cannot be before current date time" )
          // if valid period is selected, calculate duration
          else
             durationInWeeks = Duration.between( startDT, endDT ).toDays.toInt / 7
@@ -230,6 +235,6 @@ object RentItem:
 
    /** method to calculate the total rental cost of saved items */
    private def calculateRentalCost =
-      combinedRatePerWeek() * calculateRentalDuration._1 
-         + combinedRatePerDay() * calculateRentalDuration._2 
+      combinedRatePerWeek() * calculateRentalDuration._1
+         + combinedRatePerDay() * calculateRentalDuration._2
          + combinedRatePerHour() * calculateRentalDuration._3

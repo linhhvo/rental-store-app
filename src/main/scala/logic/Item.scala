@@ -35,10 +35,13 @@ case class Item( name:                       String,
       this.children.flatMap( c => allItemsList.filter( _.itemId == c ) )
 
    def availableQuantity: Int =
-      ownedQuantity - lostQuantity - rentedQuantity
+      ownedQuantity - lostQuantity 
 
-   def hasEnoughQuantity( requestQuantity: Int ): Boolean =
-      this.availableQuantity - requestQuantity >= 0
+   def hasEnoughQuantityNow( requestQuantity: Int ): Boolean =
+      this.ownedQuantity - this.lostQuantity - requestQuantity >= 0
+
+   def hasEnoughQuantityThen( existingRentedQuantity: Int, requestQuantity: Int ): Boolean =
+      this.ownedQuantity - this.lostQuantity - existingRentedQuantity - requestQuantity >= 0
 
    def reserve( quantity: Int ) =
       rentedQuantity += quantity
