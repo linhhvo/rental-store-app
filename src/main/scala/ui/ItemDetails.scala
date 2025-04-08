@@ -30,9 +30,7 @@ object ItemDetails:
    /** Rent item */
 
    // select rent quantity to add to saved list
-   private val rentQuantity = Spinner( 1, 100, 1, 1 )
-   rentQuantity.maxWidth = 125
-   rentQuantity.editable = true
+   private var rentQuantity = Spinner( 1, 100, 1, 1 )
 
    // button to add item to saved list
    private val submitItemBtn = Button( "Add To List" )
@@ -40,7 +38,6 @@ object ItemDetails:
    // group rent item quantity and button with label
    private val rentItemContainer = new VBox:
       spacing = 10
-      children = Array( Label( "Quantity" ), rentQuantity, submitItemBtn )
       margin = Insets( 5, 0, 5, 0 )
 
    // button to show/hide input fields to add item to saved list
@@ -60,7 +57,7 @@ object ItemDetails:
    // input field to enter comment
    private val cmtText = TextArea()
    cmtText.promptText = "Enter comment"
-   cmtText.maxWidth = smallWidth
+   cmtText.prefWidth = smallWidth
    cmtText.maxHeight = smallHeight
 
    // button to add comment to item
@@ -83,41 +80,34 @@ object ItemDetails:
    private val incTypeList =
       ObservableBuffer[IncidentType]( IncidentType.Loss, IncidentType.Damage )
    private val incTypeChoiceBox = ChoiceBox( incTypeList )
-   incTypeChoiceBox.maxWidth = smallWidth
+   incTypeChoiceBox.prefWidth = smallWidth
 
    // date picker to select incident date
    private val incidentDatePicker = DatePicker()
    incidentDatePicker.promptText = "Select incident date"
-   incidentDatePicker.maxWidth = smallWidth
+   incidentDatePicker.prefWidth = smallWidth
+
+   // select quantity of item affected
+   private var affectedQuantity = Spinner( 1, 100, 1, 1 )
 
    // text field to add incident comment
    private val incidentCmt = TextArea()
-   incidentCmt.maxWidth = smallWidth
+   incidentCmt.prefWidth = smallWidth
    incidentCmt.maxHeight = smallHeight
    incidentCmt.promptText = "Enter incident detail"
 
    // text field to add cost to repair
    private val repairCostField = TextField()
-   repairCostField.maxWidth = smallWidth
+   repairCostField.prefWidth = smallWidth
    repairCostField.promptText = "Enter repair cost"
 
    // button to add incident to item
    private val submitIncidentBtn = Button( "Submit" )
+   submitIncidentBtn.margin = Insets( 5, 0, 0, 0 )
 
    // group incident input fields with labels
    private val incidentContainer = new VBox:
       spacing = 7
-      children = Array(
-          Label( "Incident Type" ),
-          incTypeChoiceBox,
-          Label( "Incident Date" ),
-          incidentDatePicker,
-          Label( "Incident Detail" ),
-          incidentCmt,
-          Label( "Repair Cost" ),
-          repairCostField,
-          submitIncidentBtn
-      )
       margin = Insets( 5, 0, 5, 0 )
 
    // button to show/hide incident input fields
@@ -152,7 +142,34 @@ object ItemDetails:
 
    /** method to display details specific to item passed in parameter */
    def displayItemPage( item: Item ) =
+      // clear all input fields
       resetItemActionFields()
+
+      // update rent item quantity selection spinner
+      rentQuantity = Spinner( 0, math.max( item.availableQuantity, 0 ), 0, 1 )
+      rentQuantity.prefWidth = 125
+      rentQuantity.editable = true
+      // render rent item container to include updated spinner
+      rentItemContainer.children = Array( Label( "Quantity" ), rentQuantity, submitItemBtn )
+
+      // update incident affected quantity spinner
+      affectedQuantity = Spinner( 0, math.max( item.ownedQuantity - item.lostQuantity, 0 ), 0, 1 )
+      affectedQuantity.prefWidth = 125
+      affectedQuantity.editable = true
+      // render incident container to include update spinner
+      incidentContainer.children = Array(
+          Label( "Incident Type" ),
+          incTypeChoiceBox,
+          Label( "Incident Date" ),
+          incidentDatePicker,
+          Label( "Affected Quantity" ),
+          affectedQuantity,
+          Label( "Incident Detail" ),
+          incidentCmt,
+          Label( "Repair Cost" ),
+          repairCostField,
+          submitIncidentBtn
+      )
 
       // set action to rent item
       submitItemBtn.onAction = (
@@ -166,6 +183,8 @@ object ItemDetails:
              catch
                 case DuplicateItem( m )    => displayAlert( messageAlert, m )
                 case ItemNotAvailable( m ) => displayAlert( messageAlert, m )
+                case MissingData( m )      => displayAlert( messageAlert, m )
+                case _                     => println( "cannot add item to saved list" )
       )
 
       // set action to delete item
@@ -219,15 +238,19 @@ object ItemDetails:
                 )
                 try
                    // add incident to item
-                   item.reportIncident( newIncident )
-                   // display success message to user
-                   displayAlert( messageAlert, "Incident has been reported" )
+                   try
+                      item.reportIncident( newIncident, affectedQuantity.getValue )
+                      // display success message to user
+                      displayAlert( messageAlert, "Incident has been reported" )
 
-                   // reset and clear input fields
-                   incidentCmt.clear()
-                   repairCostField.clear()
-                   incTypeChoiceBox.getSelectionModel.clearSelection()
-                   incidentDatePicker.setValue( null )
+                      // reset and clear input fields
+                      incidentCmt.clear()
+                      repairCostField.clear()
+                      incTypeChoiceBox.getSelectionModel.clearSelection()
+                      incidentDatePicker.setValue( null )
+                   catch
+                      case MissingData( m ) => displayAlert( messageAlert, m )
+                      case _                => println( "cannot report incident" )
                 catch case ItemDoesNotExist( msg ) => displayAlert( messageAlert, msg )
              else displayAlert( messageAlert, "Missing information" )
       )
@@ -240,7 +263,10 @@ object ItemDetails:
       itemDesc.alignment = BaselineLeft
       val itemRate = HBox( rateLabel, Label( item.ratePerHour.toString ) )
       itemRate.alignment = BaselineLeft
-      val itemAvai = HBox( avaiLabel, Label( item.availableQuantity.toString ) )
+      val itemAvai = HBox(
+          avaiLabel,
+          Label( math.max( item.availableQuantity, 0 ).toString )
+      )
       itemAvai.alignment = BaselineLeft
       val itemCmt = VBox( cmtLabel, Label( "- " + item.comments.mkString( "\n- " ) ) )
       if item.comments.isEmpty then

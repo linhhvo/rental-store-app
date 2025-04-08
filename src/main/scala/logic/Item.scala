@@ -19,7 +19,7 @@ case class Item( name:                       String,
                  var children:               Set[String] = Set.empty,
                  var image:                  String = "",
                  comments:                   SortedSet[String] = SortedSet.empty,
-                 private var lostQuantity:   Int = 0,
+                 var lostQuantity:           Int = 0,
                  private var rentedQuantity: Int = 0,
                  var status:                 ItemStatus = ItemStatus.Active
 ) derives ReadWriter:
@@ -59,13 +59,15 @@ case class Item( name:                       String,
       else throw MissingData( "Comment can't be empty" )
 
    /** method to add incident to an item */
-   def reportIncident( newIncident: Incident ) =
-      this.incidents += newIncident
-      if newIncident.incidentType == IncidentType.Loss
-      then lostQuantity += 1
+   def reportIncident( newIncident: Incident, quantity: Int ) =
+      if quantity <= 0 then throw MissingData( "Item quantity cannot be zero" )
+      else
+         this.incidents += newIncident
+         if newIncident.incidentType == IncidentType.Loss
+         then lostQuantity += quantity
 
-      // update items list in external file
-      updateItemsDataSource()
+         // update items list in external file
+         updateItemsDataSource()
 
    def hideItem() =
       this.status = ItemStatus.Inactive

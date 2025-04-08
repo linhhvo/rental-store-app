@@ -39,7 +39,8 @@ object SavedItems:
    ): Buffer[SavedItem] =
       // check if all requested items have enough quantity for rent
       val isEnough = requestItems.forall( _.hasEnoughQuantity( requestQuantity ) )
-      if isEnough then
+      if requestQuantity <= 0 then throw MissingData( "Item quantity cannot be zero" )
+      else if isEnough then
          requestItems.foreach( item =>
             // check if the added item already exists in the saved list
             savedList.find( _.itemId == item.itemId ) match
