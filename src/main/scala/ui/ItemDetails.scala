@@ -131,10 +131,18 @@ object ItemDetails:
    catLabel.font = Font( null, FontWeight( Bold ), 14 )
    private val descLabel = Label( "Description: " )
    descLabel.font = Font( null, FontWeight( Bold ), 14 )
-   private val rateLabel = Label( "Rate Per Hour: " )
-   rateLabel.font = Font( null, FontWeight( Bold ), 14 )
-   private val avaiLabel = Label( "Quantity available for rent: " )
-   avaiLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val rphLabel = Label( "Rate Per Hour: " )
+   rphLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val rpdLabel = Label( "Rate Per Day: " )
+   rpdLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val rpwLabel = Label( "Rate Per Week: " )
+   rpwLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val statusLabel1 = Label( "Quantity available for rent: " )
+   statusLabel1.font = Font( null, FontWeight( Bold ), 14 )
+   private val statusLabel2 = Label( "Currently rented: " )
+   statusLabel2.font = Font( null, FontWeight( Bold ), 14 )
+   private val statusLabel3 = Label( "Item will be available after: " )
+   statusLabel3.font = Font( null, FontWeight( Bold ), 14 )
    private val cmtLabel = Label( "Comments:" )
    cmtLabel.font = Font( null, FontWeight( Bold ), 14 )
    private val childrenLabel = Label( "Bundle with: " )
@@ -146,7 +154,7 @@ object ItemDetails:
       resetItemActionFields()
 
       // update rent item quantity selection spinner
-      rentQuantity = Spinner( 0, math.max( item.availableQuantity, 0 ), 0, 1 )
+      rentQuantity = Spinner( 0, math.max( item.ownedQuantity - item.lostQuantity, 0 ), 0, 1 )
       rentQuantity.prefWidth = 125
       rentQuantity.editable = true
       // render rent item container to include updated spinner
@@ -261,13 +269,28 @@ object ItemDetails:
       itemCat.alignment = BaselineLeft
       val itemDesc = HBox( descLabel, Label( item.desc ) )
       itemDesc.alignment = BaselineLeft
-      val itemRate = HBox( rateLabel, Label( item.ratePerHour.toString ) )
-      itemRate.alignment = BaselineLeft
-      val itemAvai = HBox(
-          avaiLabel,
+      val itemRph = HBox( rphLabel, Label( item.ratePerHour.toString ) )
+      itemRph.alignment = BaselineLeft
+      val itemRpd = HBox( rpdLabel, Label( item.ratePerDay.toString ) )
+      itemRpd.alignment = BaselineLeft
+      val itemRpw = HBox( rpwLabel, Label( item.ratePerWeek.toString ) )
+      itemRpw.alignment = BaselineLeft
+      val status1 = HBox(
+          statusLabel1,
           Label( math.max( item.availableQuantity, 0 ).toString )
       )
-      itemAvai.alignment = BaselineLeft
+      status1.alignment = BaselineLeft
+      status1.margin = Insets( 10, 0, 0, 0 )
+      val status2 = HBox(
+          statusLabel2,
+          Label( "" )
+      )
+      status2.alignment = BaselineLeft
+      val status3 = HBox(
+          statusLabel3,
+          Label( "" )
+      )
+      status3.alignment = BaselineLeft
       val itemCmt = VBox( cmtLabel, Label( "- " + item.comments.mkString( "\n- " ) ) )
       if item.comments.isEmpty then
          itemCmt.visible = false
@@ -283,10 +306,14 @@ object ItemDetails:
              itemName,
              itemCat,
              itemDesc,
-             itemRate,
-             itemAvai,
-             itemCmt,
+             itemRph,
+             itemRpd,
+             itemRpw,
              itemChildren,
+             status1,
+             status2,
+             status3,
+             itemCmt,
              rentItemBtn,
              rentItemContainer,
              deleteItemBtn,
