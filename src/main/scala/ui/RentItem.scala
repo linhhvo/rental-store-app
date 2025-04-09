@@ -33,7 +33,7 @@ object RentItem:
    // if start time is 23:00, end date should be set to next day
    rentEnd._2.setValue( LocalDateTime.now().plusHours( 1 ).toLocalDate )
    rentEnd._3.setValue(
-       String.format( "%02d" + ":00", LocalDateTime.now().plusHours( 1 ).getHour )
+       String.format( "%02d" + ":00", LocalDateTime.now.plusHours( 1 ).getHour )
    )
 
    // group datetime pickers with label in container
@@ -222,7 +222,7 @@ object RentItem:
             throw InvalidDateTime( "End date time cannot be before start date time " )
          else if startDT.isEqual( endDT ) then
             throw InvalidDateTime( "Start date time cannot be the same as end date time" )
-         else if startDT.toLocalDate.isEqual( LocalDate.now() )
+         else if startDT.toLocalDate.isEqual( LocalDate.now )
             && rentStart._3.getValue.split( ":" ).head.toInt < LocalDateTime.now.getHour
          then throw InvalidDateTime( "Start date time cannot be before current date time" )
          // if valid period is selected, calculate duration
