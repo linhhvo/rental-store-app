@@ -52,14 +52,9 @@ case class Item( name:                       String,
 
    /** method to add a new comment to an item */
    def addComment( newCmt: String ) =
-      val newCmtFormatted = newCmt.trim
-      // check that comment is not null
-      if newCmtFormatted.nonEmpty then
-         this.comments += newCmtFormatted
-
-         // update items list in external file
-         updateItemsDataSource()
-      else throw MissingData( "Comment can't be empty" )
+      this.comments += newCmt
+      // update items list in external file
+      updateItemsDataSource()
 
    /** method to add incident to an item */
    def reportIncident( newIncident: Incident, quantity: Int ) =
@@ -85,7 +80,7 @@ case class Item( name:                       String,
             .flatMap( c => c.withAllChildren( allItemsList ) )
 
    /** get item availability at the current time */
-   def rentedQuantityNow ( bookingList: Buffer[Booking] = bookings): Int =
+   def rentedQuantityNow( bookingList: Buffer[Booking] = bookings ): Int =
 
       // get a list of existing currentbooking that contains the target item
       val relevantBookings: Buffer[Booking] =
@@ -96,7 +91,7 @@ case class Item( name:                       String,
          areDateRangeOverlapped( b.bookingStartTime,
                                  b.bookingEndTime,
                                  LocalDateTime.now,
-                                 LocalDateTime.now.plusHours(1),
+                                 LocalDateTime.now.plusHours( 1 )
          )
       )
 
@@ -107,8 +102,8 @@ case class Item( name:                       String,
          .sum
 
    /** get the earliest return date */
-   def getEarliestReturnDate(bookingList: Buffer[Booking] = bookings): LocalDateTime =
-   
+   def getEarliestReturnDate( bookingList: Buffer[Booking] = bookings ): LocalDateTime =
+
       // get a list of existing currentbooking that contains the target item
       val relevantBookings: Buffer[Booking] =
          bookingList.filter( b => b.outstandingItems.map( _.itemId ).contains( this.itemId ) )
@@ -118,9 +113,9 @@ case class Item( name:                       String,
          areDateRangeOverlapped( b.bookingStartTime,
                                  b.bookingEndTime,
                                  LocalDateTime.now,
-                                 LocalDateTime.now.plusHours(1),
+                                 LocalDateTime.now.plusHours( 1 )
          )
       )
-      
+
       // get the minimum of return dates of the overlapping bookings
-      overlapBookings.map(_.bookingEndTime).min
+      overlapBookings.map( _.bookingEndTime ).min

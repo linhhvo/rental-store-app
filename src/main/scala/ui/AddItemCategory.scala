@@ -2,7 +2,7 @@ package ui
 
 import logic.ItemCategory.*
 import logic.RentalStore.deleteItem
-import logic.{DuplicateItemCategory, InvalidItemCategory, ItemCategory}
+import logic.{DuplicateItemCategory, InvalidInput, ItemCategory, ItemDoesNotExist}
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType.{Confirmation, Information}
@@ -10,6 +10,7 @@ import scalafx.scene.layout.VBox
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
 import ui.Helper.displayAlert
+import ui.Validator.validateShortTextInput
 
 object AddItemCategory:
    private val btnWidth = 125
@@ -36,22 +37,23 @@ object AddItemCategory:
    // Button action for add item category button
    addItemCatBtn.onAction = (
        ( e ) =>
-          if itemCatTextField.getText.nonEmpty then
-             try
-                ItemCategory.addItemCategory( itemCatTextField.getText )
-                displayAlert( messageAlert,
-                              s"Category ${itemCatTextField.getText} has been added."
-                )
-                /* if successful, clear category text field and update existing category list
-                 * displayed on GUI */
+          try
+             ItemCategory.addItemCategory(
+                 validateShortTextInput( itemCatTextField.getText, "Item Category" )
+             )
+             displayAlert( messageAlert,
+                           s"Category ${itemCatTextField.getText.trim} has been added."
+             )
+             /* if successful, clear category text field and update existing category list displayed
+              * on GUI */
+             itemCatTextField.clear()
+             existingCatList = categoryElements
+             categoryListContainer.children = Array( textContainer ) ++ existingCatList
+          catch
+             case InvalidInput( m )                 => displayAlert( messageAlert, m )
+             case DuplicateItemCategory( errorMsg ) =>
+                displayAlert( messageAlert, errorMsg )
                 itemCatTextField.clear()
-                existingCatList = categoryElements
-                categoryListContainer.children = Array( textContainer ) ++ existingCatList
-             catch
-                case DuplicateItemCategory( errorMsg ) =>
-                   displayAlert( messageAlert, errorMsg )
-                   itemCatTextField.clear()
-          else displayAlert( messageAlert, "Category cannot be empty." )
    )
 
    // label for existing category list and instructions for deleting categories
@@ -113,7 +115,7 @@ object AddItemCategory:
                       existingCatList = categoryElements
                       categoryListContainer.children = Array( textContainer ) ++ existingCatList
                    catch
-                      case InvalidItemCategory( m ) =>
+                      case ItemDoesNotExist( m ) =>
                          displayAlert( messageAlert,
                                        "Selected category doesn't exist in the system"
                          )

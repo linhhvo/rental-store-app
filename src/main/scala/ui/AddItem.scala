@@ -1,8 +1,8 @@
 package ui
 
+import logic.*
 import logic.ItemCategory.getItemCategoryList
 import logic.RentalStore.activeItems
-import logic.{DuplicateItem, InvalidItemCategory, Item, RentalStore}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.BaselineLeft
@@ -15,6 +15,7 @@ import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 import ui.Helper.displayAlert
 import ui.Main.stage
+import ui.Validator.{validateLongTextInput, validateNumInput, validateShortTextInput}
 
 import java.io.File
 
@@ -143,41 +144,42 @@ object AddItem:
           // check that all information is entered
           if isAllFieldsNotEmpty
           then // create new item
-             val newItem = Item(
-                 nameTextField.getText,
-                 descTextField.getText,
-                 qntSpinner.getValue,
-                 dataToReset._1.getValue,
-                 rphTextField.getText.toDouble,
-                 rpdTextField.getText.toDouble,
-                 rpwTextField.getText.toDouble
-             )
              try
-                // copy selected image to resources folder
-                val newImage = File(
-                    nameTextField.getText + ".png"
+                val newItem = Item(
+                    validateShortTextInput( nameTextField.getText, "Item Name" ),
+                    validateLongTextInput(descTextField.getText, "Item Description"),
+                    qntSpinner.getValue,
+                    dataToReset._1.getValue,
+                    validateNumInput( rphTextField.getText, "Rate Per Hour" ),
+                    validateNumInput( rpdTextField.getText, "Rate Per Day" ),
+                    validateNumInput( rpwTextField.getText, "Rate Per Week" )
                 )
-                os.copy.over( os.Path( selectedImage ),
-                              os.pwd / os.RelPath( "src/main/resources/images/" + newImage.getName )
-                )
-                newItem.image = newImage.getName
 
                 // if no parent item is selected, add item without parent
                 if dataToReset._2.getValue == null then RentalStore.addItem( newItem, None )
                 else // if parent item is selected
                    RentalStore.addItem( newItem, Some( dataToReset._2.getValue ) )
 
+                // copy selected image to resources folder
+                val newImage = File(
+                    nameTextField.getText.trim.toLowerCase + ".png"
+                )
+                os.copy.over( os.Path( selectedImage ),
+                              os.pwd / os.RelPath( "src/main/resources/images/" + newImage.getName )
+                )
+
                 // display success message to user and clear page
                 displayAlert( messageAlert, "Item added to the system" )
                 resetItemPage()
              catch
+                case InvalidInput( m )       => displayAlert( messageAlert, m )
                 // if item category does not exist in the system
-                case InvalidItemCategory( msg ) =>
+                case ItemDoesNotExist( msg ) =>
                    displayAlert( messageAlert, msg )
                 // if new item already exists in the system
-                case DuplicateItem( msg )       =>
+                case DuplicateItem( msg )    =>
                    displayAlert( messageAlert, msg )
-                case _                          => displayAlert( messageAlert, "Cannot add item" )
+                case _                       => displayAlert( messageAlert, "Cannot add item" )
           // if any of the fields is missing input
           else displayAlert( messageAlert, "Missing item data" )
    )
@@ -211,7 +213,7 @@ object AddItem:
 
       // get a list of existing item names as potential parent item
       val parentList = new ObservableBuffer[String]()
-      parentList ++= activeItems.map(item => item.name)
+      parentList ++= activeItems.map( item => item.name )
       // drop down menu
       val depChoiceBox = ChoiceBox( parentList )
       depChoiceBox.maxWidth = medWidth

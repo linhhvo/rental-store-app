@@ -14,6 +14,7 @@ import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
 import ui.Helper.{displayAlert, getItemImageView, toggleDisplay}
+import ui.Validator.{validateLongTextInput, validateNumInput}
 import upickle.default.*
 
 import java.time.format.DateTimeFormatter
@@ -236,10 +237,11 @@ object ItemDetails:
       submitCmtBtn.onAction = (
           ( e ) =>
              try
-                item.addComment( cmtText.getText )
+                item.addComment( validateLongTextInput( cmtText.getText, "Comment" ) )
                 cmtText.clear()
                 displayAlert( messageAlert, "Comment has been added" )
              catch
+                case InvalidInput( m )       => displayAlert( messageAlert, m )
                 case ItemDoesNotExist( msg ) =>
                    displayAlert( messageAlert, msg )
                 case MissingData( msg )      =>
@@ -257,25 +259,26 @@ object ItemDetails:
                 && incidentCmt.getText.nonEmpty
                 && repairCostField.getText.nonEmpty
              then
-                val newIncident = Incident( incidentDatePicker.getValue,
-                                            incTypeChoiceBox.getValue,
-                                            incidentCmt.getText,
-                                            repairCostField.getText.toDouble
-                )
                 try
-                   try
-                      item.reportIncident( newIncident, affectedQuantity.getValue )
+                   val newIncident = Incident(
+                       incidentDatePicker.getValue,
+                       incTypeChoiceBox.getValue,
+                       validateLongTextInput( incidentCmt.getText, "Incident Detail" ),
+                       validateNumInput( repairCostField.getText, "Repair Cost" )
+                   )
+                   item.reportIncident( newIncident, affectedQuantity.getValue )
 
-                      displayAlert( messageAlert, "Incident has been reported" )
+                   displayAlert( messageAlert, "Incident has been reported" )
 
-                      incidentCmt.clear()
-                      repairCostField.clear()
-                      incTypeChoiceBox.getSelectionModel.clearSelection()
-                      incidentDatePicker.setValue( null )
-                   catch
-                      case MissingData( m ) => displayAlert( messageAlert, m )
-                      case _                => println( "cannot report incident" )
-                catch case ItemDoesNotExist( msg ) => displayAlert( messageAlert, msg )
+                   incidentCmt.clear()
+                   repairCostField.clear()
+                   incTypeChoiceBox.getSelectionModel.clearSelection()
+                   incidentDatePicker.setValue( null )
+                catch
+                   case MissingData( m )        => displayAlert( messageAlert, m )
+                   case InvalidInput( m )       => displayAlert( messageAlert, m )
+                   case ItemDoesNotExist( msg ) => displayAlert( messageAlert, msg )
+                   case _                       => println( "cannot report incident" )
              else displayAlert( messageAlert, "Missing information" )
       )
 
@@ -312,21 +315,19 @@ object ItemDetails:
       )
       status2.alignment = BaselineLeft
 
-      val status3 = HBox(
-          statusLabel3,
-          Label(
-              item
-                 .getEarliestReturnDate()
-                 .format( DateTimeFormatter.ofPattern( "dd-MM-yyyy HH:mm" ) )
-          )
-      )
+      val status3 = new HBox()
       status3.alignment = BaselineLeft
-      status3.visible = false
-      status3.managed = false
 
+      // only show the earliest return date if item is not available at the current time
       if ( item.availableQuantity - item.rentedQuantityNow() ) <= 0 then
-         status3.visible = true
-         status3.managed = true
+         status3.children = Array(
+             statusLabel3,
+             Label(
+                 item
+                    .getEarliestReturnDate()
+                    .format( DateTimeFormatter.ofPattern( "dd-MM-yyyy HH:mm" ) )
+             )
+         )
 
       // display item comments
       val itemCmt = VBox( cmtLabel, Label( "- " + item.comments.mkString( "\n- " ) ) )
@@ -349,10 +350,10 @@ object ItemDetails:
                                              itemRpd,
                                              itemRpw,
                                              itemChildren,
+                                             itemCmt,
                                              status1,
                                              status2,
-                                             status3,
-                                             itemCmt
+                                             status3
       )
 
       // group all item actions
