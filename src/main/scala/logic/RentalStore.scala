@@ -1,5 +1,6 @@
 package logic
 
+import logic.Booking.isItemAvailable
 import logic.IOHandler.*
 import logic.ItemStatus.Active
 import logic.SavedItems.{removeFromCart, savedItems}
@@ -92,7 +93,7 @@ object RentalStore:
    def addBooking( newBooking: Booking ) =
       // check if saved items are available during requested booking period
       val isAvailable: Boolean =
-         newBooking.items.forall( si => newBooking.isItemAvailable( si ) )
+         newBooking.items.forall( si => isItemAvailable( newBooking, si ) )
 
       if isAvailable then
          bookings += newBooking

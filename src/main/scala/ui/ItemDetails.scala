@@ -16,7 +16,7 @@ import scalafx.scene.text.{Font, FontWeight}
 import ui.Helper.{displayAlert, getItemImageView, toggleDisplay}
 import upickle.default.*
 
-import java.io.FileInputStream
+import java.time.format.DateTimeFormatter
 
 object ItemDetails:
    private val smallWidth = 240
@@ -282,12 +282,16 @@ object ItemDetails:
       status1.margin = Insets( 10, 0, 0, 0 )
       val status2 = HBox(
           statusLabel2,
-          Label( "" )
+          Label( item.rentedQuantityNow().toString )
       )
       status2.alignment = BaselineLeft
       val status3 = HBox(
           statusLabel3,
-          Label( "" )
+          Label(
+              item
+                 .getEarliestReturnDate()
+                 .format( DateTimeFormatter.ofPattern( "dd-MM-yyyy HH:mm" ) )
+          )
       )
       status3.alignment = BaselineLeft
       val itemCmt = VBox( cmtLabel, Label( "- " + item.comments.mkString( "\n- " ) ) )

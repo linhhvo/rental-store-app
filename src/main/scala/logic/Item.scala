@@ -1,9 +1,12 @@
 package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
-import logic.RentalStore.{inventory, updateItemsDataSource}
+import logic.Booking.areDateRangeOverlapped
+import logic.RentalStore.{bookings, inventory, updateItemsDataSource}
 import upickle.default.*
 
+import java.time.LocalDateTime
+import scala.collection.mutable
 import scala.collection.mutable.{Buffer, SortedSet}
 
 @upickle.implicits.serializeDefaults( true )
@@ -35,12 +38,9 @@ case class Item( name:                       String,
       this.children.flatMap( c => allItemsList.filter( _.itemId == c ) )
 
    def availableQuantity: Int =
-      ownedQuantity - lostQuantity 
+      ownedQuantity - lostQuantity
 
-   def hasEnoughQuantityNow( requestQuantity: Int ): Boolean =
-      this.ownedQuantity - this.lostQuantity - requestQuantity >= 0
-
-   def hasEnoughQuantityThen( existingRentedQuantity: Int, requestQuantity: Int ): Boolean =
+   def hasEnoughQuantity( existingRentedQuantity: Int, requestQuantity: Int ): Boolean =
       this.ownedQuantity - this.lostQuantity - existingRentedQuantity - requestQuantity >= 0
 
    def reserve( quantity: Int ) =
@@ -83,3 +83,44 @@ case class Item( name:                       String,
          oneLevel ++ this
             .getChildrenDetails( allItemsList )
             .flatMap( c => c.withAllChildren( allItemsList ) )
+
+   /** get item availability at the current time */
+   def rentedQuantityNow ( bookingList: Buffer[Booking] = bookings): Int =
+
+      // get a list of existing currentbooking that contains the target item
+      val relevantBookings: Buffer[Booking] =
+         bookingList.filter( b => b.outstandingItems.map( _.itemId ).contains( this.itemId ) )
+
+      // get a list of currentbooking that contains the target item and is happening at current time
+      val overlapBookings: Buffer[Booking] = relevantBookings.filter( b =>
+         areDateRangeOverlapped( b.bookingStartTime,
+                                 b.bookingEndTime,
+                                 LocalDateTime.now,
+                                 LocalDateTime.now.plusHours(1),
+         )
+      )
+
+      // get the total rented quantity of the target item from these bookings
+      overlapBookings
+         .flatMap( b => b.items.filter( si => si.itemId == this.itemId ) )
+         .map( _.rentQuantity )
+         .sum
+
+   /** get the earliest return date */
+   def getEarliestReturnDate(bookingList: Buffer[Booking] = bookings): LocalDateTime =
+   
+      // get a list of existing currentbooking that contains the target item
+      val relevantBookings: Buffer[Booking] =
+         bookingList.filter( b => b.outstandingItems.map( _.itemId ).contains( this.itemId ) )
+
+      // get a list of currentbooking that contains the target item and is happening at current time
+      val overlapBookings: Buffer[Booking] = relevantBookings.filter( b =>
+         areDateRangeOverlapped( b.bookingStartTime,
+                                 b.bookingEndTime,
+                                 LocalDateTime.now,
+                                 LocalDateTime.now.plusHours(1),
+         )
+      )
+      
+      // get the minimum of return dates of the overlapping bookings
+      overlapBookings.map(_.bookingEndTime).min
