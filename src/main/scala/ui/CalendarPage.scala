@@ -30,19 +30,21 @@ class CalendarPage:
       rentalReservations.getCalendars.add( c._2 )
    )
 
-   // add calendar source to calendar view
-   monthView.getCalendarSources.addAll( rentalReservations )
    // set rental reservations as the only calendar source; remove Default calendar source
    monthView.getCalendarSources.setAll( rentalReservations )
 
    // add calendar entries
    bookings.foreach( b =>
-      // create new entry from each booking
-      val bookingEntry = new Entry[String]( b.renter )
-      bookingEntry.setInterval( Interval( b.bookingStartTime, b.bookingEndTime ) )
+
       // add entry to each item calendar
       val matchedCalendars = b.items.flatMap( bi => itemCalendar.get( bi.itemId ) )
-      matchedCalendars.foreach( c => c.addEntry( bookingEntry ) )
+      matchedCalendars.foreach( calendar =>
+         // create new entry from each booking
+         val bookingEntry = new Entry[String]( b.renter )
+         bookingEntry.setInterval( Interval( b.bookingStartTime, b.bookingEndTime ) )
+
+         bookingEntry.setCalendar( calendar )
+      )
    )
 
    // sidebar to show list of rental items

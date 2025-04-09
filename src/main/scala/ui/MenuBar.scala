@@ -46,7 +46,7 @@ object MenuBar:
 
    calendarMenuItem.onAction = ( ( event ) =>
       val newCalendar = CalendarPage()
-      bodyStack.children.removeLast()
+      if bodyStack.children.size == 8 then bodyStack.children.remove( 7 )
       bodyStack.children.add( newCalendar.calendarContainer )
       displayPage( bodyStack, newCalendar.calendarContainer )
    )
