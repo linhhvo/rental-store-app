@@ -6,10 +6,11 @@ import logic.RentalStore.{bookings, updateItemsDataSource}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
+import scalafx.scene.control.Alert.AlertType.Information
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
-import ui.Helper.createRenterPicker
+import ui.Helper.{createRenterPicker, displayAlert}
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -18,6 +19,9 @@ import scala.collection.mutable.Buffer
 object ReturnItem:
    // define date conversion format
    private val dateFormatter = DateTimeFormatter.ofPattern( "dd-MM-yyyy HH:mm" )
+
+   // alert to display message to user
+   private val msgAlert = new Alert( Information )
 
    // renter selection
    private val renterPicker = createRenterPicker
@@ -106,6 +110,7 @@ object ReturnItem:
             b.returnItems( selections )
             writeBookings( bookings )
             updateItemsDataSource()
+            displayAlert( msgAlert, "Item(s) have been returned" )
             resetReturnItemPage()
          case _         => println( "do nothing" )
    )
