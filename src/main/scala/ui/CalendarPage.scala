@@ -4,12 +4,12 @@ import com.calendarfx.model.*
 import com.calendarfx.model.Calendar.Style
 import com.calendarfx.view.SourceView
 import com.calendarfx.view.page.{MonthPage, WeekPage}
-import logic.RentalStore.{bookings, activeItems}
+import logic.RentalStore.{activeItems, bookings}
 import scalafx.scene.control.ControlIncludes.jfxControl2sfx
 import scalafx.scene.control.{Tab, TabPane}
 import scalafx.scene.layout.{ColumnConstraints, GridPane, RowConstraints}
 
-object CalendarPage:
+class CalendarPage:
    /** CALENDAR PAGE */
 
    // initialize calendar views
@@ -22,7 +22,7 @@ object CalendarPage:
    private val rentalReservations = CalendarSource( "Reservations" )
 
    // create calendar for each item
-   private val itemCalendar = activeItems.map(i => i.itemId -> new Calendar(i.name)).toMap
+   private val itemCalendar = activeItems.map( i => i.itemId -> new Calendar( i.name ) ).toMap
    private var styleNum = 1
    itemCalendar.foreach( c =>
       c._2.setStyle( Style.values()( styleNum % 7 ) )
@@ -65,7 +65,7 @@ object CalendarPage:
    val calendarContainer = GridPane()
    calendarContainer.add( sideBar, 0, 0 )
    calendarContainer.add( calendarTabPane, 1, 0 )
-   calendarContainer.visible = false
+//   calendarContainer.visible = false
 
    // set column and row contraints
    private val column0 = new ColumnConstraints:
@@ -79,3 +79,5 @@ object CalendarPage:
 
    calendarContainer.columnConstraints = Array( column0, column1 )
    calendarContainer.rowConstraints = Array( row0 )
+
+end CalendarPage

@@ -4,7 +4,6 @@ import scalafx.scene.control.{Menu, MenuBar, MenuItem}
 import ui.AddItem.{addItemScroll, resetItemPage}
 import ui.AddItemCategory.*
 import ui.BodyContainer.bodyStack
-import ui.CalendarPage.calendarContainer
 import ui.Helper.displayPage
 import ui.ItemList.{itemListPageScroll, renderItemListPage}
 import ui.RentItem.{rentItemScrollContainer, resetSavedListPage}
@@ -45,7 +44,12 @@ object MenuBar:
       itemListPageScroll.setContent( renderItemListPage )
    )
 
-   calendarMenuItem.onAction = ( ( event ) => displayPage( bodyStack, calendarContainer ) )
+   calendarMenuItem.onAction = ( ( event ) =>
+      val newCalendar = CalendarPage()
+      bodyStack.children.removeLast()
+      bodyStack.children.add( newCalendar.calendarContainer )
+      displayPage( bodyStack, newCalendar.calendarContainer )
+   )
 
    addItemCategoryMenuItem.onAction = ( ( e ) =>
       displayPage( bodyStack, addItemCatContainer )
@@ -56,10 +60,11 @@ object MenuBar:
       displayPage( bodyStack, addItemScroll )
       resetItemPage()
    )
-   
-   returnItemMenuItem.onAction = ((e) =>
-      displayPage(bodyStack, returnItemScrollContainer)
-      resetReturnItemPage())
+
+   returnItemMenuItem.onAction = ( ( e ) =>
+      displayPage( bodyStack, returnItemScrollContainer )
+      resetReturnItemPage()
+   )
 
    createBookingMenuItem.onAction = ( ( e ) =>
       displayPage( bodyStack, rentItemScrollContainer )
