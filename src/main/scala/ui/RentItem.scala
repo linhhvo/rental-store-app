@@ -46,7 +46,7 @@ object RentItem:
    private val renterPicker = createRenterPicker
 
    /** Total rental cost container */
-   private val totalCost = DoubleProperty( calculateRentalCost )
+   private val totalCost = DoubleProperty( 0.0 )
 
    // Calculate and update total cost when start date and time change
    rentStart._2
@@ -188,19 +188,22 @@ object RentItem:
    /** method to clear input fields and reset initial datetime picker values */
    def resetSavedListPage() =
       // recalculate cost in case new item is added to saved list
-      totalCost.value = calculateRentalCost
-      // render page container to get updated saved items list
-      rentItemScrollContainer.setContent( renderPage )
+//      totalCost.value = calculateRentalCost
+
       // reset input fields to default values
-      rentStart._2.setValue( LocalDate.now )
+      rentEnd._3.setValue(
+          String.format( "%02d" + ":00", LocalDateTime.now().plusHours( 1 ).getHour )
+      )
       rentStart._3.setValue(
           String.format( "%02d" + ":00", LocalDateTime.now().getHour )
       )
       rentEnd._2.setValue( LocalDateTime.now().plusHours( 1 ).toLocalDate )
-      rentEnd._3.setValue(
-          String.format( "%02d" + ":00", LocalDateTime.now().plusHours( 1 ).getHour )
-      )
+      rentStart._2.setValue( LocalDate.now )
+
       renterPicker._1.getSelectionModel.clearSelection()
+
+      // render page container to get updated saved items list
+      rentItemScrollContainer.setContent( renderPage )
 
    /** method to calculate rental period based on selected start and end datetimes */
    private def calculateRentalDuration =
@@ -235,6 +238,7 @@ object RentItem:
 
    /** method to calculate the total rental cost of saved items */
    private def calculateRentalCost =
-      combinedRatePerWeek() * calculateRentalDuration._1
-         + combinedRatePerDay() * calculateRentalDuration._2
-         + combinedRatePerHour() * calculateRentalDuration._3
+      val rentalDuration = calculateRentalDuration
+      combinedRatePerWeek() * rentalDuration._1
+         + combinedRatePerDay() * rentalDuration._2
+         + combinedRatePerHour() * rentalDuration._3
