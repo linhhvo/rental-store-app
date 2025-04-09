@@ -3,13 +3,11 @@ package ui
 import logic.RentalStore.activeItems
 import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, Label, ScrollPane}
-import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{Border, FlowPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Font
+import ui.Helper.getItemImageView
 import ui.ItemDetails.displayItemPage
-
-import java.io.FileInputStream
 
 object ItemList:
    /** ITEM LIST PAGE */
@@ -27,29 +25,28 @@ object ItemList:
    def renderItemListPage =
       // Create UI element for each item
       val itemElements = activeItems.map( item =>
-         val itemImageView =
-            try
-               val itemImage = FileInputStream( "src/main/resources/images/" + item.image )
-               ImageView( Image( itemImage, 0, 200, true, true ) )
-            catch
-               case _ =>
-                  Label( s"Cannot find image for item ${item.name}" )
+         // show item image
+         val itemImageView = getItemImageView( item )
 
+         // show item name
          val itemNameLabel = Label( item.name )
          itemNameLabel.font = Font( "Arial", 18 )
+
+         // button to open item details page
          val viewItemBtn = Button( "View Item" )
          viewItemBtn.onAction = ( ( e ) =>
             itemPageContainer.setContent( displayItemPage( item ) )
             itemPageContainer.setVisible( true )
          )
 
+         // group all details into a container
          new VBox( 5 ):
             children = Array( itemImageView, itemNameLabel, viewItemBtn )
             padding = Insets( 10 )
             border = Border.stroke( Color.Gray )
       )
 
-      // Create a pane for the item list
+      // Create a container for the item list
       val itemListPageContainer = FlowPane()
       itemListPageContainer.setHgap( 15 )
       itemListPageContainer.setVgap( 15 )

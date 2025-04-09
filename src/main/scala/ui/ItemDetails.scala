@@ -10,11 +10,10 @@ import scalafx.geometry.Pos.BaselineLeft
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.Alert.AlertType.{Confirmation, Information}
-import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
-import ui.Helper.{displayAlert, toggleDisplay}
+import ui.Helper.{displayAlert, getItemImageView, toggleDisplay}
 import upickle.default.*
 
 import java.io.FileInputStream
@@ -323,16 +322,10 @@ object ItemDetails:
              incidentContainer
          )
 
-      val itemImageView =
-         try
-            val itemImage = FileInputStream( "src/main/resources/images/" + item.image )
-            ImageView( Image( itemImage, 0, 200, true, true ) )
-         catch
-            case _ =>
-               Label( s"Cannot find image for item ${item.name}" )
+      val itemImageView = getItemImageView( item )
 
+      // group all details into an overall page container
       itemPageContainer.getChildren.setAll( itemImageView, itemDetailsContainer )
-
       itemPageContainer
 
    /** method to hide action details when an item details page is first generated */

@@ -2,25 +2,28 @@ package ui
 
 import javafx.scene.control.{DateCell as JFXDateCell, DatePicker as JFXDatePicker}
 import javafx.util.Callback
+import logic.Item
 import logic.Renter.renters
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.Node
 import scalafx.scene.control.*
+import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.{ColumnConstraints, GridPane, Pane, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
 import scalafx.util.StringConverter
 
+import java.io.FileInputStream
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime}
 
 object Helper:
-   // Function to show a page in the stack pane while hiding the rest
+   /** show a page in the stack pane while hiding the rest */
    def displayPage( parentContainer: Pane, targetPage: Node ) =
       parentContainer.children.foreach( page => page.setVisible( false ) )
       targetPage.setVisible( true )
 
-   // Toggle visibility of a node
+   /** Toggle visibility of a node */
    def toggleDisplay( element: Node ) =
       if element.visible.get() then
          element.visible = false
@@ -29,12 +32,23 @@ object Helper:
          element.visible = true
          element.managed = true
 
-   // Show pop-up alert with appropriate message
+   /** Show pop-up alert with appropriate message */
    def displayAlert( alert: Alert, msg: String ) =
       alert.headerText = msg
       alert.showAndWait()
 
-   // Create a date time picker control with customized label
+   /** get item image view */
+   def getItemImageView( targetItem:      Item,
+                         resourceDirPath: String = "src/main/resources/images/"
+   ): Node =
+      try
+         val itemImage = FileInputStream( resourceDirPath + targetItem.image )
+         ImageView( Image( itemImage, 0, 200, true, true ) )
+      catch
+         case _ =>
+            Label( s"Cannot find image for item ${targetItem.name}" )
+
+   /** Create a date time picker control with customized label */
    def createDateTimePicker( labelText: String ) =
       // Change how date format is displayed
       val converter = new StringConverter[LocalDate]:
@@ -70,7 +84,7 @@ object Helper:
 
       val hour = ChoiceBox( hours )
       hour.maxWidth = 70
-      hour.setValue( String.format( "%02d" + ":00", LocalDateTime.now().getHour ) )
+      hour.setValue( String.format( "%02d" + ":00", LocalDateTime.now.getHour ) )
 
       val container = GridPane()
       container.add( Label( s"$labelText Date" ), 0, 0 )
