@@ -29,11 +29,11 @@ object RentalStore:
 
       // check that selected item category exists in the system
       if !itemCategoryList.contains( item.category.toLowerCase ) then
-         throw InvalidItemCategory( s"Item category ${item.category} doesn't exist in the system" )
+         throw ItemDoesNotExist( s"Item category ${item.category} doesn't exist in the system" )
       else // if category exists
       // check that the same item doesn't already exist in the system
       if inventory.exists( existingItem =>
-            existingItem.name == item.name && existingItem.status == Active
+            existingItem.name.trim.toLowerCase == item.name.trim.toLowerCase && existingItem.status == Active
          )
       then throw DuplicateItem( s"${item.name} already exists in the system" )
       else // if item doesn't already exist
@@ -49,6 +49,7 @@ object RentalStore:
                   case Some( pi ) =>
                      inventory += item
                      pi.addChildren( item.itemId )
+                     item.image = item.name.toLowerCase + ".png"
                      updateItemsDataSource()
                   // if parent item not found
                   case None       =>
@@ -57,6 +58,7 @@ object RentalStore:
                      )
             // if no parent item is passed, only add new item to items list
             case None           =>
+               item.image = item.name.toLowerCase + ".png"
                inventory += item
                updateItemsDataSource()
 
@@ -69,10 +71,11 @@ object RentalStore:
             di.hideItem()
 
             // remove associated item image from resources folder
-            try
-               os.remove( os.pwd / os.RelPath( "src/main/resources/images/" + di.image ) )
-               di.image = ""
-            catch case _ => println( "cannot remove item image" )
+            if di.image != "" then
+               try
+                  os.remove( os.pwd / os.RelPath( "src/main/resources/images/" + di.image ) )
+                  di.image = ""
+               catch case _ => println( "cannot remove item image" )
 
             // check if deleted item is any other item's child
             inventory.find( _.children.contains( di.itemId ) ) match

@@ -27,7 +27,7 @@ object ItemCategory:
             existingCategories -= target.toLowerCase
             os.write.over( os.pwd / os.RelPath( dataFilePath ), write( existingCategories.toSet ) )
          case None             =>
-            throw InvalidItemCategory(
+            throw ItemDoesNotExist(
                 s"Item category $target doesn't exist in the system"
             )
 
