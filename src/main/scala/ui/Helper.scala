@@ -48,18 +48,19 @@ object Helper:
          case _ =>
             Label( s"Cannot find image for item ${targetItem.name}" )
 
+   /** converter to change how date format is displayed in datetime picker */
+   val converter = new StringConverter[LocalDate]:
+      val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern( "dd-MM-yyyy" )
+
+      override def toString( date: LocalDate ): String =
+         if date != null then dateFormatter.format( date ) else ""
+
+      override def fromString( string: String ): LocalDate =
+         if string != null && string.nonEmpty then LocalDate.parse( string, dateFormatter )
+         else null
+
    /** Create a date time picker control with customized label */
    def createDateTimePicker( labelText: String ) =
-      // Change how date format is displayed
-      val converter = new StringConverter[LocalDate]:
-         val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern( "dd-MM-yyyy" )
-
-         override def toString( date: LocalDate ): String =
-            if date != null then dateFormatter.format( date ) else ""
-
-         override def fromString( string: String ): LocalDate =
-            if string != null && string.nonEmpty then LocalDate.parse( string, dateFormatter )
-            else null
 
       // Disable dates that are before current date
       val dayCellFactory: Callback[JFXDatePicker, JFXDateCell] = ( datePicker: JFXDatePicker ) =>

@@ -5,6 +5,7 @@ import ui.AddItem.addItemScroll
 import ui.AddItemCategory.addItemCatContainer
 import ui.ItemList.{itemListPageScroll, itemPageContainer}
 import ui.RentItem.rentItemScrollContainer
+import ui.ReportPage.reportPageContainer
 import ui.ReturnItem.returnItemScrollContainer
 import ui.ViewRenter.renterPageContainer
 
@@ -20,5 +21,6 @@ object BodyContainer:
        addItemScroll,
        rentItemScrollContainer,
        renterPageContainer,
-       returnItemScrollContainer
+       returnItemScrollContainer,
+       reportPageContainer
    )

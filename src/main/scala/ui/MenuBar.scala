@@ -7,6 +7,7 @@ import ui.BodyContainer.bodyStack
 import ui.Helper.displayPage
 import ui.ItemList.{itemListPageScroll, renderItemListPage}
 import ui.RentItem.{rentItemScrollContainer, resetSavedListPage}
+import ui.ReportPage.reportPageContainer
 import ui.ReturnItem.{resetReturnItemPage, returnItemScrollContainer}
 import ui.ViewRenter.{renterPageContainer, resetRenterPage}
 
@@ -46,10 +47,12 @@ object MenuBar:
 
    calendarMenuItem.onAction = ( ( event ) =>
       val newCalendar = CalendarPage()
-      if bodyStack.children.size == 8 then bodyStack.children.remove( 7 )
+      if bodyStack.children.size == 9 then bodyStack.children.remove( 8 )
       bodyStack.children.add( newCalendar.calendarContainer )
       displayPage( bodyStack, newCalendar.calendarContainer )
    )
+
+   reportsMenuItem.onAction = ( ( e ) => displayPage( bodyStack, reportPageContainer ) )
 
    addItemCategoryMenuItem.onAction = ( ( e ) =>
       displayPage( bodyStack, addItemCatContainer )
