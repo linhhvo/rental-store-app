@@ -59,6 +59,7 @@ object ItemDetails:
    cmtText.promptText = "Enter comment"
    cmtText.prefWidth = smallWidth
    cmtText.maxHeight = smallHeight
+   cmtText.wrapText = true
 
    // button to add comment to item
    private val submitCmtBtn = Button( "Submit" )
@@ -94,6 +95,7 @@ object ItemDetails:
    private val incidentCmt = TextArea()
    incidentCmt.prefWidth = smallWidth
    incidentCmt.maxHeight = smallHeight
+   incidentCmt.wrapText = true
    incidentCmt.promptText = "Enter incident detail"
 
    // text field to add cost to repair
@@ -261,8 +263,9 @@ object ItemDetails:
              then
                 try
                    val newIncident = Incident(
-                       incidentDatePicker.getValue,
                        incTypeChoiceBox.getValue,
+                       incidentDatePicker.getValue,
+                       affectedQuantity.getValue,
                        validateLongTextInput( incidentCmt.getText, "Incident Detail" ),
                        validateNumInput( repairCostField.getText, "Repair Cost" )
                    )

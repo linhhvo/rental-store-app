@@ -18,11 +18,6 @@ object RentItem:
    // predefine size for element
    private val med = 125
 
-   // Container to enable scrolling if page is long
-   val rentItemScrollContainer = ScrollPane()
-   rentItemScrollContainer.setVisible( false )
-   rentItemScrollContainer.setPadding( Insets( 20 ) )
-
    /** Rental period container */
    // Date and time controls for rental period start
    private val rentStart = createDateTimePicker( "Start" )
@@ -149,8 +144,11 @@ object RentItem:
              case _                      => // Do nothing
    )
 
-   // set content to scroll pane container
-   rentItemScrollContainer.setContent( renderPage )
+   /** Page scroll container */
+   val rentItemScrollContainer = new ScrollPane:
+      visible = false
+      padding = Insets( 20 )
+      content = renderPage
 
    /** method to update data and update GUI content */
    private def renderPage =
@@ -188,7 +186,7 @@ object RentItem:
    /** method to clear input fields and reset initial datetime picker values */
    def resetSavedListPage() =
       // recalculate cost in case new item is added to saved list
-//      totalCost.value = calculateRentalCost
+      totalCost.value = calculateRentalCost
 
       // reset input fields to default values
       rentEnd._3.setValue(

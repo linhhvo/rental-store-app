@@ -44,6 +44,7 @@ object AddItem:
    private val descTextField = TextArea()
    descTextField.maxWidth = lgWidth
    descTextField.maxHeight = medWidth
+   descTextField.wrapText = true
 
    // item desc group with label
    private val descLabel = Label( "Description" )
@@ -147,7 +148,7 @@ object AddItem:
              try
                 val newItem = Item(
                     validateShortTextInput( nameTextField.getText, "Item Name" ),
-                    validateLongTextInput(descTextField.getText, "Item Description"),
+                    validateLongTextInput( descTextField.getText, "Item Description" ),
                     qntSpinner.getValue,
                     dataToReset._1.getValue,
                     validateNumInput( rphTextField.getText, "Rate Per Hour" ),
