@@ -42,7 +42,6 @@ class CalendarPage:
          // create new entry from each booking
          val bookingEntry = new Entry[String]( b.renter )
          bookingEntry.setInterval( Interval( b.bookingStartTime, b.bookingEndTime ) )
-
          bookingEntry.setCalendar( calendar )
       )
    )
@@ -52,22 +51,17 @@ class CalendarPage:
    sideBar.bind( monthView )
 
    // tab pane to toggle between week view and month view
-   private val calendarTabPane = TabPane()
-   private val weekTab = Tab()
-   weekTab.text = "Week"
-   weekTab.content = weekView
 
-   private val monthTab = Tab()
-   monthTab.text = "Month"
-   monthTab.content = monthView
+   private val weekTab = new Tab:
+      text = "Week"
+      content = weekView
 
-   calendarTabPane.tabs = Seq( weekTab, monthTab )
+   private val monthTab = new Tab:
+      text = "Month"
+      content = monthView
 
-   // overall container of the page
-   val calendarContainer = GridPane()
-   calendarContainer.add( sideBar, 0, 0 )
-   calendarContainer.add( calendarTabPane, 1, 0 )
-//   calendarContainer.visible = false
+   private val calendarTabPane = new TabPane:
+      tabs = Seq( weekTab, monthTab )
 
    // set column and row contraints
    private val column0 = new ColumnConstraints:
@@ -78,6 +72,11 @@ class CalendarPage:
 
    private val row0 = new RowConstraints:
       percentHeight = 100
+
+   // overall container of the page
+   val calendarContainer = GridPane()
+   calendarContainer.add( sideBar, 0, 0 )
+   calendarContainer.add( calendarTabPane, 1, 0 )
 
    calendarContainer.columnConstraints = Array( column0, column1 )
    calendarContainer.rowConstraints = Array( row0 )
