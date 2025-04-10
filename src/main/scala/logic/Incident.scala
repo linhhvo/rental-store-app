@@ -7,11 +7,12 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @upickle.implicits.serializeDefaults( true )
-case class Incident( incidentDate: LocalDate,
-                     incidentType: IncidentType,
-                     comment:      String,
-                     repairCost:   Double,
-                     incidentId:   String = randomNanoId()
+case class Incident( incidentType:     IncidentType,
+                     incidentDate:     LocalDate,
+                     affectedQuantity: Int,
+                     comment:          String,
+                     repairCost:       Double,
+                     incidentId:       String = randomNanoId()
 ) derives ReadWriter
 
 object Incident:

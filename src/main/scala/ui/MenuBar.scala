@@ -7,7 +7,7 @@ import ui.BodyContainer.bodyStack
 import ui.Helper.displayPage
 import ui.ItemList.{itemListPageScroll, renderItemListPage}
 import ui.RentItem.{rentItemScrollContainer, resetSavedListPage}
-import ui.ReportPage.reportPageContainer
+import ui.ReportPage.{reportPageContainer, resetReportPage}
 import ui.ReturnItem.{resetReturnItemPage, returnItemScrollContainer}
 import ui.ViewRenter.{renterPageContainer, resetRenterPage}
 
@@ -52,7 +52,10 @@ object MenuBar:
       displayPage( bodyStack, newCalendar.calendarContainer )
    )
 
-   reportsMenuItem.onAction = ( ( e ) => displayPage( bodyStack, reportPageContainer ) )
+   reportsMenuItem.onAction = ( ( e ) =>
+      displayPage( bodyStack, reportPageContainer )
+      resetReportPage()
+   )
 
    addItemCategoryMenuItem.onAction = ( ( e ) =>
       displayPage( bodyStack, addItemCatContainer )
