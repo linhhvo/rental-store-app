@@ -102,22 +102,3 @@ object Helper:
       val dateTimeStr = date.getValue.toString + " " + time.getValue
       LocalDateTime.parse( dateTimeStr, DateTimeFormatter.ofPattern( "yyyy-MM-dd H:m" ) )
 
-   /** create components to select renter from a dropdown list */
-   def createRenterPicker =
-      val pickerLabel = Label( "Select renter" )
-      pickerLabel.font = Font( null, FontWeight( Bold ), 14 )
-
-      // get list of renters
-      val renterList = new ObservableBuffer[String]()
-      renterList ++= renters.map( r => r.name )
-
-      // dropdown menu to select renter
-      val renterPicker = ChoiceBox( renterList )
-      renterPicker.prefWidth = 125
-
-      // group renter selection with label
-      val pickerContainer = new VBox:
-         children = Array( pickerLabel, renterPicker )
-         spacing = 5
-
-      ( renterPicker, pickerContainer )

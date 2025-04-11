@@ -7,12 +7,12 @@ import scalafx.scene.control.{ChoiceBox, Label, ScrollPane}
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
-import ui.Helper.createRenterPicker
+import ui.utils.RenterPicker
 
 import scala.collection.mutable.Buffer
 
 object ViewRenter:
-   private val renterPicker = createRenterPicker
+   private val renterPicker = RenterPicker( renters )
 
    // renter name
    private val nameLabel = Label( "Name: " )
@@ -32,10 +32,10 @@ object ViewRenter:
    detailsContainer.spacing = 5
 
    // group containers into one
-   private val pageContainer = VBox( renterPicker._2, detailsContainer )
+   private val pageContainer = VBox( renterPicker.container, detailsContainer )
 
    // display relevant information as renter is selected
-   renterPicker._1
+   renterPicker.picker
       .valueProperty()
       .addListener( ( observable, oldValue, newValue ) =>
          if newValue != null then renderRenterInfo( newValue )
@@ -75,4 +75,4 @@ object ViewRenter:
          case _         => detailsContainer.children = Label( "This user doesn't exist." )
 
    def resetRenterPage() =
-      renterPicker._1.getSelectionModel.clearSelection()
+      renterPicker.picker.getSelectionModel.clearSelection()

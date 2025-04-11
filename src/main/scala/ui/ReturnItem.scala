@@ -3,6 +3,7 @@ package ui
 import logic.Booking
 import logic.IOHandler.writeBookings
 import logic.RentalStore.{bookings, updateItemsDataSource}
+import logic.Renter.renters
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
@@ -10,7 +11,8 @@ import scalafx.scene.control.Alert.AlertType.Information
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
-import ui.Helper.{createRenterPicker, displayAlert}
+import ui.Helper.displayAlert
+import ui.utils.RenterPicker
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -24,7 +26,7 @@ object ReturnItem:
    private val msgAlert = new Alert( Information )
 
    // renter selection
-   private val renterPicker = createRenterPicker
+   private val renterPicker = RenterPicker( renters )
 
    // booking items list container
    private val itemList = new VBox()
@@ -41,7 +43,7 @@ object ReturnItem:
    private var filteredBookings = bookings
 
    // update booking list as renter selection changes
-   renterPicker._1
+   renterPicker.picker
       .valueProperty()
       .addListener( ( observable, oldValue, newValue ) =>
          // empty booking list
@@ -99,7 +101,7 @@ object ReturnItem:
       spacing = 5
 
    // group renter selection and booking selection
-   private val filterContainer = HBox( renterPicker._2, bookingContainer )
+   private val filterContainer = HBox( renterPicker.container, bookingContainer )
    filterContainer.spacing = 20
 
    // button action to return selected items
@@ -125,7 +127,7 @@ object ReturnItem:
 
    /** clear dropdown menu selections and hide return button */
    def resetReturnItemPage() =
-      renterPicker._1.getSelectionModel.clearSelection()
+      renterPicker.picker.getSelectionModel.clearSelection()
       bookingPicker.getSelectionModel.clearSelection()
       returnItemBtn.visible = false
 

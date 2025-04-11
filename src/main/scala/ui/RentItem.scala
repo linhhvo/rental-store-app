@@ -1,7 +1,9 @@
 package ui
 
 import logic.RentalStore.addBooking
+import logic.Renter.renters
 import logic.SavedItems.*
+import logic.utils.BookingDuration
 import logic.{Booking, InvalidDateTime, ItemNotAvailable}
 import scalafx.beans.property.DoubleProperty
 import scalafx.geometry.Insets
@@ -11,8 +13,9 @@ import scalafx.scene.layout.VBox
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
 import ui.Helper.*
+import ui.utils.RenterPicker
 
-import java.time.{Duration, LocalDate, LocalDateTime}
+import java.time.{LocalDate, LocalDateTime}
 
 object RentItem:
    // predefine size for element
@@ -38,7 +41,7 @@ object RentItem:
    periodContainer.spacing = 5
 
    /** Renter Container */
-   private val renterPicker = createRenterPicker
+   private val renterPicker = RenterPicker(renters)
 
    /** Total rental cost container */
    private val totalCost = DoubleProperty( 0.0 )
@@ -106,7 +109,7 @@ object RentItem:
    bookingBtn.onAction = (
        ( e ) =>
           // display error message if renter is not selected
-          if renterPicker._1.getValue == null then
+          if renterPicker.picker.getValue == null then
              displayAlert( msgAlert, "Please select a renter" )
           // when all information is entered
           else
@@ -114,7 +117,7 @@ object RentItem:
                                        getDateTime( rentStart._2, rentStart._3 ),
                                        getDateTime( rentEnd._2, rentEnd._3 ),
                                        totalCost.toDouble,
-                                       renterPicker._1.getValue
+                                       renterPicker.picker.getValue
              )
 
              // add new booking to the store
@@ -174,7 +177,7 @@ object RentItem:
          else
             children = Array( savedItemsContainer,
                               periodContainer,
-                              renterPicker._2,
+                              renterPicker.container,
                               costLabel,
                               bookingBtn,
                               clearBtn
@@ -198,17 +201,15 @@ object RentItem:
       rentEnd._2.setValue( LocalDateTime.now().plusHours( 1 ).toLocalDate )
       rentStart._2.setValue( LocalDate.now )
 
-      renterPicker._1.getSelectionModel.clearSelection()
+      renterPicker.picker.getSelectionModel.clearSelection()
 
       // render page container to get updated saved items list
       rentItemScrollContainer.setContent( renderPage )
 
-   /** method to calculate rental period based on selected start and end datetimes */
-   private def calculateRentalDuration =
-      // initialize duration values
-      var durationInWeeks = 0
-      var durationInDays = 0
-      var durationInHours = 0
+   /** validate datetime selections and covert selected values to LocalDateTime then use valid
+     * datetime values to get booking duration
+     */
+   private def calculateRentalDuration: BookingDuration =
 
       // check that start date and end date are not empty
       if rentStart._2.getValue == null || rentEnd._2.getValue == null then
@@ -226,17 +227,12 @@ object RentItem:
          else if startDT.toLocalDate.isEqual( LocalDate.now )
             && rentStart._3.getValue.split( ":" ).head.toInt < LocalDateTime.now.getHour
          then throw InvalidDateTime( "Start date time cannot be before current date time" )
-         // if valid period is selected, calculate duration
-         else
-            durationInWeeks = Duration.between( startDT, endDT ).toDays.toInt / 7
-            durationInDays = Duration.between( startDT, endDT ).toDays.toInt   % 7
-            durationInHours = Duration.between( startDT, endDT ).toHours.toInt % 24
 
-         ( durationInWeeks, durationInDays, durationInHours )
+         BookingDuration( startDT, endDT )
 
    /** method to calculate the total rental cost of saved items */
    private def calculateRentalCost =
       val rentalDuration = calculateRentalDuration
-      combinedRatePerWeek() * rentalDuration._1
-         + combinedRatePerDay() * rentalDuration._2
-         + combinedRatePerHour() * rentalDuration._3
+      combinedRatePerWeek() * rentalDuration.durationInWeeks
+         + combinedRatePerDay() * rentalDuration.durationInDays
+         + combinedRatePerHour() * rentalDuration.durationInHours
