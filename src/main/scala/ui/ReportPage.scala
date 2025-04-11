@@ -1,8 +1,8 @@
 package ui
 
-import logic.enums.IncidentType.Loss
 import logic.Item
 import logic.RentalStore.inventory
+import logic.enums.IncidentType.{Damage, Loss}
 import scalafx.geometry.Insets
 import scalafx.geometry.Orientation.Horizontal
 import scalafx.geometry.Pos.BaselineLeft
@@ -49,6 +49,26 @@ object ReportPage:
       margin = Insets( 20 )
       alignment = BaselineLeft
 
+   /** Tab container for reports */
+   private val financeReport = new Tab:
+      text = "Finance"
+
+   private val incidentsReport = new Tab:
+      text = "Incidents"
+
+   private val tabContainer = new TabPane:
+//      tabs = Seq( financeReport, incidentsReport )
+      vgrow = Always
+
+   /** Container to group filter and tab container */
+   private val pageContainer = VBox( filterContainer, tabContainer )
+
+   /** Page scroll container */
+   val reportPageContainer = new ScrollPane:
+      content = pageContainer
+      fitToWidth = true
+      visible = false
+
    /** button action to generate reports based on selected date range filter */
    generateReportBtn.onAction = ( ( e ) =>
       val filterStart = fromDate.getValue
@@ -79,47 +99,39 @@ object ReportPage:
 
       // set content for incident tab container
       incidentsReport.content = incidentSummaryContainer
+
+      /** Populate financial report */
+      val financeSummaryByCategory = inventory
+         .map( i =>
+            new VBox:
+               children = Array(
+                   Label( i.name ),
+                   Label( "Income: " + i.totalIncome( filterStart, filterEnd ).toString ),
+                   Label( "Repair Cost: " + i.totalExpense( Damage, filterStart, filterEnd ) ),
+                   Label( "Replacement Cost: " + i.totalExpense( Loss, filterStart, filterEnd ) )
+               )
+               spacing = 5
+               margin = Insets( 0, 0, 10, 0 )
+         )
+
+      val financeSummaryContainer = new VBox:
+         children = financeSummaryByCategory
+         margin = Insets( 10, 0, 0, 20 )
+
+      // set content for finance tab container
+      financeReport.content = financeSummaryContainer
+
+      tabContainer.tabs = Seq( financeReport, incidentsReport )
    )
-
-   /** Tab container for reports */
-   private val financeReport = new Tab:
-      text = "Finance"
-
-   private val incidentsReport = new Tab:
-      text = "Incidents"
-
-   private val tabContainer = new TabPane:
-      tabs = Seq( financeReport, incidentsReport )
-      vgrow = Always
-
-   /** Container to group filter and tab container */
-   private val pageContainer = VBox( filterContainer, tabContainer )
-
-   /** Page scroll container */
-   val reportPageContainer = new ScrollPane:
-      content = pageContainer
-      fitToWidth = true
-      fitToHeight = true
-      visible = false
 
    /** create a container to display incident information for an item */
    private def incidentsByItem( targetItem: Item, start: LocalDate, end: LocalDate ): Buffer[VBox] =
       // if filter is empty, get all inciddents
       // otherwise, get incidents that are within the filter date range inclusively
-      val incidents =
-         if start == null || end == null then targetItem.incidents.toBuffer
-         else
-            targetItem.incidents
-               .filter( inc =>
-                  ( inc.incidentDate.isAfter( start )
-                     || inc.incidentDate.isEqual( start ) )
-                     && ( inc.incidentDate.isBefore( end )
-                        || inc.incidentDate.isEqual( end ) )
-               )
-               .toBuffer
+      val filteredIncidents = targetItem.incidentsByDates( start, end )
 
       // generate container to display incident details for each incident
-      incidents.map( inc =>
+      filteredIncidents.map( inc =>
          val incType = Label( "Type: " + inc.incidentType )
          val incDate = Label(
              "Date: " + inc.incidentDate.format( DateTimeFormatter.ofPattern( "dd-MM-yyyy" ) )
@@ -161,3 +173,4 @@ object ReportPage:
       toDate.value = null
       fromDate.value = null
       incidentsReport.content = null
+      financeReport.content = null

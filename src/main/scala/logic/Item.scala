@@ -113,3 +113,37 @@ case class Item( name:                       String,
 
       // get the minimum of return dates of the overlapping bookings
       overlapBookings.map( _.bookingEndTime ).min
+
+   /** get a list of incidents happened within a time interval */
+   def incidentsByDates( start: LocalDate, end: LocalDate ): Buffer[Incident] =
+      if start == null || end == null then this.incidents
+      else
+         this.incidents.filter( inc =>
+            ( inc.incidentDate.isAfter( start )
+               || inc.incidentDate.isEqual( start ) )
+               && ( inc.incidentDate.isBefore( end )
+                  || inc.incidentDate.isEqual( end ) )
+         )
+
+   /** calculate expense generated from incidents within a time interval */
+   def totalExpense( targetType: IncidentType, start: LocalDate, end: LocalDate ): Double =
+      val targetIncidents =
+         this.incidentsByDates( start, end ).filter( _.incidentType == targetType )
+      if start == null || end == null then targetIncidents.map( _.repairCost ).sum
+      else targetIncidents.map( _.repairCost ).sum
+
+   /** calculate income generated from an item */
+   def totalIncome( start: LocalDate, end: LocalDate ): Double =
+      val filteredBookings = bookingListByDates( start, end )
+      val includedBookings =
+         filteredBookings.filter( _.items.map( _.itemId ).contains( this.itemId ) )
+
+      includedBookings
+         .map( b =>
+            val targetItem = b.items.filter( _.itemId == this.itemId )
+            val duration = BookingDuration( b.bookingStartTime, b.bookingEndTime )
+            calculateRentalCost( duration, targetItem )
+         )
+         .sum
+
+   /** calculate demand for an item within a time interval */
