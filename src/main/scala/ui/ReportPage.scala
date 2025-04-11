@@ -57,7 +57,7 @@ object ReportPage:
       text = "Incidents"
 
    private val tabContainer = new TabPane:
-//      tabs = Seq( financeReport, incidentsReport )
+      tabs = Seq( financeReport, incidentsReport )
       vgrow = Always
 
    /** Container to group filter and tab container */
@@ -106,7 +106,8 @@ object ReportPage:
             new VBox:
                children = Array(
                    Label( i.name ),
-                   Label( "Income: " + i.totalIncome( filterStart, filterEnd ).toString ),
+                   Label( "Demand: " + i.totalDemand( filterStart, filterEnd ) ),
+                   Label( "Income: " + i.totalIncome( filterStart, filterEnd ) ),
                    Label( "Repair Cost: " + i.totalExpense( Damage, filterStart, filterEnd ) ),
                    Label( "Replacement Cost: " + i.totalExpense( Loss, filterStart, filterEnd ) )
                )
@@ -121,7 +122,7 @@ object ReportPage:
       // set content for finance tab container
       financeReport.content = financeSummaryContainer
 
-      tabContainer.tabs = Seq( financeReport, incidentsReport )
+//      tabContainer.tabs = Seq( financeReport, incidentsReport )
    )
 
    /** create a container to display incident information for an item */
@@ -167,6 +168,8 @@ object ReportPage:
                managed = false
                visible = false
       )
+
+//   private def financeByItem(targetItem: Item, start: LocalDate, end: LocalDate) =
 
    /** clear filter date fields and clear report content */
    def resetReportPage() =

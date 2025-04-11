@@ -136,8 +136,7 @@ case class Item( name:                       String,
    def totalExpense( targetType: IncidentType, start: LocalDate, end: LocalDate ): Double =
       val targetIncidents =
          this.incidentsByDates( start, end ).filter( _.incidentType == targetType )
-      if start == null || end == null then targetIncidents.map( _.repairCost ).sum
-      else targetIncidents.map( _.repairCost ).sum
+      targetIncidents.map( _.repairCost ).sum
 
    /** calculate income generated from an item */
    def totalIncome( start: LocalDate, end: LocalDate ): Double =
@@ -154,3 +153,11 @@ case class Item( name:                       String,
          .sum
 
    /** calculate demand for an item within a time interval */
+   def totalDemand( start: LocalDate, end: LocalDate ): Int =
+      val filteredBookings = bookingListByDates( start, end )
+      val includedBookings =
+         filteredBookings.filter( _.items.map( _.itemId ).contains( this.itemId ) )
+
+      includedBookings
+         .map( b => b.items.find( _.itemId == this.itemId ).map( _.rentQuantity ).getOrElse( 0 ) )
+         .sum
