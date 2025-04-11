@@ -1,12 +1,13 @@
 package logic
 
-import logic.Booking.isItemAvailable
-import logic.util.IOHandler.*
-import logic.enums.ItemStatus.Active
+import logic.Booking.areDateRangeOverlapped
 import logic.SavedItems.{removeFromCart, savedItems}
-import logic.util.{BookingDuration, DuplicateItem, ItemDoesNotExist, ItemNotAvailable}
+import logic.enums.ItemStatus.Active
+import logic.util.IOHandler.*
+import logic.util.{DuplicateItem, ItemDoesNotExist, ItemNotAvailable}
 import upickle.default.*
 
+import java.time.{LocalDate, LocalDateTime}
 import scala.collection.mutable.Buffer
 
 object RentalStore:
@@ -97,7 +98,9 @@ object RentalStore:
    def addBooking( newBooking: Booking ) =
       // check if saved items are available during requested booking period
       val isAvailable: Boolean =
-         newBooking.items.forall( si => isItemAvailable( newBooking, si ) )
+         newBooking.items.forall( si =>
+            si.getDetailsFromItemList().exists( _.isItemAvailable( newBooking, si.rentQuantity ) )
+         )
 
       if isAvailable then
          bookings += newBooking
@@ -114,3 +117,35 @@ object RentalStore:
 
    /** update items list in external file */
    def updateItemsDataSource() = writeItems( inventory )
+
+   /** get a list of bookings within a time interval */
+   def bookingListByDates( start:       LocalDate,
+                           end:         LocalDate,
+                           bookingList: Buffer[Booking] = bookings
+   ) =
+      if start == null || end == null then bookingList
+      else
+         bookingList.filter( b =>
+            val bEnd = b.bookingEndTime.toLocalDate
+            ( bEnd.isAfter( start )
+               || bEnd.isEqual( start ) )
+            && ( bEnd.isBefore( end )
+               || bEnd.isEqual( end ) )
+         )
+
+   /** get a list of bookings that contain target item as one of its rented items and overlap with
+     * given date range
+     */
+   def overlapBookingList( targetItemId: String,
+                           start:        LocalDateTime,
+                           end:          LocalDateTime,
+                           bookingList:  Buffer[Booking] = bookings
+   ): Buffer[Booking] =
+      // get a list of existing currentbooking that contains the target item
+      val relevantBookings: Buffer[Booking] =
+         bookingList.filter( b => b.outstandingItems.map( _.itemId ).contains( targetItemId ) )
+
+      // get a list of currentbooking that contains the target item and is happening at current time
+      relevantBookings.filter( b =>
+         areDateRangeOverlapped( b.bookingStartTime, b.bookingEndTime, start, end )
+      )

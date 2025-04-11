@@ -1,7 +1,7 @@
 package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
-import logic.RentalStore.bookings
+import logic.RentalStore.{bookings, overlapBookingList}
 import logic.enums.SavedItemStatus.*
 import logic.util.ItemDoesNotExist
 import upickle.default.*
@@ -58,31 +58,3 @@ object Booking:
    ): Boolean =
       start1.isBefore( end2 ) && end1.isAfter( start2 )
 
-   def isItemAvailable( currentbooking: Booking,
-                        targetItem:     SavedItem,
-                        bookingList:    Buffer[Booking] = bookings
-   ): Boolean =
-      // get the item instance of the target item
-      val itemDetails = targetItem.getDetailsFromItemList()
-
-      // get a list of existing currentbooking that contains the target item
-      val relevantBookings: Buffer[Booking] =
-         bookingList.filter( b => b.outstandingItems.map( _.itemId ).contains( targetItem.itemId ) )
-
-      /* get a list of currentbooking that contains the target item and overlap with the current
-       * currentbooking */
-      val overlapBookings: Buffer[Booking] = relevantBookings.filter( b =>
-         areDateRangeOverlapped( b.bookingStartTime,
-                                 b.bookingEndTime,
-                                 currentbooking.bookingStartTime,
-                                 currentbooking.bookingEndTime
-         )
-      )
-
-      // get the total rented quantity of the target item from these bookings
-      val reservedQuantity = overlapBookings
-         .flatMap( b => b.items.filter( si => si.itemId == targetItem.itemId ) )
-         .map( _.rentQuantity )
-         .sum
-
-      itemDetails.exists( _.hasEnoughQuantity( reservedQuantity, targetItem.rentQuantity ) )

@@ -19,6 +19,7 @@ import ui.util.Helper.{displayAlert, getItemImageView, toggleDisplay}
 import ui.util.Validator.{validateLongTextInput, validateNumInput}
 import upickle.default.*
 
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 object ItemDetails:
@@ -314,9 +315,12 @@ object ItemDetails:
       status1.alignment = BaselineLeft
       status1.margin = Insets( 10, 0, 0, 0 )
 
+      val rentedQntNow =
+         item.rentedQntByDateRange( LocalDateTime.now, LocalDateTime.now.plusHours( 1 ) )
+         
       val status2 = HBox(
           statusLabel2,
-          Label( item.rentedQuantityNow().toString )
+          Label( rentedQntNow.toString )
       )
       status2.alignment = BaselineLeft
 
@@ -326,7 +330,8 @@ object ItemDetails:
       // only show the earliest return date if item is not available at the current time
       if item.availableQuantity <= 0 then
          status3.children = Array( Label( "All units of this item are lost " ) )
-      else if ( item.availableQuantity - item.rentedQuantityNow() ) <= 0 then
+      else if ( item.availableQuantity - rentedQntNow ) <= 0
+      then
          status3.children = Array(
              statusLabel3,
              Label(
