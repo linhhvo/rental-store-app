@@ -38,9 +38,9 @@ class DateTimePicker( val dateLabel: DateType ):
    this.setDefaultValues()
 
    val container = GridPane()
-   container.add(Label(s"$dateLabel Date"), 0, 0)
+   container.add( Label( s"$dateLabel Date" ), 0, 0 )
    container.add( date, 0, 1 )
-   container.add(Label(s"$dateLabel Time"), 1, 0)
+   container.add( Label( s"$dateLabel Time" ), 1, 0 )
    container.add( time, 1, 1 )
    container.columnConstraints =
       Array( ColumnConstraints( 135 ), ColumnConstraints( 80 ), ColumnConstraints( 80 ) )

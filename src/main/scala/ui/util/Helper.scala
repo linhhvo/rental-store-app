@@ -1,16 +1,10 @@
 package ui.util
 
-import javafx.scene.control.{DateCell as JFXDateCell, DatePicker as JFXDatePicker}
-import javafx.util.Callback
 import logic.Item
-import logic.Renter.renters
-import scalafx.collections.ObservableBuffer
 import scalafx.scene.Node
 import scalafx.scene.control.*
 import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.layout.{ColumnConstraints, GridPane, Pane, VBox}
-import scalafx.scene.text.FontWeight.Bold
-import scalafx.scene.text.{Font, FontWeight}
+import scalafx.scene.layout.Pane
 import scalafx.util.StringConverter
 
 import java.io.FileInputStream
@@ -18,6 +12,18 @@ import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime}
 
 object Helper:
+
+   /** converter to change how date format is displayed in datetime picker */
+   val dateStrConverter = new StringConverter[LocalDate]:
+      val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern( "dd-MM-yyyy" )
+
+      override def toString( date: LocalDate ): String =
+         if date != null then dateFormatter.format( date ) else ""
+
+      override def fromString( string: String ): LocalDate =
+         if string != null && string.nonEmpty then LocalDate.parse( string, dateFormatter )
+         else null
+
    /** show a page in the stack pane while hiding the rest */
    def displayPage( parentContainer: Pane, targetPage: Node ) =
       parentContainer.children.foreach( page => page.setVisible( false ) )
@@ -48,19 +54,7 @@ object Helper:
          case _ =>
             Label( s"Cannot find image for item ${targetItem.name}" )
 
-   /** converter to change how date format is displayed in datetime picker */
-   val dateStrConverter = new StringConverter[LocalDate]:
-      val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern( "dd-MM-yyyy" )
-
-      override def toString( date: LocalDate ): String =
-         if date != null then dateFormatter.format( date ) else ""
-
-      override def fromString( string: String ): LocalDate =
-         if string != null && string.nonEmpty then LocalDate.parse( string, dateFormatter )
-         else null
- 
    /** method to combine date and time inputs and convert to LocalDateTime */
    def getDateTime( date: DatePicker, time: ChoiceBox[String] ) =
       val dateTimeStr = date.getValue.toString + " " + time.getValue
       LocalDateTime.parse( dateTimeStr, DateTimeFormatter.ofPattern( "yyyy-MM-dd H:m" ) )
-
