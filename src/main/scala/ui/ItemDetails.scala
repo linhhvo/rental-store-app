@@ -1,11 +1,11 @@
 package ui
 
 import logic.*
-import logic.util.IOHandler.writeSavedItems
 import logic.RentalStore.deleteItem
 import logic.SavedItems.{addToCart, savedItems}
 import logic.enums.IncidentType
-import logic.util.{DuplicateItem, InvalidInput, ItemDoesNotExist, ItemNotAvailable, MissingData}
+import logic.util.*
+import logic.util.IOHandler.writeSavedItems
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.BaselineLeft
@@ -324,7 +324,9 @@ object ItemDetails:
       status3.alignment = BaselineLeft
 
       // only show the earliest return date if item is not available at the current time
-      if ( item.availableQuantity - item.rentedQuantityNow() ) <= 0 then
+      if item.availableQuantity <= 0 then
+         status3.children = Array( Label( "All units of this item are lost " ) )
+      else if ( item.availableQuantity - item.rentedQuantityNow() ) <= 0 then
          status3.children = Array(
              statusLabel3,
              Label(
