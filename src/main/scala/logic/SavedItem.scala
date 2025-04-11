@@ -2,6 +2,7 @@ package logic
 
 import logic.RentalStore.{inventory, updateItemsDataSource}
 import logic.enums.SavedItemStatus
+import logic.enums.SavedItemStatus.*
 import logic.util.IOHandler.{getDataFromFile, writeSavedItems}
 import logic.util.{BookingDuration, MissingData}
 import upickle.default.*
