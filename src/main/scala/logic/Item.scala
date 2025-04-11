@@ -41,7 +41,7 @@ case class Item( name:                       String,
 
    def availableQuantity: Int =
       ownedQuantity - lostQuantity
-      
+
    def reserve( quantity: Int ) =
       rentedQuantity += quantity
 
@@ -67,15 +67,14 @@ case class Item( name:                       String,
          .sum
 
    /** check if item has enough quantity to be rented out in a specific booking */
-   def isItemAvailable( currentBooking :  Booking,
+   def isItemAvailable( currentBooking:  Booking,
                         requestQuantity: Int,
-                        bookingList    :     Buffer[Booking] = bookings
+                        bookingList:     Buffer[Booking] = bookings
    ): Boolean =
       val reservedQuantity =
-         this.rentedQntByDateRange(currentBooking.bookingStartTime, currentBooking.bookingEndTime)
+         this.rentedQntByDateRange( currentBooking.bookingStartTime, currentBooking.bookingEndTime )
 
       this.hasEnoughQuantity( reservedQuantity, requestQuantity )
-
 
    /** method to add a new comment to an item */
    def addComment( newCmt: String ) =
@@ -116,7 +115,15 @@ case class Item( name:                       String,
 
    /** get a list of incidents happened within a time interval */
    def incidentsByDates( start: LocalDate, end: LocalDate ): Buffer[Incident] =
-      if start == null || end == null then this.incidents
+      if start == null && end == null then this.incidents
+      else if start != null && end == null then
+         this.incidents.filter( inc =>
+            inc.incidentDate.isAfter( start ) || inc.incidentDate.isEqual( start )
+         )
+      else if start == null && end != null then
+         this.incidents.filter( inc =>
+            inc.incidentDate.isBefore( end ) || inc.incidentDate.isEqual( end )
+         )
       else
          this.incidents.filter( inc =>
             ( inc.incidentDate.isAfter( start )

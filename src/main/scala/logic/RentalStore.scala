@@ -123,7 +123,17 @@ object RentalStore:
                            end:         LocalDate,
                            bookingList: Buffer[Booking] = bookings
    ) =
-      if start == null || end == null then bookingList
+      if start == null && end == null then bookingList
+      else if start != null && end == null then
+         bookingList.filter( b =>
+            val bEnd = b.bookingEndTime.toLocalDate
+            bEnd.isAfter( start ) || bEnd.isEqual( start )
+         )
+      else if start == null && end != null then
+         bookingList.filter( b =>
+            val bEnd = b.bookingEndTime.toLocalDate
+            bEnd.isBefore( end ) || bEnd.isEqual( end )
+         )
       else
          bookingList.filter( b =>
             val bEnd = b.bookingEndTime.toLocalDate
