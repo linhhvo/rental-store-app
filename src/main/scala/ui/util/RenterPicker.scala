@@ -1,4 +1,4 @@
-package ui.utils
+package ui.util
 
 import logic.Renter
 import scalafx.collections.ObservableBuffer

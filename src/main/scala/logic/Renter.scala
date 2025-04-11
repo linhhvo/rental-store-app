@@ -1,6 +1,6 @@
 package logic
 
-import logic.IOHandler.getDataFromFile
+import logic.util.IOHandler.getDataFromFile
 import logic.RentalStore.bookings
 import upickle.default.*
 

@@ -1,4 +1,4 @@
-package logic.utils
+package logic.util
 
 import java.time.{Duration, LocalDateTime}
 

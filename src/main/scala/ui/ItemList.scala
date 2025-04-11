@@ -6,7 +6,7 @@ import scalafx.scene.control.{Button, Label, ScrollPane}
 import scalafx.scene.layout.{Border, FlowPane, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.Font
-import ui.Helper.getItemImageView
+import ui.util.Helper.getItemImageView
 import ui.ItemDetails.displayItemPage
 
 object ItemList:

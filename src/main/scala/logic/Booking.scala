@@ -2,7 +2,8 @@ package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
 import logic.RentalStore.bookings
-import logic.SavedItemStatus.{Booked, Returned}
+import logic.enums.SavedItemStatus.*
+import logic.util.ItemDoesNotExist
 import upickle.default.*
 
 import java.time.LocalDateTime

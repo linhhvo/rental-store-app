@@ -3,6 +3,7 @@ package ui
 import logic.*
 import logic.ItemCategory.getItemCategoryList
 import logic.RentalStore.activeItems
+import logic.util.{DuplicateItem, InvalidInput, ItemDoesNotExist}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.BaselineLeft
@@ -13,9 +14,9 @@ import scalafx.scene.text.FontWeight.{Black, Bold}
 import scalafx.scene.text.{Font, FontWeight}
 import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
-import ui.Helper.displayAlert
+import ui.util.Helper.displayAlert
 import ui.Main.stage
-import ui.Validator.{validateLongTextInput, validateNumInput, validateShortTextInput}
+import ui.util.Validator.{validateLongTextInput, validateNumInput, validateShortTextInput}
 
 import java.io.File
 

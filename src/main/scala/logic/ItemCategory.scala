@@ -1,7 +1,8 @@
 package logic
 
-import logic.ItemStatus.Active
+import logic.enums.ItemStatus.Active
 import logic.RentalStore.inventory
+import logic.util.{DuplicateItemCategory, IOHandler, ItemDoesNotExist}
 import upickle.default.*
 
 import scala.collection.mutable.Buffer

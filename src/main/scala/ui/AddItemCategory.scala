@@ -2,15 +2,16 @@ package ui
 
 import logic.ItemCategory.*
 import logic.RentalStore.deleteItem
-import logic.{DuplicateItemCategory, InvalidInput, ItemCategory, ItemDoesNotExist}
+import logic.util.{DuplicateItemCategory, InvalidInput, ItemDoesNotExist}
+import logic.ItemCategory
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
 import scalafx.scene.control.Alert.AlertType.{Confirmation, Information}
 import scalafx.scene.layout.VBox
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
-import ui.Helper.displayAlert
-import ui.Validator.validateShortTextInput
+import ui.util.Helper.displayAlert
+import ui.util.Validator.validateShortTextInput
 
 object AddItemCategory:
    private val btnWidth = 125

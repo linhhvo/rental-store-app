@@ -1,7 +1,7 @@
 package ui
 
 import logic.Booking
-import logic.IOHandler.writeBookings
+import logic.util.IOHandler.writeBookings
 import logic.RentalStore.{bookings, updateItemsDataSource}
 import logic.Renter.renters
 import scalafx.collections.ObservableBuffer
@@ -11,8 +11,8 @@ import scalafx.scene.control.Alert.AlertType.Information
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
-import ui.Helper.displayAlert
-import ui.utils.RenterPicker
+import ui.util.Helper.displayAlert
+import ui.util.RenterPicker
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

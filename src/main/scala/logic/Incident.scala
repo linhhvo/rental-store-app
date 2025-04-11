@@ -1,6 +1,7 @@
 package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
+import logic.enums.IncidentType
 import upickle.default.*
 
 import java.time.LocalDate

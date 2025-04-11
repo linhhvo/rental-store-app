@@ -1,4 +1,4 @@
-package logic
+package logic.util
 
 case class InvalidInput ( msg: String ) extends Exception(msg)
 

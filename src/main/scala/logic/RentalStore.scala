@@ -1,9 +1,10 @@
 package logic
 
 import logic.Booking.isItemAvailable
-import logic.IOHandler.*
-import logic.ItemStatus.Active
+import logic.util.IOHandler.*
+import logic.enums.ItemStatus.Active
 import logic.SavedItems.{removeFromCart, savedItems}
+import logic.util.{BookingDuration, DuplicateItem, ItemDoesNotExist, ItemNotAvailable}
 import upickle.default.*
 
 import scala.collection.mutable.Buffer
@@ -101,7 +102,7 @@ object RentalStore:
       if isAvailable then
          bookings += newBooking
          newBooking.items.foreach( bi =>
-            inventory.find( i => i.itemId == bi.itemId ).foreach( _.reserve( bi.rentQuantity ) )
+            inventory.find( _.itemId == bi.itemId ).foreach( _.reserve( bi.rentQuantity ) )
             bi.confirmBooking()
          )
          updateItemsDataSource()

@@ -1,6 +1,6 @@
 package ui
 
-import logic.IncidentType.Loss
+import logic.enums.IncidentType.Loss
 import logic.Item
 import logic.RentalStore.inventory
 import scalafx.geometry.Insets
@@ -11,6 +11,7 @@ import scalafx.scene.layout.Priority.Always
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
+import ui.util.Helper
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -28,32 +29,35 @@ object ReportPage:
 
    private val fromDate = new DatePicker:
       maxWidth = 125
-      converter = Helper.converter
+      converter = Helper.dateStrConverter
       editable = false
 
    private val toDate = new DatePicker:
       maxWidth = 125
-      converter = Helper.converter
+      converter = Helper.dateStrConverter
       editable = false
 
+   /** button to display summary reports */
    val generateReportBtn = new Button:
       text = "Generate Reports"
       margin = Insets( 0, 0, 0, 10 )
 
+   /** group date pickers and button into a container */
    val filterContainer = new HBox:
       children = Array( fromLabel, fromDate, toLabel, toDate, generateReportBtn )
       spacing = 10
       margin = Insets( 20 )
       alignment = BaselineLeft
 
+   /** button action to generate reports based on selected date range filter */
    generateReportBtn.onAction = ( ( e ) =>
       val filterStart = fromDate.getValue
       val filterEnd = toDate.getValue
 
-      /** Populate incidents report */
       val itemsByCategory = inventory.groupBy( _.category )
 
-      val summaryByCategory = itemsByCategory.map( ( cat, items ) =>
+      /** Populate incidents report */
+      val incidentSummaryByCategory = itemsByCategory.map( ( cat, items ) =>
          val incidents = incidentsByCategory( items, filterStart, filterEnd )
 
          if incidents.exists( _.children.nonEmpty ) then
@@ -70,16 +74,16 @@ object ReportPage:
       )
 
       val incidentSummaryContainer = new VBox:
-         children = summaryByCategory
+         children = incidentSummaryByCategory
          margin = Insets( 10, 0, 0, 20 )
 
+      // set content for incident tab container
       incidentsReport.content = incidentSummaryContainer
    )
 
    /** Tab container for reports */
    private val financeReport = new Tab:
-      text = "Income/Expense"
-      content = Label( "Income/expense" )
+      text = "Finance"
 
    private val incidentsReport = new Tab:
       text = "Incidents"
@@ -100,6 +104,8 @@ object ReportPage:
 
    /** create a container to display incident information for an item */
    private def incidentsByItem( targetItem: Item, start: LocalDate, end: LocalDate ): Buffer[VBox] =
+      // if filter is empty, get all inciddents
+      // otherwise, get incidents that are within the filter date range inclusively
       val incidents =
          if start == null || end == null then targetItem.incidents.toBuffer
          else
@@ -112,6 +118,7 @@ object ReportPage:
                )
                .toBuffer
 
+      // generate container to display incident details for each incident
       incidents.map( inc =>
          val incType = Label( "Type: " + inc.incidentType )
          val incDate = Label(
@@ -153,5 +160,4 @@ object ReportPage:
    def resetReportPage() =
       toDate.value = null
       fromDate.value = null
-
       incidentsReport.content = null

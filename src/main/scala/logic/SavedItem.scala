@@ -1,8 +1,9 @@
 package logic
 
-import logic.IOHandler.{getDataFromFile, writeSavedItems}
 import logic.RentalStore.{inventory, updateItemsDataSource}
-import logic.SavedItemStatus.*
+import logic.enums.SavedItemStatus
+import logic.util.IOHandler.{getDataFromFile, writeSavedItems}
+import logic.util.{BookingDuration, MissingData}
 import upickle.default.*
 
 import scala.collection.mutable.Buffer
@@ -39,7 +40,7 @@ object SavedItems:
    ): Buffer[SavedItem] =
       // check that item quantity is selected properly
       if requestQuantity <= 0 then throw MissingData( "Item quantity cannot be zero" )
-      else 
+      else
          requestItems.foreach( item =>
             // check if the added item already exists in the saved list
             savedList.find( _.itemId == item.itemId ) match
@@ -73,12 +74,11 @@ object SavedItems:
       savedList.foreach( si =>
          si.getDetailsFromItemList( allItemsList ).foreach( _.free( si.rentQuantity ) )
       )
-//      savedList = Buffer.empty
       updateItemsDataSource()
       writeSavedItems( Buffer.empty )
       Buffer[SavedItem]()
 
-   /** method to calculate total rate per hour for all saved items */
+   /** calculate total rate per hour for a list of saved items */
    def combinedRatePerHour( savedList:    Buffer[SavedItem] = savedItems,
                             allItemsList: Buffer[Item] = inventory
    ): Double =
@@ -89,7 +89,7 @@ object SavedItems:
          )
          .sum
 
-   /** method to calculate total rate per day for all saved items */
+   /** calculate total rate per day for a list of saved items */
    def combinedRatePerDay( savedList:    Buffer[SavedItem] = savedItems,
                            allItemsList: Buffer[Item] = inventory
    ): Double =
@@ -100,7 +100,7 @@ object SavedItems:
          )
          .sum
 
-   /** method to calculate total rate per week for all saved items */
+   /** calculate total rate per week for a list of saved items */
    def combinedRatePerWeek( savedList:    Buffer[SavedItem] = savedItems,
                             allItemsList: Buffer[Item] = inventory
    ): Double =
@@ -110,3 +110,11 @@ object SavedItems:
                .foldLeft( 0.0 )( ( s, i ) => s + ( i.ratePerWeek * si.rentQuantity ) )
          )
          .sum
+
+   /** calculate the total rental cost of a list of saved items */
+   def calculateRentalCost( duration:  BookingDuration,
+                            savedList: Buffer[SavedItem] = savedItems
+   ): Double =
+      combinedRatePerWeek( savedList ) * duration.durationInWeeks
+         + combinedRatePerDay( savedList ) * duration.durationInDays
+         + combinedRatePerHour( savedList ) * duration.durationInHours

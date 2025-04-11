@@ -3,6 +3,8 @@ package logic
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
 import logic.Booking.areDateRangeOverlapped
 import logic.RentalStore.{bookings, inventory, updateItemsDataSource}
+import logic.enums.{IncidentType, ItemStatus}
+import logic.util.MissingData
 import upickle.default.*
 
 import java.time.LocalDateTime

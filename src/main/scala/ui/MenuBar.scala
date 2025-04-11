@@ -4,7 +4,7 @@ import scalafx.scene.control.{Menu, MenuBar, MenuItem}
 import ui.AddItem.{addItemScroll, resetItemPage}
 import ui.AddItemCategory.*
 import ui.BodyContainer.bodyStack
-import ui.Helper.displayPage
+import ui.util.Helper.displayPage
 import ui.ItemList.{itemListPageScroll, renderItemListPage}
 import ui.RentItem.{rentItemScrollContainer, resetSavedListPage}
 import ui.ReportPage.{reportPageContainer, resetReportPage}

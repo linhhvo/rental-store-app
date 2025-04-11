@@ -1,9 +1,11 @@
 package ui
 
 import logic.*
-import logic.IOHandler.writeSavedItems
+import logic.util.IOHandler.writeSavedItems
 import logic.RentalStore.deleteItem
 import logic.SavedItems.{addToCart, savedItems}
+import logic.enums.IncidentType
+import logic.util.{DuplicateItem, InvalidInput, ItemDoesNotExist, ItemNotAvailable, MissingData}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.BaselineLeft
@@ -13,8 +15,8 @@ import scalafx.scene.control.Alert.AlertType.{Confirmation, Information}
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
-import ui.Helper.{displayAlert, getItemImageView, toggleDisplay}
-import ui.Validator.{validateLongTextInput, validateNumInput}
+import ui.util.Helper.{displayAlert, getItemImageView, toggleDisplay}
+import ui.util.Validator.{validateLongTextInput, validateNumInput}
 import upickle.default.*
 
 import java.time.format.DateTimeFormatter

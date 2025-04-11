@@ -1,6 +1,7 @@
-package logic
+package logic.util
 
-import logic.IOHandler.getDataFromFile
+import logic.util.IOHandler.getDataFromFile
+import logic.{Booking, Item, SavedItem}
 import ujson.{IncompleteParseException, ParseException}
 import upickle.default.*
 

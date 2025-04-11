@@ -7,7 +7,7 @@ import scalafx.scene.control.{ChoiceBox, Label, ScrollPane}
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
-import ui.utils.RenterPicker
+import ui.util.RenterPicker
 
 import scala.collection.mutable.Buffer
 

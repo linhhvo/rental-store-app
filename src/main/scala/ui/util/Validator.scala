@@ -1,6 +1,6 @@
-package ui
+package ui.util
 
-import logic.{InvalidInput, MissingData}
+import logic.util.{InvalidInput, MissingData}
 
 object Validator:
    /** check that user has entered valid numbers in number fields */
