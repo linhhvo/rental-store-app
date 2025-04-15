@@ -32,7 +32,7 @@
       {
         "itemId": "b480j7-yLKqGLo5TQdQTr",
         "rentQuantity": 2,
-        "savedItemStatus": "Booked"
+        "savedItemStatus": "Returned"
       }
     ],
     "bookingStartTime": "9-04-2025 18:00",
@@ -40,5 +40,217 @@
     "totalCost": 2000,
     "renter": "renter3",
     "bookingId": "1LGxx3PeuOqPKJ9f4hMpH"
+  },
+  {
+    "items": [
+      {
+        "itemId": "b480j7-yLKqGLo5TQdQTr",
+        "rentQuantity": 2,
+        "savedItemStatus": "Booked"
+      },
+      {
+        "itemId": "579A9aa_NdVqYXPw5SDVY",
+        "rentQuantity": 1,
+        "savedItemStatus": "Booked"
+      }
+    ],
+    "bookingStartTime": "14-04-2025 15:00",
+    "bookingEndTime": "14-04-2025 20:00",
+    "totalCost": 105,
+    "renter": "renter4",
+    "bookingId": "nTLaLa76hhS3_Yy_fX34v"
+  },
+  {
+    "items": [
+      {
+        "itemId": "b480j7-yLKqGLo5TQdQTr",
+        "rentQuantity": 1,
+        "savedItemStatus": "Returned"
+      },
+      {
+        "itemId": "579A9aa_NdVqYXPw5SDVY",
+        "rentQuantity": 1,
+        "savedItemStatus": "Returned"
+      }
+    ],
+    "bookingStartTime": "23-04-2025 15:00",
+    "bookingEndTime": "23-04-2025 20:00",
+    "totalCost": 55,
+    "renter": "renter1",
+    "bookingId": "MUeNmT04uL0CEzt3IOSSZ"
+  },
+  {
+    "items": [
+      {
+        "itemId": "7-lbeuEOY-glb8Pk7fPsj",
+        "rentQuantity": 3,
+        "savedItemStatus": "Returned"
+      }
+    ],
+    "bookingStartTime": "1-05-2025 17:00",
+    "bookingEndTime": "1-05-2025 23:00",
+    "totalCost": 180,
+    "renter": "renter2",
+    "bookingId": "VVtMsG8ZmAksUI9apFytu"
+  },
+  {
+    "items": [
+      {
+        "itemId": "X-VMWqshQ1xfnaSQnEgwa",
+        "rentQuantity": 3,
+        "savedItemStatus": "Returned"
+      },
+      {
+        "itemId": "7-lbeuEOY-glb8Pk7fPsj",
+        "rentQuantity": 2,
+        "savedItemStatus": "Returned"
+      }
+    ],
+    "bookingStartTime": "18-04-2025 09:00",
+    "bookingEndTime": "19-04-2025 22:00",
+    "totalCost": 1150,
+    "renter": "renter3",
+    "bookingId": "kIoi8ZXO7Jx80vJ_iggY9"
+  },
+  {
+    "items": [
+      {
+        "itemId": "b480j7-yLKqGLo5TQdQTr",
+        "rentQuantity": 1,
+        "savedItemStatus": "Returned"
+      },
+      {
+        "itemId": "X-VMWqshQ1xfnaSQnEgwa",
+        "rentQuantity": 1,
+        "savedItemStatus": "Returned"
+      },
+      {
+        "itemId": "7-lbeuEOY-glb8Pk7fPsj",
+        "rentQuantity": 2,
+        "savedItemStatus": "Returned"
+      }
+    ],
+    "bookingStartTime": "11-04-2025 11:00",
+    "bookingEndTime": "11-04-2025 12:00",
+    "totalCost": 40,
+    "renter": "renter3",
+    "bookingId": "a14UEU3haeW16BxCaQeq0"
+  },
+  {
+    "items": [
+      {
+        "itemId": "7-lbeuEOY-glb8Pk7fPsj",
+        "rentQuantity": 1,
+        "savedItemStatus": "Booked"
+      }
+    ],
+    "bookingStartTime": "11-04-2025 11:00",
+    "bookingEndTime": "11-04-2025 12:00",
+    "totalCost": 10,
+    "renter": "renter4",
+    "bookingId": "HT-rU6X4xEFeZaHQ3DtHL"
+  },
+  {
+    "items": [
+      {
+        "itemId": "7-lbeuEOY-glb8Pk7fPsj",
+        "rentQuantity": 2,
+        "savedItemStatus": "Booked"
+      }
+    ],
+    "bookingStartTime": "11-04-2025 12:00",
+    "bookingEndTime": "12-04-2025 12:00",
+    "totalCost": 200,
+    "renter": "renter1",
+    "bookingId": "ZasVrMFkNs1XpNefVjiKS"
+  },
+  {
+    "items": [
+      {
+        "itemId": "b480j7-yLKqGLo5TQdQTr",
+        "rentQuantity": 1,
+        "savedItemStatus": "Returned"
+      }
+    ],
+    "bookingStartTime": "11-04-2025 12:00",
+    "bookingEndTime": "12-04-2025 12:00",
+    "totalCost": 100,
+    "renter": "renter2",
+    "bookingId": "Y51NjtB7FHoAwz6_ccij2"
+  },
+  {
+    "items": [
+      {
+        "itemId": "b480j7-yLKqGLo5TQdQTr",
+        "rentQuantity": 1,
+        "savedItemStatus": "Returned"
+      }
+    ],
+    "bookingStartTime": "11-04-2025 13:00",
+    "bookingEndTime": "12-04-2025 13:00",
+    "totalCost": 100,
+    "renter": "renter3",
+    "bookingId": "YZqYdgVe5wP4JiQ1q9WR5"
+  },
+  {
+    "items": [
+      {
+        "itemId": "7-lbeuEOY-glb8Pk7fPsj",
+        "rentQuantity": 10,
+        "savedItemStatus": "Returned"
+      }
+    ],
+    "bookingStartTime": "23-04-2025 22:00",
+    "bookingEndTime": "25-04-2025 14:00",
+    "totalCost": 2600,
+    "renter": "renter2",
+    "bookingId": "bWx-BCKzh3DGa_MV1HQlL"
+  },
+  {
+    "items": [
+      {
+        "itemId": "7-lbeuEOY-glb8Pk7fPsj",
+        "rentQuantity": 10,
+        "savedItemStatus": "Booked"
+      }
+    ],
+    "bookingStartTime": "24-04-2025 13:00",
+    "bookingEndTime": "24-04-2025 14:00",
+    "totalCost": 100,
+    "renter": "renter2",
+    "bookingId": "ueJutoK8fhjNZxqgMhMBZ"
+  },
+  {
+    "items": [
+      {
+        "itemId": "7-lbeuEOY-glb8Pk7fPsj",
+        "rentQuantity": 8,
+        "savedItemStatus": "Booked"
+      }
+    ],
+    "bookingStartTime": "11-04-2025 18:00",
+    "bookingEndTime": "11-04-2025 19:00",
+    "totalCost": 80,
+    "renter": "renter2",
+    "bookingId": "mdBMd2fJ4Zbk-oqYwU3NL"
+  },
+  {
+    "items": [
+      {
+        "itemId": "7-lbeuEOY-glb8Pk7fPsj",
+        "rentQuantity": 5,
+        "savedItemStatus": "Booked"
+      },
+      {
+        "itemId": "svAVCv3uIJld1A68JPDDH",
+        "rentQuantity": 2,
+        "savedItemStatus": "Booked"
+      }
+    ],
+    "bookingStartTime": "8-05-2025 18:00",
+    "bookingEndTime": "9-05-2025 18:00",
+    "totalCost": 700,
+    "renter": "renter3",
+    "bookingId": "fc3A7qy9ulvE6knDsEuPO"
   }
 ]

@@ -8,13 +8,41 @@
     "ratePerDay": 100,
     "ratePerWeek": 1000,
     "itemId": "579A9aa_NdVqYXPw5SDVY",
-    "incidents": [],
+    "incidents": [
+      {
+        "incidentType": "Damage",
+        "incidentDate": "10-04-2025",
+        "affectedQuantity": 1,
+        "comment": "damage tent",
+        "repairCost": 12,
+        "incidentId": "UlSGayOBXbRjE6H2R91gm"
+      },
+      {
+        "incidentType": "Damage",
+        "incidentDate": "11-04-2025",
+        "affectedQuantity": 1,
+        "comment": "damage tent",
+        "repairCost": 12,
+        "incidentId": "-a5eYPD2QuTw0sIgeLN4w"
+      },
+      {
+        "incidentType": "Loss",
+        "incidentDate": "10-04-2025",
+        "affectedQuantity": 1,
+        "comment": "lost",
+        "repairCost": 12,
+        "incidentId": "1gC9XWUtKp-RNjqtZyvmO"
+      }
+    ],
     "children": [
       "b480j7-yLKqGLo5TQdQTr"
     ],
     "image": "tent.png",
-    "comments": [],
-    "lostQuantity": 0,
+    "comments": [
+      "///goodtent/12",
+      "good tent"
+    ],
+    "lostQuantity": 1,
     "rentedQuantity": 1,
     "status": "Active"
   },
@@ -27,12 +55,91 @@
     "ratePerDay": 100,
     "ratePerWeek": 1000,
     "itemId": "b480j7-yLKqGLo5TQdQTr",
-    "incidents": [],
+    "incidents": [
+      {
+        "incidentType": "Loss",
+        "incidentDate": "8-04-2025",
+        "affectedQuantity": 2,
+        "comment": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "repairCost": 123,
+        "incidentId": "I_0FEmoQcML2bM4Uke9zO"
+      },
+      {
+        "incidentType": "Damage",
+        "incidentDate": "9-04-2025",
+        "affectedQuantity": 1,
+        "comment": "damage item",
+        "repairCost": 12,
+        "incidentId": "6GTOA7Vryo6Sz_XVoKU2r"
+      }
+    ],
     "children": [],
     "image": "sleeping bag.png",
     "comments": [],
+    "lostQuantity": 2,
+    "rentedQuantity": 2,
+    "status": "Active"
+  },
+  {
+    "name": "pot",
+    "desc": "pot",
+    "ownedQuantity": 10,
+    "category": "cooking",
+    "ratePerHour": 10,
+    "ratePerDay": 100,
+    "ratePerWeek": 1000,
+    "itemId": "X-VMWqshQ1xfnaSQnEgwa",
+    "incidents": [
+      {
+        "incidentType": "Loss",
+        "incidentDate": "15-04-2025",
+        "affectedQuantity": 1,
+        "comment": "lost item",
+        "repairCost": 123,
+        "incidentId": "bN126RhmN51UQ42usKCCu"
+      }
+    ],
+    "children": [],
+    "image": "",
+    "comments": [],
+    "lostQuantity": 1,
+    "rentedQuantity": 2,
+    "status": "Inactive"
+  },
+  {
+    "name": "tent1",
+    "desc": "tent",
+    "ownedQuantity": 10,
+    "category": "camping",
+    "ratePerHour": 10,
+    "ratePerDay": 100,
+    "ratePerWeek": 1000,
+    "itemId": "7-lbeuEOY-glb8Pk7fPsj",
+    "incidents": [],
+    "children": [
+      "svAVCv3uIJld1A68JPDDH"
+    ],
+    "image": "tent1.png",
+    "comments": [],
     "lostQuantity": 0,
-    "rentedQuantity": 4,
+    "rentedQuantity": 26,
+    "status": "Active"
+  },
+  {
+    "name": "pot",
+    "desc": "pot",
+    "ownedQuantity": 5,
+    "category": "cooking",
+    "ratePerHour": 10,
+    "ratePerDay": 100,
+    "ratePerWeek": 1000,
+    "itemId": "svAVCv3uIJld1A68JPDDH",
+    "incidents": [],
+    "children": [],
+    "image": "pot.png",
+    "comments": [],
+    "lostQuantity": 0,
+    "rentedQuantity": 2,
     "status": "Active"
   }
 ]
