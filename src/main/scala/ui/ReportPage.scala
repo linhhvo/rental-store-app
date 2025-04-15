@@ -101,19 +101,15 @@ object ReportPage:
       incidentsReport.content = incidentSummaryContainer
 
       /** Populate financial report */
-      val financeSummaryByCategory = inventory
-         .map( i =>
-            new VBox:
-               children = Array(
-                   Label( i.name ),
-                   Label( "Demand: " + i.totalDemand( filterStart, filterEnd ) ),
-                   Label( "Income: " + i.totalIncome( filterStart, filterEnd ) ),
-                   Label( "Repair Cost: " + i.totalExpense( Damage, filterStart, filterEnd ) ),
-                   Label( "Replacement Cost: " + i.totalExpense( Loss, filterStart, filterEnd ) )
-               )
-               spacing = 5
-               margin = Insets( 0, 0, 10, 0 )
-         )
+      val financeSummaryByCategory = itemsByCategory.map((cat, items) =>
+         new VBox:
+            children = Array(Label("Category " + cat))
+               ++ financeByItem(items, filterStart, filterEnd)
+               ++ Array(Separator(Horizontal))
+            spacing = 10
+            margin = Insets(10,0,0,0)
+      )
+
 
       val financeSummaryContainer = new VBox:
          children = financeSummaryByCategory
@@ -149,7 +145,7 @@ object ReportPage:
 
          new VBox:
             children = Array( incType, incDate, incQnt, incDetails, incCost )
-            margin = Insets( 12, 0, 0, 15 )
+            margin = Insets( 12, 0, 0, 20 )
       )
 
    /** create a container to display items and their incidents for an item category */
@@ -159,9 +155,13 @@ object ReportPage:
    ): Buffer[VBox] =
       items.map( i =>
          val filteredIncidents = incidentsByItem( i, start, end )
+         val nameLabel = new Label:
+            text = "Item " + i.name
+            margin = Insets(0,0,0,10)
+
          if filteredIncidents.nonEmpty then
             new VBox:
-               children = Array( Label( "Item " + i.name ) ) ++ filteredIncidents
+               children = Array( nameLabel ) ++ filteredIncidents
                margin = Insets( 0, 0, 5, 0 )
          else
             new VBox:
@@ -169,7 +169,23 @@ object ReportPage:
                visible = false
       )
 
-//   private def financeByItem(targetItem: Item, start: LocalDate, end: LocalDate) =
+   private def financeByItem(items: Buffer[Item], start: LocalDate, end: LocalDate) =
+      items.map( i =>
+         val nameLabel = new Label:
+            text = i.name
+            margin = Insets(0,0, 0, -10)
+
+         new VBox:
+            children = Array(
+                nameLabel,
+                Label( "Demand: " + i.totalDemand( start, end ) ),
+                Label( "Income: " + i.totalIncome( start, end ) ),
+                Label( "Repair Cost: " + i.totalExpense( Damage, start, end ) ),
+                Label( "Replacement Cost: " + i.totalExpense( Loss, start, end ) )
+            )
+            spacing = 5
+            margin = Insets( 0, 0, 5, 20 ))
+
 
    /** clear filter date fields and clear report content */
    def resetReportPage() =
