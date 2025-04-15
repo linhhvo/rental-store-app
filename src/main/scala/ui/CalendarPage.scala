@@ -35,12 +35,12 @@ class CalendarPage:
 
    // add calendar entries
    bookings.foreach( b =>
-
       // add entry to each item calendar
-      val matchedCalendars = b.items.flatMap( bi => itemCalendar.get( bi.itemId ) )
-      matchedCalendars.foreach( calendar =>
+      val matchedCalendars =
+         b.items.map( bi => ( itemCalendar.getOrElse( bi.itemId, null ), bi.rentQuantity ) )
+      matchedCalendars.foreach( ( calendar, quantity ) =>
          // create new entry from each booking
-         val bookingEntry = new Entry[String]( b.renter )
+         val bookingEntry = new Entry[String]( s"$quantity units" )
          bookingEntry.setInterval( Interval( b.bookingStartTime, b.bookingEndTime ) )
          bookingEntry.setCalendar( calendar )
       )
