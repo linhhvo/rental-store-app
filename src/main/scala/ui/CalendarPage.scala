@@ -6,6 +6,7 @@ import com.calendarfx.view.SourceView
 import com.calendarfx.view.page.{MonthPage, WeekPage}
 import logic.RentalStore.{activeItems, bookings}
 import scalafx.scene.control.ControlIncludes.jfxControl2sfx
+import scalafx.scene.control.TabPane.TabClosingPolicy.Unavailable
 import scalafx.scene.control.{Tab, TabPane}
 import scalafx.scene.layout.{ColumnConstraints, GridPane, RowConstraints}
 
@@ -18,39 +19,47 @@ class CalendarPage:
 
    monthView.bind( weekView, true )
 
-   // add calendar source to store item reservations
+   // add a calendar source to store item reservations
    private val rentalReservations = CalendarSource( "Reservations" )
 
-   // create calendar for each item
-   private val itemCalendar = activeItems.map( i => i.itemId -> new Calendar( i.name ) ).toMap
+   // create a calendar for each item
+   private val itemCalendarList = activeItems.map( i => i.itemId -> new Calendar( i.name ) ).toMap
+
+   // assign different color styles to each calendar
    private var styleNum = 1
-   itemCalendar.foreach( c =>
+   itemCalendarList.foreach( c =>
       c._2.setStyle( Style.values()( styleNum % 7 ) )
       styleNum += 1
       rentalReservations.getCalendars.add( c._2 )
    )
 
-   // set rental reservations as the only calendar source; remove Default calendar source
+   // set rental reservations as the only calendar source; remove the Default calendar source
    monthView.getCalendarSources.setAll( rentalReservations )
 
-   // add calendar entries
-   bookings.foreach( b =>
-      // add entry to each item calendar
-      val matchedCalendars =
-         b.items.map( bi => ( itemCalendar.getOrElse( bi.itemId, null ), bi.rentQuantity ) )
-      matchedCalendars.foreach( ( calendar, quantity ) =>
-         // create new entry from each booking
-         val bookingEntry = new Entry[String]( s"$quantity units" )
-         bookingEntry.setInterval( Interval( b.bookingStartTime, b.bookingEndTime ) )
-         bookingEntry.setCalendar( calendar )
-      )
+   /* Add reservations to each item calendar:
+    * - Filter the bookings that contain the item
+    * - Group the bookings by start and end time
+    * - Calculate the total rented quantity for the item if multiple bookings have the same date
+    * range
+    * - Create a calendar entry for each booking date range and add to the calendar */
+   itemCalendarList.foreach( ( itemId, cal ) =>
+      bookings
+         .filter( b => b.items.exists( _.itemId == itemId ) )
+         .groupMapReduce( b => ( b.bookingStartTime, b.bookingEndTime ) )( b =>
+            b.items.find( _.itemId == itemId ).map( _.rentQuantity ).getOrElse( 0 )
+         )( _ + _ )
+         .foreach( ( key, value ) =>
+            val entry = new Entry( s"$value unit(s)", Interval( key._1, key._2 ) )
+            entry.setCalendar( cal )
+         )
    )
 
-   // sidebar to show list of rental items
+   // disable functionalities to modify calendar entries directly on GUI
+   itemCalendarList.foreach( ( id, cal ) => cal.setReadOnly( true ) )
+
+   // sidebar to show a list of rental items
    private val sideBar = SourceView()
    sideBar.bind( monthView )
-
-   // tab pane to toggle between week view and month view
 
    private val weekTab = new Tab:
       text = "Week"
@@ -60,8 +69,10 @@ class CalendarPage:
       text = "Month"
       content = monthView
 
+   // tab pane to toggle between week view and month view
    private val calendarTabPane = new TabPane:
       tabs = Seq( weekTab, monthTab )
+      tabClosingPolicy = Unavailable
 
    // set column and row contraints
    private val column0 = new ColumnConstraints:
