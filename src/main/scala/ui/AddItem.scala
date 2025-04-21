@@ -1,8 +1,8 @@
 package ui
 
 import logic.*
+import logic.Inventory.activeItems
 import logic.ItemCategory.itemCategoryList
-import logic.RentalStore.activeItems
 import logic.util.{DuplicateItem, InvalidInput, ItemDoesNotExist}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
@@ -14,8 +14,8 @@ import scalafx.scene.text.FontWeight.{Black, Bold}
 import scalafx.scene.text.{Font, FontWeight}
 import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
-import ui.util.Helper.displayAlert
 import ui.Main.stage
+import ui.util.Helper.displayAlert
 import ui.util.Validator.{validateLongTextInput, validateNumInput, validateShortTextInput}
 
 import java.io.File
@@ -26,70 +26,81 @@ object AddItem:
    private val medWidth = 155
    private val smWidth = 60
 
-   /** ITEM NAME */
+   /* ITEM NAME */
 
    // text field to enter item name
-   private val nameTextField = TextField()
-   nameTextField.maxWidth = lgWidth
+   private val nameTextField = new TextField:
+      maxWidth = lgWidth
 
    // item name group with label
-   private val nameLabel = Label( "Name" )
-   nameLabel.font = Font( null, FontWeight( Black ), 14 )
+   private val nameLabel = new Label:
+      text = "Name"
+      font = Font( null, FontWeight( Black ), 14 )
+
    private val itemName = new VBox:
       spacing = 5
       children = Array( nameLabel, nameTextField )
 
-   /** ITEM DESCRIPTION */
+   /* ITEM DESCRIPTION */
 
    // text field to enter item description
-   private val descTextField = TextArea()
-   descTextField.maxWidth = lgWidth
-   descTextField.maxHeight = medWidth
-   descTextField.wrapText = true
+   private val descTextField = new TextArea:
+      maxWidth = lgWidth
+      maxHeight = medWidth
+      wrapText = true
 
    // item desc group with label
-   private val descLabel = Label( "Description" )
-   descLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val descLabel = new Label:
+      text = "Description"
+      font = Font( null, FontWeight( Bold ), 14 )
+
    private val itemDesc = new VBox:
       spacing = 5
       children = Array( descLabel, descTextField )
 
-   /** ITEM QUANTITY */
+   /* ITEM QUANTITY */
 
    // item quantity selection, initial amount is 1
-   private val qntSpinner = Spinner( 1, 100, 1, 1 )
-   qntSpinner.maxWidth = medWidth
-   qntSpinner.editable = true
+   private val qntSpinner = new Spinner( 1, 100, 1, 1 ):
+      maxWidth = medWidth
+      editable = true
 
    // item quanity group with label
-   private val qntLabel = Label( "Quantity" )
-   qntLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val qntLabel = new Label:
+      text = "Quantity"
+      font = Font( null, FontWeight( Bold ), 14 )
+
    private val itemQuantity = new VBox:
       spacing = 5
       children = Array( qntLabel, qntSpinner )
 
-   /** ITEM RENTAL RATE */
+   /* ITEM RENTAL RATE */
 
    // item rental rate per hour
    private val rphLabel = Label( "Rate Per Hour" )
-   private val rphTextField = TextField()
-   rphTextField.maxWidth = smWidth
+   private val rphTextField = new TextField:
+      maxWidth = smWidth
 
    // item rental rate per day
    private val rpdLabel = Label( "Rate Per Day" )
-   private val rpdTextField = TextField()
-   rpdTextField.maxWidth = smWidth
+   private val rpdTextField = new TextField:
+      maxWidth = smWidth
 
    // item rental rate per week
    private val rpwLabel = Label( "Rate Per Week" )
-   private val rpwTextField = TextField()
-   rpwTextField.maxWidth = smWidth
+   private val rpwTextField = new TextField:
+      maxWidth = smWidth
 
    // container for all rental rates
-   private val rateLabel = Label( "Rental Rate" )
-   rateLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val rateLabel = new Label:
+      text = "Rental Rate"
+      font = Font( null, FontWeight( Bold ), 14 )
 
-   private val itemRate = GridPane()
+   private val itemRate = new GridPane:
+      hgap = 5
+      vgap = 5
+      margin = Insets( 5, 0, 0, 0 )
+
    itemRate.add( rateLabel, 0, 0, 2, 1 )
    itemRate.add( rphLabel, 0, 1 )
    itemRate.add( rphTextField, 1, 1 )
@@ -97,15 +108,12 @@ object AddItem:
    itemRate.add( rpdTextField, 1, 2 )
    itemRate.add( rpwLabel, 0, 3 )
    itemRate.add( rpwTextField, 1, 3 )
-   itemRate.hgap = 5
-   itemRate.vgap = 5
-   itemRate.margin = Insets( 5, 0, 0, 0 )
 
-   /** ITEM IMAGE */
+   /* ITEM IMAGE */
 
-   private val imageChooser = FileChooser()
-   imageChooser.title = "Select an image"
-   imageChooser.extensionFilters.add( ExtensionFilter( "Images", Seq( "*.jpg", "*.png" ) ) )
+   private val imageChooser = new FileChooser:
+      title = "Select an image"
+      extensionFilters.add( ExtensionFilter( "Images", Seq( "*.jpg", "*.png" ) ) )
 
    // initialize the selected image file
    private var selectedImage = File( "placeholder" )
@@ -113,34 +121,34 @@ object AddItem:
    // label to show user message if selecting image was successful or not
    private val imageLabel = Label( null )
 
-   private val uploadImageBtn = Button( "Select image" )
-   uploadImageBtn.onAction = ( ( e ) =>
-      // prompt user to select an image from local storage
-      selectedImage = imageChooser.showOpenDialog( stage )
-      // display user message
-      if selectedImage != null && selectedImage.getName != "placeholder" then
-         imageLabel.text = s"Image ${selectedImage.getName} has been added"
-      else imageLabel.text = "No image has been added"
-   )
+   private val uploadImageBtn = new Button:
+      text = "Select image"
+      onAction = ( ( e ) =>
+         selectedImage = imageChooser.showOpenDialog( stage )
+         if selectedImage != null && selectedImage.getName != "placeholder" then
+            imageLabel.text = s"Image ${selectedImage.getName} has been added"
+         else imageLabel.text = "No image has been added"
+      )
 
    // group image chooser and label in container
-   private val itemImage = new HBox( uploadImageBtn, imageLabel )
-   itemImage.spacing = 5
-   itemImage.alignment = BaselineLeft
-   itemImage.margin = Insets( 10, 0, 0, 0 )
+   private val itemImage = new HBox:
+      children = Array( uploadImageBtn, imageLabel )
+      spacing = 5
+      alignment = BaselineLeft
+      margin = Insets( 10, 0, 0, 0 )
 
-   /** ADD BUTTON */
-
-   private val addItemBtn = Button( "Add Item" )
-   addItemBtn.margin = Insets( 15, 0, 0, 0 )
+   /* ADD BUTTON */
 
    // set up alert to display user messages
    private val messageAlert = new Alert( Information )
 
+   private val addItemBtn = new Button:
+      text = "Add Item"
+      margin = Insets( 15, 0, 0, 0 )
+
    // get category list, parent item list, and container
    private var dataToReset = renderAddItemPage
 
-   // action to add new item to system
    addItemBtn.onAction = (
        ( e ) =>
           // check that all information is entered
@@ -158,9 +166,9 @@ object AddItem:
                 )
 
                 // if no parent item is selected, add item without parent
-                if dataToReset._2.getValue == null then RentalStore.addItem( newItem, None )
+                if dataToReset._2.getValue == null then Inventory.addItem( newItem, None )
                 else // if parent item is selected
-                   RentalStore.addItem( newItem, Some( dataToReset._2.getValue ) )
+                   Inventory.addItem( newItem, Some( dataToReset._2.getValue ) )
 
                 // copy selected image to resources folder
                 val newImage = File(
@@ -186,64 +194,72 @@ object AddItem:
           else displayAlert( messageAlert, "Missing item data" )
    )
 
-   // Scroll container for add item page
-   val addItemScroll = ScrollPane()
-   addItemScroll.setContent( dataToReset._3 )
-   addItemScroll.visible = false
-   addItemScroll.padding = Insets( 20 )
+   // scroll container for add item page
+   val addItemScroll = new ScrollPane:
+      content = dataToReset._3
+      visible = false
+      padding = Insets( 20 )
 
-   /** function to render page; update item category list data and parent item list data when there
-     * are changes from adding/deleting category or adding/deleting item; render container
+   /** Render page<br>
+     * Update item category list data and parent item list data when there are changes from adding/deleting category or adding/deleting item
      */
    private def renderAddItemPage =
-      /** ITEM CATEGORY */
+      /* ITEM CATEGORY */
 
       // drop down menu to select item category
-      val categoryList = new ObservableBuffer[String]()
-      categoryList ++= getItemCategoryList
-      val catChoiceBox = ChoiceBox( categoryList )
-      catChoiceBox.maxWidth = medWidth
+      val categoryList = ObservableBuffer.empty[String]
+      categoryList ++= itemCategoryList
+      val catChoiceBox = new ChoiceBox[String]:
+         items = categoryList
+         maxWidth = medWidth
 
       // item category list group with label
-      val catLabel = Label( "Category" )
-      catLabel.font = Font( null, FontWeight( Bold ), 14 )
+      val catLabel = new Label:
+         text = "Category"
+         font = Font( null, FontWeight( Bold ), 14 )
+
       val itemCategory = new VBox:
          spacing = 5
          children = Array( catLabel, catChoiceBox )
 
-      /** ITEM DEPENDENCY */
+      /* ITEM DEPENDENCY */
 
       // get a list of existing item names as potential parent item
-      val parentList = new ObservableBuffer[String]()
+      val parentList = ObservableBuffer.empty[String]
       parentList ++= activeItems.map( item => item.name )
       // drop down menu
-      val depChoiceBox = ChoiceBox( parentList )
-      depChoiceBox.maxWidth = medWidth
+      val depChoiceBox = new ChoiceBox[String]:
+         items = parentList
+         maxWidth = medWidth
 
       // group drop down parent item list menu and label
-      val parentLabel = Label( "Parent Item" )
-      parentLabel.font = Font( null, FontWeight( Bold ), 14 )
+      val parentLabel = new Label:
+         text = "Parent Item"
+         font = Font( null, FontWeight( Bold ), 14 )
+
       val itemDependencies = new VBox:
          spacing = 5
          children = Array( parentLabel, depChoiceBox )
 
       // overall container
       val addItemContainer = new VBox:
-         children = Array( itemName,
-                           itemDesc,
-                           itemQuantity,
-                           itemCategory,
-                           itemRate,
-                           itemDependencies,
-                           itemImage,
-                           addItemBtn
+         children = Array(
+             itemName,
+             itemDesc,
+             itemQuantity,
+             itemCategory,
+             itemRate,
+             itemDependencies,
+             itemImage,
+             addItemBtn
          )
          spacing = 10
 
       ( catChoiceBox, depChoiceBox, addItemContainer )
 
-   /** function to reset page clear entered information from input fields; update data and re-render
-     * container
+   /** Reset page<br>
+     * Clear entered information from input fields
+     * Update data and re-render container
      */
    def resetItemPage() =
       nameTextField.clear()
@@ -255,7 +271,7 @@ object AddItem:
       addItemScroll.setContent( dataToReset._3 )
       imageLabel.text = null
 
-   /** function to check if all input fields have information */
+   /** Check if all input fields have information */
    private def isAllFieldsNotEmpty =
       nameTextField.getText.nonEmpty
          && descTextField.getText.nonEmpty
