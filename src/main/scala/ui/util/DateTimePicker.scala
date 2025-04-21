@@ -9,8 +9,9 @@ import ui.util.DateType.Start
 
 import java.time.{LocalDate, LocalDateTime}
 
+/** Create a group of components to select date and time */
 class DateTimePicker( val dateLabel: DateType ):
-   // Disable dates that are before current date
+   // disable dates that are before current date
    private val customeDayCellFactory: Callback[JFXDatePicker, JFXDateCell] =
       ( datePicker: JFXDatePicker ) =>
          new JFXDateCell:
@@ -20,7 +21,7 @@ class DateTimePicker( val dateLabel: DateType ):
                if item != null && item.isBefore( LocalDate.now )
                then setDisable( true )
 
-   // List of hours for ChoiceBox
+   // list of hours for ChoiceBox
    private val hours = ObservableBuffer[String]() ++ ( 0 to 23 ).toArray.map( num =>
       String.format( "%02d" + ":00", num )
    )
@@ -45,9 +46,9 @@ class DateTimePicker( val dateLabel: DateType ):
    container.columnConstraints =
       Array( ColumnConstraints( 135 ), ColumnConstraints( 80 ), ColumnConstraints( 80 ) )
 
-   /** set default initial values for date and time pickers start date and time is set to one hour
-     * ahead of current local time to avoid issue with start time is before current time end date
-     * and time is set to two hours ahead of current local time so that default duration is 1 hour
+   /** Set default initial values for date and time pickers.<br>
+     * Start date and time is set to one hour ahead of current local time to avoid issue with start time is before current time.<br>
+     * End date and time is set to two hours ahead of current local time so that default duration is 1 hour
      */
    def setDefaultValues() =
       if dateLabel == Start then

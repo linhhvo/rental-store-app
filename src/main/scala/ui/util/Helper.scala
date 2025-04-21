@@ -2,6 +2,7 @@ package ui.util
 
 import logic.Item
 import scalafx.scene.Node
+import scalafx.scene.SceneIncludes.jfxNode2sfx
 import scalafx.scene.control.*
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.layout.Pane
@@ -13,7 +14,7 @@ import java.time.{LocalDate, LocalDateTime}
 
 object Helper:
 
-   /** converter to change how date format is displayed in datetime picker */
+   /** Converter to change how date is displayed in date picker */
    val dateStrConverter = new StringConverter[LocalDate]:
       val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern( "dd-MM-yyyy" )
 
@@ -24,10 +25,10 @@ object Helper:
          if string != null && string.nonEmpty then LocalDate.parse( string, dateFormatter )
          else null
 
-   /** show a page in the stack pane while hiding the rest */
+   /** Show a page in the stack pane while hiding the rest */
    def displayPage( parentContainer: Pane, targetPage: Node ) =
-      parentContainer.children.foreach( page => page.setVisible( false ) )
-      targetPage.setVisible( true )
+      parentContainer.children.foreach( _.visible = false )
+      targetPage.visible = true
 
    /** Toggle visibility of a node */
    def toggleDisplay( element: Node ) =
@@ -38,12 +39,12 @@ object Helper:
          element.visible = true
          element.managed = true
 
-   /** Show pop-up alert with appropriate message */
+   /** Show pop-up alert with the appropriate message */
    def displayAlert( alert: Alert, msg: String ) =
       alert.headerText = msg
       alert.showAndWait()
 
-   /** get item image view */
+   /** Get item image view */
    def getItemImageView( targetItem:      Item,
                          resourceDirPath: String = "src/main/resources/images/"
    ): Node =
@@ -54,7 +55,7 @@ object Helper:
          case _ =>
             Label( s"Cannot find image for item ${targetItem.name}" )
 
-   /** method to combine date and time inputs and convert to LocalDateTime */
+   /** Combine date and time inputs and convert to LocalDateTime */
    def getDateTime( date: DatePicker, time: ChoiceBox[String] ) =
       val dateTimeStr = date.getValue.toString + " " + time.getValue
       LocalDateTime.parse( dateTimeStr, DateTimeFormatter.ofPattern( "yyyy-MM-dd H:m" ) )
