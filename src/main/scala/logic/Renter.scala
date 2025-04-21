@@ -1,7 +1,7 @@
 package logic
 
 import logic.util.IOHandler.getDataFromFile
-import logic.RentalStore.bookings
+import logic.BookingList.bookings
 import upickle.default.*
 
 import scala.collection.mutable.SortedSet

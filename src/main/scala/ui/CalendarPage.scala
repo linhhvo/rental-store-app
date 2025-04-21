@@ -4,7 +4,9 @@ import com.calendarfx.model.*
 import com.calendarfx.model.Calendar.Style
 import com.calendarfx.view.SourceView
 import com.calendarfx.view.page.{MonthPage, WeekPage}
-import logic.RentalStore.{activeItems, bookings}
+import logic.BookingList.bookings
+import logic.RentalStore.activeItems
+import logic.enums.SavedItemStatus.Booked
 import scalafx.scene.control.ControlIncludes.jfxControl2sfx
 import scalafx.scene.control.TabPane.TabClosingPolicy.Unavailable
 import scalafx.scene.control.{Tab, TabPane}

@@ -2,7 +2,7 @@ package ui
 
 import logic.*
 import logic.RentalStore.deleteItem
-import logic.SavedItems.{addToCart, savedItems}
+import logic.SavedList.{addToCart, savedItems}
 import logic.enums.IncidentType
 import logic.util.*
 import logic.util.IOHandler.writeSavedItems

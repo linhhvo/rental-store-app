@@ -1,9 +1,10 @@
 package ui
 
 import logic.Booking
-import logic.util.IOHandler.writeBookings
-import logic.RentalStore.{bookings, updateItemsDataSource}
+import logic.BookingList.bookings
+import logic.RentalStore.updateItemsDataSource
 import logic.Renter.renters
+import logic.util.IOHandler.writeBookings
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
@@ -29,12 +30,13 @@ object ReturnItem:
    private val renterPicker = RenterPicker( renters )
 
    // booking items list container
-   private val itemList = new VBox()
-   itemList.spacing = 5
+   private val itemList = new VBox:
+      spacing = 5
 
    // booking selection
-   private val pickerLabel = Label( "Select booking" )
-   pickerLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val pickerLabel = new Label:
+      text = "Select booking"
+      font = Font( null, FontWeight( Bold ), 14 )
 
    // get list of bookings
    private val bookingList = new ObservableBuffer[String]()

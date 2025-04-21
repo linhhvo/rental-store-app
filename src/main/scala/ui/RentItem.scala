@@ -1,10 +1,10 @@
 package ui
 
-import logic.RentalStore.addBooking
-import logic.Renter.renters
-import logic.SavedItems.*
-import logic.util.{BookingDuration, InvalidDateTime, ItemNotAvailable}
 import logic.Booking
+import logic.BookingList.addBooking
+import logic.Renter.renters
+import logic.SavedList.*
+import logic.util.{BookingDuration, InvalidDateTime, ItemNotAvailable}
 import scalafx.beans.property.DoubleProperty
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
@@ -12,8 +12,8 @@ import scalafx.scene.control.Alert.AlertType.Confirmation
 import scalafx.scene.layout.VBox
 import scalafx.scene.text.FontWeight.Bold
 import scalafx.scene.text.{Font, FontWeight}
-import ui.util.Helper.*
 import ui.util.DateType.{End, Start}
+import ui.util.Helper.*
 import ui.util.{DateTimePicker, RenterPicker}
 
 import java.time.{LocalDate, LocalDateTime}
@@ -46,7 +46,7 @@ object RentItem:
    rentStart.date
       .valueProperty()
       .addListener( ( observable, oldDate, newDate ) =>
-         try totalCost.value = calculateRentalCost(getRentalDuration)
+         try totalCost.value = calculateRentalCost( getRentalDuration )
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
@@ -55,7 +55,7 @@ object RentItem:
    rentStart.time
       .valueProperty()
       .addListener( ( observable, oldDate, newDate ) =>
-         try totalCost.value = calculateRentalCost(getRentalDuration)
+         try totalCost.value = calculateRentalCost( getRentalDuration )
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
@@ -67,7 +67,7 @@ object RentItem:
    rentEnd.date
       .valueProperty()
       .addListener( ( observable, oldDate, newDate ) =>
-         try totalCost.value = calculateRentalCost(getRentalDuration)
+         try totalCost.value = calculateRentalCost( getRentalDuration )
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
@@ -76,7 +76,7 @@ object RentItem:
    rentEnd.time
       .valueProperty()
       .addListener( ( observable, oldDate, newDate ) =>
-         try totalCost.value = calculateRentalCost(getRentalDuration)
+         try totalCost.value = calculateRentalCost( getRentalDuration )
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
@@ -186,11 +186,11 @@ object RentItem:
    /** method to clear input fields and reset initial datetime picker values */
    def resetSavedListPage() =
       // recalculate cost in case new item is added to saved list
-      totalCost.value = calculateRentalCost(getRentalDuration)
+      totalCost.value = calculateRentalCost( getRentalDuration )
 
       rentStart.setDefaultValues()
       rentEnd.setDefaultValues()
-      
+
       renterPicker.picker.getSelectionModel.clearSelection()
 
       // render page container to get updated saved items list

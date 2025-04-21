@@ -1,7 +1,7 @@
 package ui
 
 import logic.*
-import logic.ItemCategory.getItemCategoryList
+import logic.ItemCategory.itemCategoryList
 import logic.RentalStore.activeItems
 import logic.util.{DuplicateItem, InvalidInput, ItemDoesNotExist}
 import scalafx.collections.ObservableBuffer
