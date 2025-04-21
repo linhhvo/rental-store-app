@@ -5,7 +5,7 @@ import com.calendarfx.model.Calendar.Style
 import com.calendarfx.view.SourceView
 import com.calendarfx.view.page.{MonthPage, WeekPage}
 import logic.BookingList.bookings
-import logic.RentalStore.activeItems
+import logic.Inventory.activeItems
 import logic.enums.SavedItemStatus.Booked
 import scalafx.scene.control.ControlIncludes.jfxControl2sfx
 import scalafx.scene.control.TabPane.TabClosingPolicy.Unavailable
@@ -13,7 +13,6 @@ import scalafx.scene.control.{Tab, TabPane}
 import scalafx.scene.layout.{ColumnConstraints, GridPane, RowConstraints}
 
 class CalendarPage:
-   /** CALENDAR PAGE */
 
    // initialize calendar views
    private val monthView = MonthPage()
@@ -48,11 +47,15 @@ class CalendarPage:
       bookings
          .filter( b => b.items.exists( _.itemId == itemId ) )
          .groupMapReduce( b => ( b.bookingStartTime, b.bookingEndTime ) )( b =>
-            b.items.find( _.itemId == itemId ).map( _.rentQuantity ).getOrElse( 0 )
+            b.items
+               .find( si => si.itemId == itemId && si.savedItemStatus == Booked )
+               .map( _.rentQuantity )
+               .getOrElse( 0 )
          )( _ + _ )
          .foreach( ( key, value ) =>
-            val entry = new Entry( s"$value unit(s)", Interval( key._1, key._2 ) )
-            entry.setCalendar( cal )
+            if value > 0 then
+               val entry = new Entry( s"$value unit(s)", Interval( key._1, key._2 ) )
+               entry.setCalendar( cal )
          )
    )
 

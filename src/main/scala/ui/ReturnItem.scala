@@ -126,13 +126,13 @@ object ReturnItem:
       content = returnItemPageContainer
       visible = false
 
-   /** clear dropdown menu selections and hide return button */
+   /** Clear dropdown menu selections and hide return button */
    def resetReturnItemPage() =
       renterPicker.picker.getSelectionModel.clearSelection()
       bookingPicker.getSelectionModel.clearSelection()
       returnItemBtn.visible = false
 
-   /** return a booking instance based on booking period string */
+   /** Return a booking instance based on booking period string */
    private def findBooking( bookingPeriodStr: String ): Buffer[Booking] =
       val period = bookingPeriodStr.split( " to " )
       val start = LocalDateTime.parse( period.head, dateFormatter )

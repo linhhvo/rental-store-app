@@ -10,14 +10,13 @@ import ui.MenuBar.menuBar
 object Main extends JFXApp3:
    def start() =
       val bodyHeight = 950
-      val bodyWidth = 1100
+      val bodyWidth = 1200
       stage = new PrimaryStage:
          title = "Cookie Rental Company"
          height = bodyHeight
          width = bodyWidth
          resizable = true
 
-      /** ROOT */
       val root = new BorderPane {
          top = menuBar
          center = bodyStack

@@ -3,24 +3,22 @@ package ui
 import scalafx.scene.layout.StackPane
 import ui.AddItem.addItemScroll
 import ui.AddItemCategory.addItemCatContainer
-import ui.ItemList.{itemListPageScroll, itemPageContainer}
+import ui.ItemGrid.{itemGridPageScroll, itemPageContainer}
 import ui.RentItem.rentItemScrollContainer
 import ui.ReportPage.reportPageContainer
 import ui.ReturnItem.returnItemScrollContainer
 import ui.ViewRenter.renterPageContainer
 
 object BodyContainer:
-   /** BODY CONTAINER */
-
    // Create a pane to stack different views. The view changes based on selected menu option
-   val bodyStack = StackPane()
-   bodyStack.children = Array(
-       itemListPageScroll,
-       addItemCatContainer,
-       itemPageContainer,
-       addItemScroll,
-       rentItemScrollContainer,
-       renterPageContainer,
-       returnItemScrollContainer,
-       reportPageContainer
-   )
+   val bodyStack = new StackPane:
+      children = Array(
+         itemGridPageScroll,
+         addItemCatContainer,
+         itemPageContainer,
+         addItemScroll,
+         rentItemScrollContainer,
+         renterPageContainer,
+         returnItemScrollContainer,
+         reportPageContainer
+         )

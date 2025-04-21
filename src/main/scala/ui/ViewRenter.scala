@@ -15,21 +15,24 @@ object ViewRenter:
    private val renterPicker = RenterPicker( renters )
 
    // renter name
-   private val nameLabel = Label( "Name: " )
-   nameLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val nameLabel = new Label:
+      text = "Name: "
+      font = Font( null, FontWeight( Bold ), 14 )
 
    // renter email
-   private val emailLabel = Label( "Email: " )
-   emailLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val emailLabel = new Label:
+      text = "Email: "
+      font = Font( null, FontWeight( Bold ), 14 )
 
    // renter's rented items
-   private val rentedLabel = Label( "Rented Items:" )
-   rentedLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val rentedLabel = new Label:
+      text = "Rented Items:"
+      font = Font( null, FontWeight( Bold ), 14 )
 
    // details container
-   private val detailsContainer = new VBox()
-   detailsContainer.padding = Insets( 20, 0, 0, 0 )
-   detailsContainer.spacing = 5
+   private val detailsContainer = new VBox:
+      padding = Insets( 20, 0, 0, 0 )
+      spacing = 5
 
    // group containers into one
    private val pageContainer = VBox( renterPicker.container, detailsContainer )
@@ -42,23 +45,25 @@ object ViewRenter:
          else detailsContainer.children.clear()
       )
 
-   val renterPageContainer = ScrollPane()
-   renterPageContainer.setContent( pageContainer )
-   renterPageContainer.setPadding( Insets( 20 ) )
-   renterPageContainer.setVisible( false )
+   val renterPageContainer = new ScrollPane:
+      content = pageContainer
+      padding = Insets( 20 )
+      visible = false
 
-   /** get and generate renter details */
+   /** Get and generate renter details */
    private def renderRenterInfo( selectedRenter: String ) =
       val renter = renters.find( _.name == selectedRenter )
       renter match
          case Some( r ) =>
             // display renter name
-            val renterName = HBox( nameLabel, Label( r.name ) )
-            renterName.alignment = BaselineLeft
+            val renterName = new HBox:
+               children = Array( nameLabel, Label( r.name ) )
+               alignment = BaselineLeft
 
             // display renter email
-            val renterEmail = HBox( emailLabel, Label( r.email ) )
-            renterEmail.alignment = BaselineLeft
+            val renterEmail = new HBox:
+               children = Array( emailLabel, Label( r.email ) )
+               alignment = BaselineLeft
 
             // generate list of renter's rented items
             val rentedItems =
@@ -74,5 +79,6 @@ object ViewRenter:
             detailsContainer.children = Array( renterName, renterEmail, rentedLabel, itemsList )
          case _         => detailsContainer.children = Label( "This user doesn't exist." )
 
+   /** Clear renter selection */
    def resetRenterPage() =
       renterPicker.picker.getSelectionModel.clearSelection()

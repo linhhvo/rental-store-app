@@ -1,11 +1,10 @@
 package ui
 
 import logic.*
-import logic.RentalStore.deleteItem
-import logic.SavedList.{addToCart, savedItems}
+import logic.Inventory.deleteItem
+import logic.SavedList.addToCart
 import logic.enums.IncidentType
 import logic.util.*
-import logic.util.IOHandler.writeSavedItems
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.geometry.Pos.BaselineLeft
@@ -27,10 +26,9 @@ object ItemDetails:
    private val btnWidth = 125
    private val smallHeight = 75
 
-   /** User message alert */
    private val messageAlert = new Alert( Information )
 
-   /** Rent item */
+   /* RENT ITEM */
 
    // select rent quantity to add to saved list
    private var rentQuantity = Spinner( 1, 100, 1, 1 )
@@ -44,25 +42,27 @@ object ItemDetails:
       margin = Insets( 5, 0, 5, 0 )
 
    // button to show/hide input fields to add item to saved list
-   private val rentItemBtn = Button( "Rent Item" )
-   rentItemBtn.prefWidth = btnWidth
-   rentItemBtn.onAction = ( ( e ) => toggleDisplay( rentItemContainer ) )
-   rentItemBtn.margin = Insets( 20, 0, 0, 0 )
+   private val rentItemBtn = new Button:
+      text = "Rent Item"
+      prefWidth = btnWidth
+      onAction = ( ( e ) => toggleDisplay( rentItemContainer ) )
+      margin = Insets( 20, 0, 0, 0 )
 
-   /** Delete item button */
+   /* DELETE ITEM */
 
-   private val deleteItemBtn = Button( "Delete Item" )
-   deleteItemBtn.prefWidth = btnWidth
-   deleteItemBtn.margin = Insets( 15, 0, 15, 0 )
+   private val deleteItemBtn = new Button:
+      text = "Delete Item"
+      prefWidth = btnWidth
+      margin = Insets( 15, 0, 15, 0 )
 
-   /** Add item comment */
+   /* ADD ITEM COMMENT */
 
    // input field to enter comment
-   private val cmtText = TextArea()
-   cmtText.promptText = "Enter comment"
-   cmtText.prefWidth = smallWidth
-   cmtText.maxHeight = smallHeight
-   cmtText.wrapText = true
+   private val cmtText = new TextArea:
+      promptText = "Enter comment"
+      prefWidth = smallWidth
+      maxHeight = smallHeight
+      wrapText = true
 
    // button to add comment to item
    private val submitCmtBtn = Button( "Submit" )
@@ -74,41 +74,45 @@ object ItemDetails:
       margin = Insets( 10, 0, 5, 0 )
 
    // button to show/hide comment field
-   private val addCmtBtn = Button( "Add Comment" )
-   addCmtBtn.prefWidth = btnWidth
-   addCmtBtn.onAction = ( ( e ) => toggleDisplay( addCmtContainer ) )
+   private val addCmtBtn = new Button:
+      text = "Add Comment"
+      prefWidth = btnWidth
+      onAction = ( ( e ) => toggleDisplay( addCmtContainer ) )
 
-   /** Report item incident */
+   /* REPORT ITEM INCIDENT */
 
    // dropdown menu to select incident type
    private val incTypeList =
       ObservableBuffer[IncidentType]( IncidentType.Loss, IncidentType.Damage )
-   private val incTypeChoiceBox = ChoiceBox( incTypeList )
-   incTypeChoiceBox.prefWidth = smallWidth
+
+   private val incTypeChoiceBox = new ChoiceBox[IncidentType]:
+      items = incTypeList
+      prefWidth = smallWidth
 
    // date picker to select incident date
-   private val incidentDatePicker = DatePicker()
-   incidentDatePicker.promptText = "Select incident date"
-   incidentDatePicker.prefWidth = smallWidth
+   private val incidentDatePicker = new DatePicker:
+      promptText = "Select incident date"
+      prefWidth = smallWidth
 
    // select quantity of item affected
    private var affectedQuantity = Spinner( 1, 100, 1, 1 )
 
    // text field to add incident comment
-   private val incidentCmt = TextArea()
-   incidentCmt.prefWidth = smallWidth
-   incidentCmt.maxHeight = smallHeight
-   incidentCmt.wrapText = true
-   incidentCmt.promptText = "Enter incident detail"
+   private val incidentCmt = new TextArea:
+      prefWidth = smallWidth
+      maxHeight = smallHeight
+      wrapText = true
+      promptText = "Enter incident detail"
 
    // text field to add cost to repair
-   private val repairCostField = TextField()
-   repairCostField.prefWidth = smallWidth
-   repairCostField.promptText = "Enter repair cost"
+   private val repairCostField = new TextField:
+      prefWidth = smallWidth
+      promptText = "Enter repair cost"
 
    // button to add incident to item
-   private val submitIncidentBtn = Button( "Submit" )
-   submitIncidentBtn.margin = Insets( 5, 0, 0, 0 )
+   private val submitIncidentBtn = new Button:
+      text = "Submit"
+      margin = Insets( 5, 0, 0, 0 )
 
    // group incident input fields with labels
    private val incidentContainer = new VBox:
@@ -116,74 +120,90 @@ object ItemDetails:
       margin = Insets( 5, 0, 5, 0 )
 
    // button to show/hide incident input fields
-   private val reportIncidentBtn = Button( "Report Incident" )
-   reportIncidentBtn.margin = Insets( 15, 0, 0, 0 )
-   reportIncidentBtn.prefWidth = btnWidth
-   reportIncidentBtn.onAction = ( ( e ) => toggleDisplay( incidentContainer ) )
+   private val reportIncidentBtn = new Button:
+      text = "Report Incident"
+      margin = Insets( 15, 0, 0, 0 )
+      prefWidth = btnWidth
+      onAction = ( ( e ) => toggleDisplay( incidentContainer ) )
 
-   /** Item details container */
-   private val itemDetailsContainer = VBox( 5 )
-   itemDetailsContainer.padding = Insets( 10, 0, 0, 0 )
+   /* Container to group all item details texts */
+   private val itemDetailsContainer = new VBox:
+      spacing = 5
+      padding = Insets( 10, 0, 0, 0 )
 
-   /** Item details container */
-   private val itemActionsContainer = VBox( 5 )
-   itemDetailsContainer.padding = Insets( 10, 0, 0, 0 )
+   /* Container to group all item action buttons and input fields */
+   private val itemActionsContainer = new VBox:
+      spacing = 5
+      padding = Insets( 10, 0, 0, 0 )
 
-   /** Page container */
-   private val itemPageContainer = HBox( 20 )
-   itemPageContainer.padding = Insets( 20 )
+   /* Page container */
+   private val itemPageContainer = new HBox:
+      spacing = 20
+      padding = Insets( 20 )
 
-   // create label fields for item details
-   private val nameLabel = Label( "Item: " ) // name
-   nameLabel.font = Font( null, FontWeight( Bold ), 14 )
+   /* Labels for item details */
+   private val nameLabel = new Label:
+      text = "Item: "
+      font = Font( null, FontWeight( Bold ), 14 )
 
-   private val catLabel = Label( "Category: " ) // category
-   catLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val catLabel = new Label:
+      text = "Category: "
+      font = Font( null, FontWeight( Bold ), 14 )
 
-   private val descLabel = Label( "Description: " ) // description
-   descLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val descLabel = new Label:
+      text = "Description: "
+      font = Font( null, FontWeight( Bold ), 14 )
 
-   private val rphLabel = Label( "Rate Per Hour: " ) // rate per hour
-   rphLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val rphLabel = new Label:
+      text = "Rate Per Hour: "
+      font = Font( null, FontWeight( Bold ), 14 )
 
-   private val rpdLabel = Label( "Rate Per Day: " ) // rate per day
-   rpdLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val rpdLabel = new Label:
+      text = "Rate Per Day: "
+      font = Font( null, FontWeight( Bold ), 14 )
 
-   private val rpwLabel = Label( "Rate Per Week: " ) // rate per week
-   rpwLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val rpwLabel = new Label:
+      text = "Rate Per Week: "
+      font = Font( null, FontWeight( Bold ), 14 )
 
-   private val statusLabel1 = Label( "Quantity available for rent: " ) // avaialble quantity
-   statusLabel1.font = Font( null, FontWeight( Bold ), 14 )
+   private val statusLabel1 = new Label:
+      text = "Quantity available for rent: "
+      font = Font( null, FontWeight( Bold ), 14 )
 
-   private val statusLabel2 = Label( "Currently rented: " ) // rented quantity
-   statusLabel2.font = Font( null, FontWeight( Bold ), 14 )
+   private val statusLabel2 = new Label:
+      text = "Currently rented: "
+      font = Font( null, FontWeight( Bold ), 14 )
 
-   private val statusLabel3 = Label( "Item will be available after: " ) // earliest return date
-   statusLabel3.font = Font( null, FontWeight( Bold ), 14 )
+   private val statusLabel3 = new Label:
+      text = "Item will be available after: "
+      font = Font( null, FontWeight( Bold ), 14 )
 
-   private val cmtLabel = Label( "Comments:" ) // comment
-   cmtLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val cmtLabel = new Label:
+      text = "Comments:"
+      font = Font( null, FontWeight( Bold ), 14 )
 
-   private val childrenLabel = Label( "Bundle with: " ) // children items
-   childrenLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val childrenLabel = new Label:
+      text = "Bundle with: "
+      font = Font( null, FontWeight( Bold ), 14 )
 
-   /** display details specific to item passed in parameter */
+   /** Display details specific to item passed in parameter */
    def displayItemPage( item: Item ) =
       // clear all input fields
       resetItemActionFields()
 
       // update rent item quantity selection spinner
-      rentQuantity = Spinner( 0, math.max( item.ownedQuantity - item.lostQuantity, 0 ), 0, 1 )
-      rentQuantity.prefWidth = 125
-      rentQuantity.editable = true
+      rentQuantity = new Spinner( 0, math.max( item.ownedQuantity - item.lostQuantity, 0 ), 0, 1 ):
+         prefWidth = 125
+         editable = true
 
       // render rent item container to include updated spinner
       rentItemContainer.children = Array( Label( "Quantity" ), rentQuantity, submitItemBtn )
 
       // update incident affected quantity spinner
-      affectedQuantity = Spinner( 0, math.max( item.ownedQuantity - item.lostQuantity, 0 ), 0, 1 )
-      affectedQuantity.prefWidth = 125
-      affectedQuantity.editable = true
+      affectedQuantity =
+         new Spinner( 0, math.max( item.ownedQuantity - item.lostQuantity, 0 ), 0, 1 ):
+            prefWidth = 125
+            editable = true
 
       // render incident container to include update spinner
       incidentContainer.children = Array(
@@ -200,15 +220,16 @@ object ItemDetails:
           submitIncidentBtn
       )
 
-      /** button action to rent item: if item has children, also add child items to saved list with
-        * the same quantity. Then update saved list external data file and show user sucess message
-        * alert. If there are errors, display error message to user.
+      /** Rent item
+        * If the item has children, also add child items to a saved list with the same
+        * quantity.
+        * Then update saved list external data file and show user success message alert.
+        * If there are errors, display an error message to user.
         */
       submitItemBtn.onAction = (
           ( e ) =>
              try
                 addToCart( item.withAllChildren(), rentQuantity.getValue )
-                writeSavedItems( savedItems )
                 displayAlert( messageAlert, "Added to saved list" )
              catch
                 case DuplicateItem( m )    => displayAlert( messageAlert, m )
@@ -217,9 +238,10 @@ object ItemDetails:
                 case _                     => println( "cannot add item to saved list" )
       )
 
-      /** button action to delete item: display confirmation alert to ask user to confirm that they
-        * want to delete the item. Remove item from UI and display success message to user. Do
-        * nothing if user selects No
+      /** Delete item
+        * Display confirmation alert to ask user to confirm that they want to delete the
+        * item.
+        * Remove item from UI and display success message to user. Do nothing if user selects No
         */
       deleteItemBtn.onAction = (
           ( e ) =>
@@ -237,8 +259,7 @@ object ItemDetails:
                 case _                      => // Do nothing
       )
 
-      /** action to add comment to item: add comment to item and clear input text field if success
-        */
+      /* Add comment to item and clear input text field if success */
       submitCmtBtn.onAction = (
           ( e ) =>
              try
@@ -253,9 +274,9 @@ object ItemDetails:
                    displayAlert( messageAlert, msg )
       )
 
-      /** button action to add incident to item: verify that user has entered all required
-        * information for the incident then add new incident to the item. Clear all input text
-        * fields after successful addition
+      /** Add incident to item
+        * Verify that user has entered all required information for the incident then add new incident to the item.
+        * Clear all input text fields after successful addition
         */
       submitIncidentBtn.onAction = (
           ( e ) =>
@@ -289,45 +310,46 @@ object ItemDetails:
       )
 
       // group label and item data into separate containers
-      val itemName = HBox( nameLabel, Label( item.name ) )
-      itemName.alignment = BaselineLeft
+      val itemName = new HBox:
+         children = Array( nameLabel, Label( item.name ) )
+         alignment = BaselineLeft
 
-      val itemCat = HBox( catLabel, Label( item.category ) )
-      itemCat.alignment = BaselineLeft
+      val itemCat = new HBox:
+         children = Array( catLabel, Label( item.category ) )
+         alignment = BaselineLeft
 
-      val itemDesc = HBox( descLabel, Label( item.desc ) )
-      itemDesc.alignment = BaselineLeft
+      val itemDesc = new HBox:
+         children = Array( descLabel, Label( item.desc ) )
+         alignment = BaselineLeft
 
-      val itemRph = HBox( rphLabel, Label( item.ratePerHour.toString ) )
-      itemRph.alignment = BaselineLeft
+      val itemRph = new HBox:
+         children = Array( rphLabel, Label( item.ratePerHour.toString ) )
+         alignment = BaselineLeft
 
-      val itemRpd = HBox( rpdLabel, Label( item.ratePerDay.toString ) )
-      itemRpd.alignment = BaselineLeft
+      val itemRpd = new HBox:
+         children = Array( rpdLabel, Label( item.ratePerDay.toString ) )
+         alignment = BaselineLeft
 
-      val itemRpw = HBox( rpwLabel, Label( item.ratePerWeek.toString ) )
-      itemRpw.alignment = BaselineLeft
+      val itemRpw = new HBox:
+         children = Array( rpwLabel, Label( item.ratePerWeek.toString ) )
+         alignment = BaselineLeft
 
       // display item availability status
-      val status1 = HBox(
-          statusLabel1,
-          Label( math.max( item.availableQuantity, 0 ).toString )
-      )
-      status1.alignment = BaselineLeft
-      status1.margin = Insets( 10, 0, 0, 0 )
+      val status1 = new HBox:
+         children = Array( statusLabel1, Label( math.max( item.availableQuantity, 0 ).toString ) )
+         alignment = BaselineLeft
+         margin = Insets( 10, 0, 0, 0 )
 
+      // show the number of units rented at the current time
       val rentedQntNow =
          item.rentedQntByDateRange( LocalDateTime.now, LocalDateTime.now.plusHours( 1 ) )
-         
-      val status2 = HBox(
-          statusLabel2,
-          Label( rentedQntNow.toString )
-      )
-      status2.alignment = BaselineLeft
+      val status2 = new HBox:
+         children = Array( statusLabel2, Label( rentedQntNow.toString ) )
+         alignment = BaselineLeft
 
-      val status3 = new HBox()
-      status3.alignment = BaselineLeft
-
-      // only show the earliest return date if item is not available at the current time
+      // show the earliest return date if item is not available at the current time
+      val status3 = new HBox:
+         alignment = BaselineLeft
       if item.availableQuantity <= 0 then
          status3.children = Array( Label( "All units of this item are lost " ) )
       else if ( item.availableQuantity - rentedQntNow ) <= 0
@@ -335,8 +357,7 @@ object ItemDetails:
          status3.children = Array(
              statusLabel3,
              Label(
-                 item
-                    .getEarliestReturnDate()
+                 item.getEarliestReturnDate
                     .format( DateTimeFormatter.ofPattern( "dd-MM-yyyy HH:mm" ) )
              )
          )
@@ -355,27 +376,29 @@ object ItemDetails:
          itemChildren.managed = false
 
       // add all labels to item details container
-      itemDetailsContainer.children = Array( itemName,
-                                             itemCat,
-                                             itemDesc,
-                                             itemRph,
-                                             itemRpd,
-                                             itemRpw,
-                                             itemChildren,
-                                             itemCmt,
-                                             status1,
-                                             status2,
-                                             status3
+      itemDetailsContainer.children = Array(
+          itemName,
+          itemCat,
+          itemDesc,
+          itemRph,
+          itemRpd,
+          itemRpw,
+          itemChildren,
+          itemCmt,
+          status1,
+          status2,
+          status3
       )
 
       // group all item actions
-      itemActionsContainer.children = Array( rentItemBtn,
-                                             rentItemContainer,
-                                             deleteItemBtn,
-                                             addCmtBtn,
-                                             addCmtContainer,
-                                             reportIncidentBtn,
-                                             incidentContainer
+      itemActionsContainer.children = Array(
+          rentItemBtn,
+          rentItemContainer,
+          deleteItemBtn,
+          addCmtBtn,
+          addCmtContainer,
+          reportIncidentBtn,
+          incidentContainer
       )
 
       val itemImageView = getItemImageView( item )
@@ -385,9 +408,7 @@ object ItemDetails:
          Array( itemImageView, itemDetailsContainer, itemActionsContainer )
       itemPageContainer
 
-   /** hide action details and clear all input text fields when an item details page is first
-     * generated
-     */
+   /** Hide action details and clear all input text fields when an item details page is first generated */
    private def resetItemActionFields() =
       rentItemContainer.visible = false
       rentItemContainer.managed = false

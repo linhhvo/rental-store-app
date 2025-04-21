@@ -1,7 +1,7 @@
 package ui
 
+import logic.Inventory.inventory
 import logic.Item
-import logic.RentalStore.inventory
 import logic.enums.IncidentType.{Damage, Loss}
 import scalafx.geometry.Insets
 import scalafx.geometry.Orientation.Horizontal
@@ -23,7 +23,7 @@ object ReportPage:
 
    private val msgAlert = new Alert( Alert.AlertType.Information )
 
-   /** Time interval filter */
+   /* TIME INTERVAL FILTER */
    private val fromLabel = new Label:
       text = "From"
       font = Font( null, FontWeight( Bold ), 14 )
@@ -42,19 +42,19 @@ object ReportPage:
       converter = Helper.dateStrConverter
       editable = false
 
-   /** button to display summary reports */
+   // button to display summary reports
    val generateReportBtn = new Button:
       text = "Generate Reports"
       margin = Insets( 0, 0, 0, 10 )
 
-   /** group date pickers and button into a container */
+   // group date pickers and button into a container
    val filterContainer = new HBox:
       children = Array( fromLabel, fromDate, toLabel, toDate, generateReportBtn )
       spacing = 10
       margin = Insets( 20 )
       alignment = BaselineLeft
 
-   /** Tab container for reports */
+   /* TAB CONTAINER FOR REPORTS */
    private val financeReport = new Tab:
       text = "Finance"
 
@@ -65,16 +65,16 @@ object ReportPage:
       vgrow = Always
       tabClosingPolicy = Unavailable
 
-   /** Container to group filter and tab container */
+   // container to group filter and tab container
    private val pageContainer = VBox( filterContainer, tabContainer )
 
-   /** Page scroll container */
+   // page scroll container
    val reportPageContainer = new ScrollPane:
       content = pageContainer
       fitToWidth = true
       visible = false
 
-   /** button action to generate reports based on a selected date range filter */
+   // button action to generate reports based on a selected date range filter
    generateReportBtn.onAction = ( ( e ) =>
       val filterStart = fromDate.getValue
       val filterEnd = toDate.getValue
@@ -84,7 +84,7 @@ object ReportPage:
       else
          val itemsByCategory = inventory.groupBy( _.category )
 
-         /** Populate incidents report */
+         // populate incidents report
          val incidentSummaryByCategory = itemsByCategory.map( ( cat, items ) =>
             val incidents = incidentsByCategory( items, filterStart, filterEnd )
 
@@ -113,7 +113,7 @@ object ReportPage:
          // set content for incident tab container
          incidentsReport.content = incidentSummaryContainer
 
-         /** Populate financial report */
+         // populate financial report
          val financeSummaryByCategory = itemsByCategory.map( ( cat, items ) =>
             new VBox:
                children = Array( Label( "Category " + cat ) )
@@ -134,7 +134,7 @@ object ReportPage:
          tabContainer.tabs = Seq( financeReport, incidentsReport )
    )
 
-   /** create a container to display incident information for an item */
+   /** Create a container to display incident information for an item */
    private def incidentsByItem( targetItem: Item, start: LocalDate, end: LocalDate ): Buffer[VBox] =
       // if the filter is empty, get all incidents
       // otherwise, get incidents that are within the filter date range inclusively
@@ -161,7 +161,7 @@ object ReportPage:
             margin = Insets( 12, 0, 0, 20 )
       )
 
-   /** create a container to display items and their incidents for an item category */
+   /** Create a container to display items and their incidents for an item category */
    private def incidentsByCategory( items: Buffer[Item],
                                     start: LocalDate,
                                     end:   LocalDate
@@ -182,11 +182,11 @@ object ReportPage:
                visible = false
       )
 
-   /** create a container to display all finance information for an item */
+   /** Create a container to display all finance information for an item */
    private def financeByItem( items: Buffer[Item], start: LocalDate, end: LocalDate ) =
       items.map( i =>
          val nameLabel = new Label:
-            text = i.name
+            text = i.name + " - " + i.status
             margin = Insets( 0, 0, 0, -10 )
 
          new VBox:
@@ -201,7 +201,7 @@ object ReportPage:
             margin = Insets( 0, 0, 5, 20 )
       )
 
-   /** clear filter date fields and clear report content */
+   /** Clear filter date fields and clear report content */
    def resetReportPage() =
       toDate.value = null
       fromDate.value = null

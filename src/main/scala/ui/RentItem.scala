@@ -22,7 +22,8 @@ object RentItem:
    // predefine size for element
    private val med = 125
 
-   /** Rental period container */
+   /* RENTAL PERIOD */
+
    // Date and time controls for rental period start
    private val rentStart = DateTimePicker( Start )
 
@@ -30,16 +31,18 @@ object RentItem:
    private val rentEnd = DateTimePicker( End )
 
    // group datetime pickers with label in container
-   private val periodLabel = Label( "Select rental period" )
-   periodLabel.font = Font( null, FontWeight( Bold ), 14 )
+   private val periodLabel = new Label:
+      text = "Select rental period"
+      font = Font( null, FontWeight( Bold ), 14 )
 
-   private val periodContainer = VBox( periodLabel, rentStart.container, rentEnd.container )
-   periodContainer.spacing = 5
+   private val periodContainer = new VBox:
+      children = Array( periodLabel, rentStart.container, rentEnd.container )
+      spacing = 5
 
-   /** Renter Container */
+   /* RENTER */
    private val renterPicker = RenterPicker( renters )
 
-   /** Total rental cost container */
+   /* TOTAL RENTAL COST */
    private val totalCost = DoubleProperty( 0.0 )
 
    // Calculate and update total cost when start date and time change
@@ -50,7 +53,7 @@ object RentItem:
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
-               rentStart.date.setValue( LocalDate.now )
+               rentStart.date.value = LocalDateTime.now().plusHours( 1 ).toLocalDate
       )
    rentStart.time
       .valueProperty()
@@ -59,8 +62,8 @@ object RentItem:
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
-               rentStart.time
-                  .setValue( String.format( "%02d" + ":00", LocalDateTime.now().getHour ) )
+               rentStart.time.value =
+                  String.format( "%02d" + ":00", LocalDateTime.now.plusHours( 1 ).getHour )
       )
 
    // Calculate and update total cost when end date and time change
@@ -71,7 +74,7 @@ object RentItem:
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
-               rentEnd.date.setValue( LocalDate.now )
+               rentEnd.date.value = LocalDateTime.now().plusHours( 2 ).toLocalDate
       )
    rentEnd.time
       .valueProperty()
@@ -80,28 +83,29 @@ object RentItem:
          catch
             case InvalidDateTime( msg ) =>
                displayAlert( msgAlert, msg )
-               rentEnd.time.setValue(
-                   String.format( "%02d" + ":00", LocalDateTime.now().plusHours( 1 ).getHour )
-               )
+               rentEnd.time.value =
+                  String.format( "%02d" + ":00", LocalDateTime.now.plusHours( 2 ).getHour )
       )
 
-   private val costLabel = Label( s"Rental Total Cost: ${totalCost.value}" )
-   costLabel.font = Font( null, FontWeight( Bold ), 14 )
-   costLabel.margin = Insets( 10, 0, 10, 0 )
+   private val costLabel = new Label:
+      text = s"Rental Total Cost: ${totalCost.value}"
+      font = Font( null, FontWeight( Bold ), 14 )
+      margin = Insets( 10, 0, 10, 0 )
 
    // update cost label to display new cost when start or end datetime change
    totalCost.onChange { ( source, oldValue, newValue ) =>
       costLabel.text = s"Rental Total Cost: ${totalCost.value}"
    }
 
-   /** Booking button */
+   /* BOOKING BUTTON */
 
    // set up alert to display user message
    private val msgAlert = new Alert( Alert.AlertType.Information )
 
    // button to confirm booking and add new rental
-   private val bookingBtn = Button( "Book Rental" )
-   bookingBtn.prefWidth = med
+   private val bookingBtn = new Button:
+      text = "Book Rental"
+      prefWidth = med
 
    bookingBtn.onAction = (
        ( e ) =>
@@ -110,47 +114,51 @@ object RentItem:
              displayAlert( msgAlert, "Please select a renter" )
           // when all information is entered
           else
-             val newBooking = Booking( savedItems,
-                                       getDateTime( rentStart.date, rentStart.time ),
-                                       getDateTime( rentEnd.date, rentEnd.time ),
-                                       totalCost.toDouble,
-                                       renterPicker.picker.getValue
+             val newBooking = Booking(
+                 savedItems,
+                 getDateTime( rentStart.date, rentStart.time ),
+                 getDateTime( rentEnd.date, rentEnd.time ),
+                 totalCost.toDouble,
+                 renterPicker.picker.getValue
              )
 
              // add new booking to the store
              try
                 addBooking( newBooking )
-                savedItems = resetSavedList() // update saved item list in external file to be empty
+                // clear saved list
+                savedItems = resetSavedList()
                 displayAlert( msgAlert, "Rental is confirmed" )
-                // update page to display user message
-                rentItemScrollContainer.setContent( renderPage )
+                // update page content
+                rentItemScrollContainer.content = renderPage
              catch case ItemNotAvailable( m ) => displayAlert( msgAlert, m )
    )
 
-   /** Clear list button */
+   /* CLEAR LIST BUTTON */
 
    // button to delete all items in saved list and clear saved list
-   private val clearBtn = Button( "Delete All Items" )
-   clearBtn.prefWidth = med
+   private val clearBtn = new Button:
+      text = "Delete All Items"
+      prefWidth = med
+
    clearBtn.onAction = (
        ( e ) =>
-          new Alert( Confirmation ) {
+          new Alert( Confirmation ):
              headerText = "Do you want to remove all items from the saved list?"
              buttonTypes = Seq( ButtonType.Yes, ButtonType.No )
-          }.showAndWait() match
+          .showAndWait() match
              case Some( ButtonType.Yes ) =>
                 savedItems = resetSavedList()
                 rentItemScrollContainer.setContent( renderPage )
              case _                      => // Do nothing
    )
 
-   /** Page scroll container */
+   /* PAGE SCROLL CONTAINER */
    val rentItemScrollContainer = new ScrollPane:
       visible = false
       padding = Insets( 20 )
       content = renderPage
 
-   /** method to update data and update GUI content */
+   /** Update data and update GUI content */
    private def renderPage =
       // generate GUI elements to display saved items list
       val itemElements = savedItems.map( savedItem =>
@@ -159,44 +167,46 @@ object RentItem:
             case None      => Label( null )
       )
 
-      val label = Label( "Items added:" )
-      label.font = Font( null, FontWeight( Bold ), 14 )
+      val label = new Label:
+         text = "Items added:"
+         font = Font( null, FontWeight( Bold ), 14 )
 
       // group saved items list with label
-      val savedItemsContainer = new VBox():
+      val savedItemsContainer = new VBox:
          children = Array( label ) ++ itemElements
 
-      /** overall page container */
+      // overall page container
       val boxContainer = new VBox:
+         spacing = 10
          if savedItems.isEmpty then
             children =
                Array( Label( "No items in the saved list. Add items to list to book a rental" ) )
          else
-            children = Array( savedItemsContainer,
-                              periodContainer,
-                              renterPicker.container,
-                              costLabel,
-                              bookingBtn,
-                              clearBtn
+            children = Array(
+                savedItemsContainer,
+                periodContainer,
+                renterPicker.container,
+                costLabel,
+                bookingBtn,
+                clearBtn
             )
-         spacing = 10
 
       boxContainer
 
-   /** method to clear input fields and reset initial datetime picker values */
+   /** Clear input fields and reset initial datetime picker values */
    def resetSavedListPage() =
       // recalculate cost in case new item is added to saved list
       totalCost.value = calculateRentalCost( getRentalDuration )
 
-      rentStart.setDefaultValues()
       rentEnd.setDefaultValues()
+      rentStart.setDefaultValues()
 
       renterPicker.picker.getSelectionModel.clearSelection()
 
       // render page container to get updated saved items list
       rentItemScrollContainer.setContent( renderPage )
 
-   /** validate datetime selections and covert selected values to LocalDateTime then use valid
+   /** Validate datetime selections and covert selected values to LocalDateTime then use the valid
      * datetime values to get booking duration
      */
    private def getRentalDuration: BookingDuration =
