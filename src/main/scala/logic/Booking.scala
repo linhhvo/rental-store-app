@@ -1,7 +1,9 @@
 package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
+import logic.BookingList.bookings
 import logic.enums.SavedItemStatus.*
+import logic.util.IOHandler.{prodDataFilePath, writeBookings}
 import upickle.default.*
 
 import java.time.LocalDateTime
@@ -27,7 +29,10 @@ case class Booking( items:            Buffer[SavedItem] = Buffer.empty,
          .flatMap( _.getDetailsFromItemList() )
 
    /** Return selected items in this booking */
-   def returnItems( targetItemNames: Buffer[String] ) =
+   def returnItems( targetItemNames: Set[String],
+                    bookingList:     Buffer[Booking] = bookings,
+                    dataFilePath:    String = prodDataFilePath
+   ) =
       this.items
          .filter( si =>
             si.getDetailsFromItemList() match
@@ -35,6 +40,8 @@ case class Booking( items:            Buffer[SavedItem] = Buffer.empty,
                case None          => false
          )
          .foreach( _.returnFromBooking() )
+
+      writeBookings( bookingList, dataFilePath )
 end Booking
 
 object Booking:

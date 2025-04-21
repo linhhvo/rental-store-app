@@ -26,7 +26,7 @@ object IOHandler:
             Buffer.empty
    end getDataFromFile
 
-   def writeItems( itemList: Iterable[Item], dataFilePath: String = prodDataFilePath ) =
+   def writeItems( itemList: Iterable[Item], dataFilePath: String ) =
       os.write.over( os.pwd / os.RelPath( dataFilePath ) / "items.json",
                      write( itemList, indent = 2 )
       )
@@ -36,7 +36,7 @@ object IOHandler:
                      write( itemList, indent = 2 )
       )
 
-   def writeBookings( bookingList: Iterable[Booking], dataFilePath: String = prodDataFilePath ) =
+   def writeBookings( bookingList: Iterable[Booking], dataFilePath: String ) =
       os.write.over( os.pwd / os.RelPath( dataFilePath ) / "bookings.json",
                      write( bookingList, indent = 2 )
       )

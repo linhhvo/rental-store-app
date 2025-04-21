@@ -1,6 +1,6 @@
 package logic
 
-import logic.util.IOHandler.{getDataFromFile, writeBookings}
+import logic.util.IOHandler.{getDataFromFile, prodDataFilePath, writeBookings}
 import logic.util.ItemNotAvailable
 import upickle.default.read
 
@@ -9,12 +9,15 @@ import scala.collection.mutable.Buffer
 
 object BookingList:
 
-   // get booking list from external file 
+   // get booking list from external file
    val bookings =
       getDataFromFile( "bookings" ).map( item => read[Booking]( item ) )
 
    /** Add a new rental reservation */
-   def addBooking( newBooking: Booking, bookingList: Buffer[Booking] = bookings ) =
+   def addBooking( newBooking:   Booking,
+                   bookingList:  Buffer[Booking] = bookings,
+                   dataFilePath: String = prodDataFilePath
+   ) =
       // check if saved items are available during requested booking period
       val isAvailable: Boolean =
          newBooking.items.forall( si =>
@@ -24,7 +27,7 @@ object BookingList:
       if isAvailable then
          bookingList += newBooking
          newBooking.items.foreach( bi => bi.confirmBooking() )
-         writeBookings( bookingList )
+         writeBookings( bookingList, dataFilePath)
       else
          throw ItemNotAvailable(
              s"Some item in this bundle is not available for rent"

@@ -2,7 +2,7 @@ package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
 import logic.BookingList.{bookingListByDates, overlapBookingList}
-import logic.RentalStore.{inventory, updateItemsDataSource}
+import logic.Inventory.{inventory, updateItemsDataSource}
 import logic.SavedList.calculateRentalCost
 import logic.enums.{IncidentType, ItemStatus}
 import logic.util.{BookingDuration, MissingData}

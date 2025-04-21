@@ -1,16 +1,15 @@
 package logic
 
 import logic.ItemCategory.itemCategoryList
-import logic.SavedList.{removeFromCart, savedItems}
+import logic.SavedList.removeFromCart
 import logic.enums.ItemStatus.Active
 import logic.util.IOHandler.*
-import logic.util.{DuplicateItem, ItemDoesNotExist, ItemNotAvailable}
+import logic.util.{DuplicateItem, ItemDoesNotExist}
 import upickle.default.*
 
-import java.time.{LocalDate, LocalDateTime}
 import scala.collection.mutable.Buffer
 
-object RentalStore:
+object Inventory:
 
    val inventory =
       getDataFromFile( "items" ).map( item => read[Item]( item ) )
@@ -19,10 +18,15 @@ object RentalStore:
    def activeItems = inventory.filter( i => i.status == Active )
 
    /** Update items list in external file */
-   def updateItemsDataSource(dataFilePath: String = prodDataFilePath) = writeItems( inventory, dataFilePath )
+   def updateItemsDataSource( dataFilePath: String = prodDataFilePath ) =
+      writeItems( inventory, dataFilePath )
 
    /** Add new item to inventory list */
-   def addItem( item: Item, parentItem: Option[String], itemList: Buffer[Item] = inventory ) =
+   def addItem( item:         Item,
+                parentItem:   Option[String],
+                itemList:     Buffer[Item] = inventory,
+                dataFilePath: String = prodDataFilePath
+   ) =
       // check that the selected item category exists in the system
       if !itemCategoryList.contains( item.category.toUpperCase ) then
          throw ItemDoesNotExist( s"Item category ${item.category} doesn't exist in the system" )
@@ -42,7 +46,7 @@ object RentalStore:
                         item.image = item.name.toLowerCase + ".png"
                         itemList += item
                         pi.addChildren( item.itemId )
-                        updateItemsDataSource()
+                        writeItems( itemList, dataFilePath )
                      // if parent item not found
                      case None       =>
                         throw ItemDoesNotExist(
@@ -52,10 +56,13 @@ object RentalStore:
                case None           =>
                   item.image = item.name.toLowerCase + ".png"
                   itemList += item
-                  updateItemsDataSource()
+                  writeItems( itemList, dataFilePath )
 
    /** Delete item from inventory list */
-   def deleteItem( item: Item, savedList: Buffer[SavedItem] = savedItems ) =
+   def deleteItem( item:         Item,
+                   itemList:     Buffer[Item] = inventory,
+                   dataFilePath: String = prodDataFilePath
+   ) =
       activeItems.find( _.itemId == item.itemId ) match
          /* if item exists and is active, set item status to Inactive and remove from parent item
           * dependency if any */
@@ -73,7 +80,8 @@ object RentalStore:
                case Some( pi ) => // if parent item found, delete item from children list
                   pi.deleteChildren( di.itemId )
                case None       => // Do nothing
-            updateItemsDataSource()
+            // update items list in external file
+            writeItems( itemList, dataFilePath )
 
             // remove item from saved list if it was added to saved list before deleting
             removeFromCart( di )
@@ -81,4 +89,3 @@ object RentalStore:
          // if item is not found in the items list, throw error
          case None =>
             throw ItemDoesNotExist( s"${item.name} does not exist or is not active in the system" )
-
