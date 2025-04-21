@@ -2,9 +2,7 @@ package ui
 
 import logic.Booking
 import logic.BookingList.bookings
-import logic.RentalStore.updateItemsDataSource
 import logic.Renter.renters
-import logic.util.IOHandler.writeBookings
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
@@ -39,7 +37,7 @@ object ReturnItem:
       font = Font( null, FontWeight( Bold ), 14 )
 
    // get list of bookings
-   private val bookingList = new ObservableBuffer[String]()
+   private val bookingList = ObservableBuffer.empty[String]
 
    // initialize a bookings list to replace with bookings filtered based on selected renter
    private var filteredBookings = bookings
@@ -50,6 +48,7 @@ object ReturnItem:
       .addListener( ( observable, oldValue, newValue ) =>
          // empty booking list
          bookingList.clear()
+         returnItemBtn.visible = false
          // if selected renter is not empty, update booking list
          if newValue != null then
             filteredBookings = bookings
@@ -59,23 +58,25 @@ object ReturnItem:
                   b.bookingStartTime.format( dateFormatter ) + " to " + b.bookingEndTime
                      .format( dateFormatter )
                )
+               .toSet
       )
 
    // return button
-   private val returnItemBtn = Button( "Return Item" )
-   returnItemBtn.visible = false
+   private val returnItemBtn = new Button:
+      text = "Return Item"
+      visible = false
 
    // dropdown menu to select booking
-   private val bookingPicker = ChoiceBox( bookingList )
-   bookingPicker.prefWidth = 270
+   private val bookingPicker = new ChoiceBox[String]:
+      items = bookingList
+      prefWidth = 270
 
-   private var selectedBooking =
-      if bookingPicker.getSelectionModel.getSelectedItem != null then
-         findBooking( bookingPicker.getValue )
-      else bookings.headOption
+   private var selectedBooking = Buffer.empty[Booking]
 
    // generate list of items in the booking
-   private var itemCheckBoxes: Buffer[CheckBox] = Buffer.empty
+   private var itemCheckBoxes = Set.empty[CheckBox]
+
+   // display outstanding items in the booking when a booking is selected
    bookingPicker
       .valueProperty()
       .addListener( ( observable, oldValue, newValue ) =>
@@ -83,17 +84,16 @@ object ReturnItem:
             // get booking instance based on selected string value
             selectedBooking = findBooking( newValue )
             // if found, display a list of items that need to be returned
-            selectedBooking match
-               case Some( booking ) =>
-                  itemCheckBoxes = booking.outstandingItems.map( i => CheckBox( i.name ) )
-                  // dislay items to be returned or display a message informing user
-                  if itemCheckBoxes.nonEmpty then
-                     itemList.children = itemCheckBoxes
-                     returnItemBtn.visible = true
-                  else
-                     itemList.children =
-                        Array( Label( "All items in this booking have been returned" ) )
-               case _ => itemList.children = Array( Label( "This booking doesn't exist" ) )
+            if selectedBooking.nonEmpty then
+               itemCheckBoxes =
+                  selectedBooking.flatMap( _.outstandingItems ).toSet.map( i => CheckBox( i.name ) )
+               // dislay items to be returned or display a message informing user
+               if itemCheckBoxes.nonEmpty then
+                  itemList.children = itemCheckBoxes
+                  returnItemBtn.visible = true
+               else
+                  itemList.children =
+                     Array( Label( "All items in this booking have been returned" ) )
          else itemList.children.clear()
       )
 
@@ -103,29 +103,28 @@ object ReturnItem:
       spacing = 5
 
    // group renter selection and booking selection
-   private val filterContainer = HBox( renterPicker.container, bookingContainer )
-   filterContainer.spacing = 20
+   private val filterContainer = new HBox:
+      children = Array( renterPicker.container, bookingContainer )
+      spacing = 20
 
    // button action to return selected items
    returnItemBtn.onAction = ( ( e ) =>
       val selections = itemCheckBoxes.filter( _.selected.value ).map( _.text.value )
-      selectedBooking match
-         case Some( b ) =>
-            b.returnItems( selections )
-            writeBookings( bookings )
-            updateItemsDataSource()
-            displayAlert( msgAlert, "Item(s) have been returned" )
-            resetReturnItemPage()
-         case _         => println( "do nothing" )
+      if selectedBooking.nonEmpty && selections.nonEmpty then
+         selectedBooking.foreach( _.returnItems( selections ) )
+         displayAlert( msgAlert, "Item(s) have been returned" )
+         resetReturnItemPage()
+      else displayAlert( msgAlert, "Please select an item to return" )
    )
 
-   private val returnItemPageContainer = VBox( filterContainer, itemList, returnItemBtn )
-   returnItemPageContainer.padding = Insets( 20 )
-   returnItemPageContainer.spacing = 10
+   private val returnItemPageContainer = new VBox:
+      children = Array( filterContainer, itemList, returnItemBtn )
+      padding = Insets( 20 )
+      spacing = 10
 
-   val returnItemScrollContainer = ScrollPane()
-   returnItemScrollContainer.setContent( returnItemPageContainer )
-   returnItemScrollContainer.setVisible( false )
+   val returnItemScrollContainer = new ScrollPane:
+      content = returnItemPageContainer
+      visible = false
 
    /** clear dropdown menu selections and hide return button */
    def resetReturnItemPage() =
@@ -134,9 +133,9 @@ object ReturnItem:
       returnItemBtn.visible = false
 
    /** return a booking instance based on booking period string */
-   private def findBooking( bookingPeriodStr: String ): Option[Booking] =
+   private def findBooking( bookingPeriodStr: String ): Buffer[Booking] =
       val period = bookingPeriodStr.split( " to " )
       val start = LocalDateTime.parse( period.head, dateFormatter )
       val end = LocalDateTime.parse( period.last, dateFormatter )
 
-      filteredBookings.find( b => b.bookingStartTime == start && b.bookingEndTime == end )
+      filteredBookings.filter( b => b.bookingStartTime == start && b.bookingEndTime == end )
