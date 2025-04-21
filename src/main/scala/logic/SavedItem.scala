@@ -1,6 +1,6 @@
 package logic
 
-import logic.Inventory.inventory
+import logic.ItemList.inventory
 import logic.enums.SavedItemStatus
 import logic.enums.SavedItemStatus.*
 import upickle.default.*

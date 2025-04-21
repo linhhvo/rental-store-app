@@ -1,6 +1,6 @@
 package ui
 
-import logic.Inventory.activeItems
+import logic.ItemList.activeItems
 import scalafx.geometry.Insets
 import scalafx.scene.control.{Button, Label, ScrollPane}
 import scalafx.scene.layout.{Border, FlowPane, VBox}

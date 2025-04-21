@@ -1,7 +1,7 @@
 package ui
 
 import logic.*
-import logic.Inventory.deleteItem
+import logic.ItemList.deleteItem
 import logic.SavedList.addToCart
 import logic.enums.IncidentType
 import logic.util.*

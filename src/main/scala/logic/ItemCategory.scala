@@ -1,6 +1,6 @@
 package logic
 
-import logic.Inventory.{activeItems, deleteItem}
+import logic.ItemList.{activeItems, deleteItem}
 import logic.util.{DuplicateItemCategory, IOHandler, ItemDoesNotExist}
 import upickle.default.*
 

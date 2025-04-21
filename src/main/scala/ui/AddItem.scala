@@ -1,7 +1,7 @@
 package ui
 
 import logic.*
-import logic.Inventory.activeItems
+import logic.ItemList.activeItems
 import logic.ItemCategory.itemCategoryList
 import logic.util.{DuplicateItem, InvalidInput, ItemDoesNotExist}
 import scalafx.collections.ObservableBuffer
@@ -166,9 +166,9 @@ object AddItem:
                 )
 
                 // if no parent item is selected, add item without parent
-                if dataToReset._2.getValue == null then Inventory.addItem( newItem, None )
+                if dataToReset._2.getValue == null then ItemList.addItem(newItem, None)
                 else // if parent item is selected
-                   Inventory.addItem( newItem, Some( dataToReset._2.getValue ) )
+                   ItemList.addItem(newItem, Some(dataToReset._2.getValue))
 
                 // copy selected image to resources folder
                 val newImage = File(

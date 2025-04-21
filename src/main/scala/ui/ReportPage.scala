@@ -1,6 +1,6 @@
 package ui
 
-import logic.Inventory.inventory
+import logic.ItemList.inventory
 import logic.Item
 import logic.enums.IncidentType.{Damage, Loss}
 import scalafx.geometry.Insets

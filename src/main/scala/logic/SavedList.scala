@@ -1,6 +1,6 @@
 package logic
 
-import logic.Inventory.inventory
+import logic.ItemList.inventory
 import logic.util.IOHandler.{getDataFromFile, prodDataFilePath, writeSavedItems}
 import logic.util.{BookingDuration, MissingData}
 import upickle.default.read

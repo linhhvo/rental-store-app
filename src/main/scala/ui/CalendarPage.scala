@@ -5,7 +5,7 @@ import com.calendarfx.model.Calendar.Style
 import com.calendarfx.view.SourceView
 import com.calendarfx.view.page.{MonthPage, WeekPage}
 import logic.BookingList.bookings
-import logic.Inventory.activeItems
+import logic.ItemList.activeItems
 import logic.enums.SavedItemStatus.Booked
 import scalafx.scene.control.ControlIncludes.jfxControl2sfx
 import scalafx.scene.control.TabPane.TabClosingPolicy.Unavailable

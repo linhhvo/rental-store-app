@@ -9,7 +9,7 @@ import upickle.default.*
 
 import scala.collection.mutable.Buffer
 
-object Inventory:
+object ItemList:
 
    val inventory =
       getDataFromFile( "items" ).map( item => read[Item]( item ) )
