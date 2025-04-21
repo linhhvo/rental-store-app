@@ -1,7 +1,6 @@
 package logic
 
-import logic.enums.ItemStatus.Active
-import logic.RentalStore.inventory
+import logic.RentalStore.{activeItems, deleteItem}
 import logic.util.{DuplicateItemCategory, IOHandler, ItemDoesNotExist}
 import upickle.default.*
 
@@ -10,31 +9,32 @@ import scala.collection.mutable.Buffer
 object ItemCategory:
    val dataFilePath = "src/main/resources/data/itemCategories.json"
 
-   def getItemCategoryList =
-      IOHandler.getDataFromFile( "itemCategories" ).map( _.str )
+   val itemCategoryList =
+      IOHandler.getDataFromFile( "itemCategories" ).map( _.str.toUpperCase )
 
    def addItemCategory( newCategory: String ) =
-      val existingCategories = this.getItemCategoryList
-      if !existingCategories.contains( newCategory.toLowerCase ) then
-         existingCategories += newCategory.toLowerCase
+      if !itemCategoryList.contains( newCategory.toUpperCase ) then
+         itemCategoryList += newCategory.toUpperCase
 
-         os.write.over( os.pwd / os.RelPath( dataFilePath ), write( existingCategories.toSet ) )
+         os.write.over( os.pwd / os.RelPath( dataFilePath ), write( itemCategoryList.toSet ) )
       else throw DuplicateItemCategory( "Category already exists" )
 
-   def deleteItemCategory( target: String ) =
-      val existingCategories = this.getItemCategoryList
-      existingCategories.find( _ == target.toLowerCase ) match
+   def deleteItemCategory( targetCategory: String ) =
+      itemCategoryList.find( _ == targetCategory.toUpperCase ) match
          case Some( category ) =>
-            existingCategories -= target.toLowerCase
-            os.write.over( os.pwd / os.RelPath( dataFilePath ), write( existingCategories.toSet ) )
+            itemCategoryList -= targetCategory.toUpperCase
+            // delete related items if any
+            if ( itemInCategoryCount( targetCategory ) > 0 ) then
+               getItemsInCategory( targetCategory ).foreach( item => deleteItem( item ) )
+            os.write.over( os.pwd / os.RelPath( dataFilePath ), write( itemCategoryList.toSet ) )
          case None             =>
             throw ItemDoesNotExist(
-                s"Item category $target doesn't exist in the system"
+                s"Item category $targetCategory doesn't exist in the system"
             )
 
-   /** retrieve items that belong to an item category */
+   /** Get active items that belong to an item category */
    def getItemsInCategory( category: String ): Buffer[Item] =
-      inventory.filter( _.category == category )
+      activeItems.filter( i => i.category == category )
 
    def itemInCategoryCount( category: String ): Int =
       this.getItemsInCategory( category ).size

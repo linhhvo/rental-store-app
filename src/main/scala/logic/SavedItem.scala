@@ -1,9 +1,9 @@
 package logic
 
-import logic.RentalStore.{inventory, updateItemsDataSource}
+import logic.RentalStore.inventory
 import logic.enums.SavedItemStatus
 import logic.enums.SavedItemStatus.*
-import logic.util.IOHandler.{getDataFromFile, writeSavedItems}
+import logic.util.IOHandler.{getDataFromFile, prodDataFilePath, writeSavedItems}
 import logic.util.{BookingDuration, MissingData}
 import upickle.default.*
 
@@ -31,14 +31,12 @@ object SavedItems:
    var savedItems =
       getDataFromFile( "savedItems" ).map( item => read[SavedItem]( item ) )
 
-   /** make saved items list available globally */
-   def getSavedItems = savedItems
-
-   /** add item to saved items list to prepare for booking */
+   /** Add item to saved list to prepare for booking */
    def addToCart( requestItems:    Set[Item],
                   requestQuantity: Int,
-                  savedList:       Buffer[SavedItem] = savedItems
-   ): Buffer[SavedItem] =
+                  savedList:       Buffer[SavedItem] = savedItems,
+                  dataFilePath:    String = prodDataFilePath
+   ) =
       // check that item quantity is selected properly
       if requestQuantity <= 0 then throw MissingData( "Item quantity cannot be zero" )
       else
@@ -46,40 +44,31 @@ object SavedItems:
             // check if the added item already exists in the saved list
             savedList.find( _.itemId == item.itemId ) match
                case Some( i ) =>
-                  // add the requested quantity to saved list quantity
+                  // increase the saved item quantity by the requested quantity
                   i.rentQuantity += requestQuantity
                case _         =>
                   // add requested item to the saved list
                   savedList += SavedItem( item.itemId, requestQuantity )
-
-            item.reserve( requestQuantity )
          )
+      writeSavedItems( savedList, dataFilePath )
 
-      updateItemsDataSource() // to update available quantity for the item
-      savedList
-
-   /** check if item is included in the saved item list. If yes, delete item from saved item list.
-     * If no, do nothing. This method is only used when an item is deleted from the system
-     */
-   def removeFromCart( item: Item, savedList: Buffer[SavedItem] = savedItems ): Buffer[SavedItem] =
+   /** Remove a single item from the saved list when the item is hidden from the UI. */
+   def removeFromCart( item:         Item,
+                       savedList:    Buffer[SavedItem] = savedItems,
+                       dataFilePath: String = prodDataFilePath
+   ) =
       savedList.find( _.itemId == item.itemId ) match
          case Some( i ) =>
             savedList -= i
          case _         => // Do nothing
-      savedList
+      writeSavedItems( savedList, dataFilePath )
 
-   /** remove all items from saved list */
-   def resetSavedList( savedList:    Buffer[SavedItem] = savedItems,
-                       allItemsList: Buffer[Item] = inventory
-   ): Buffer[SavedItem] =
-      savedList.foreach( si =>
-         si.getDetailsFromItemList( allItemsList ).foreach( _.free( si.rentQuantity ) )
-      )
-      updateItemsDataSource()
-      writeSavedItems( Buffer.empty )
+   /** Remove all items from the saved list */
+   def resetSavedList( dataFilePath: String = prodDataFilePath ): Buffer[SavedItem] =
+      writeSavedItems( Buffer.empty, dataFilePath )
       Buffer[SavedItem]()
 
-   /** calculate total rate per hour for a list of saved items */
+   /** Calculate the total rate per hour for a list of saved items */
    def combinedRatePerHour( savedList:    Buffer[SavedItem] = savedItems,
                             allItemsList: Buffer[Item] = inventory
    ): Double =
@@ -90,7 +79,7 @@ object SavedItems:
          )
          .sum
 
-   /** calculate total rate per day for a list of saved items */
+   /** Calculate the total rate per day for a list of saved items */
    def combinedRatePerDay( savedList:    Buffer[SavedItem] = savedItems,
                            allItemsList: Buffer[Item] = inventory
    ): Double =
@@ -101,7 +90,7 @@ object SavedItems:
          )
          .sum
 
-   /** calculate total rate per week for a list of saved items */
+   /** Calculate the total rate per week for a list of saved items */
    def combinedRatePerWeek( savedList:    Buffer[SavedItem] = savedItems,
                             allItemsList: Buffer[Item] = inventory
    ): Double =
@@ -112,7 +101,7 @@ object SavedItems:
          )
          .sum
 
-   /** calculate the total rental cost of a list of saved items */
+   /** Calculate the total rental cost for a list of saved items */
    def calculateRentalCost( duration:  BookingDuration,
                             savedList: Buffer[SavedItem] = savedItems
    ): Double =

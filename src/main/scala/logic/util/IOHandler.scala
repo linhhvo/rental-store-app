@@ -1,6 +1,5 @@
 package logic.util
 
-import logic.util.IOHandler.getDataFromFile
 import logic.{Booking, Item, SavedItem}
 import ujson.{IncompleteParseException, ParseException}
 import upickle.default.*
@@ -9,7 +8,7 @@ import java.nio.file.NoSuchFileException
 import scala.collection.mutable.Buffer
 
 object IOHandler:
-   private val prodDataFilePath = "src/main/resources/data/"
+   val prodDataFilePath = "src/main/resources/data/"
 
    def getDataFromFile( fileName: String, dataFilePath: String = prodDataFilePath ) =
       try ujson.read( os.read( os.pwd / os.RelPath( dataFilePath + fileName + ".json" ) ) ).arr
@@ -32,7 +31,7 @@ object IOHandler:
                      write( itemList, indent = 2 )
       )
 
-   def writeSavedItems( itemList: Iterable[SavedItem], dataFilePath: String = prodDataFilePath ) =
+   def writeSavedItems( itemList: Iterable[SavedItem], dataFilePath: String ) =
       os.write.over( os.pwd / os.RelPath( dataFilePath ) / "savedItems.json",
                      write( itemList, indent = 2 )
       )

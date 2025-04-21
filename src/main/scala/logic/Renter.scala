@@ -10,10 +10,8 @@ import scala.collection.mutable.SortedSet
 case class Renter( name: String, email: String, comments: SortedSet[String] = SortedSet.empty )
     derives ReadWriter:
 
-   def getBookings = bookings.filter( _.renter == this.name )
-
    def getRentedItems =
-      this.getBookings.flatMap(_.getItemDetails).toSet
+      bookings.filter( _.renter == this.name ).flatMap( _.getItemDetails ).toSet
 
 object Renter:
    val renters =
