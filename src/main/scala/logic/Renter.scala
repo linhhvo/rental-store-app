@@ -1,6 +1,6 @@
 package logic
 
-import logic.util.IOHandler.getDataFromFile
+import logic.util.IOHandler.{getDataFromFile, getRenterData}
 import logic.BookingList.bookings
 import upickle.default.*
 
@@ -14,8 +14,7 @@ case class Renter( name: String, email: String, comments: SortedSet[String] = So
       bookings.filter( _.renter == this.name ).flatMap( _.getItemDetails ).toSet
 
 object Renter:
-   val renters =
-      getDataFromFile( "renters" ).map( r => read[Renter]( r ) )
+   val renters = getRenterData()
 
 @main def addRenter() =
    val renter1 = Renter( "renter1", "renter1@email.com" )

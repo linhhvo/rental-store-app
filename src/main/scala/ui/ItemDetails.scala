@@ -293,7 +293,7 @@ object ItemDetails:
                        validateLongTextInput( incidentCmt.getText, "Incident Detail" ),
                        validateNumInput( repairCostField.getText, "Repair Cost" )
                    )
-                   item.reportIncident( newIncident, affectedQuantity.getValue )
+                   item.reportIncident( newIncident )
 
                    displayAlert( messageAlert, "Incident has been reported" )
 
@@ -357,7 +357,7 @@ object ItemDetails:
          status3.children = Array(
              statusLabel3,
              Label(
-                 item.getEarliestReturnDate
+                 item.getEarliestReturnDate()
                     .format( DateTimeFormatter.ofPattern( "dd-MM-yyyy HH:mm" ) )
              )
          )

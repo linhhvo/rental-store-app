@@ -52,7 +52,7 @@ object ReturnItem:
          // if selected renter is not empty, update booking list
          if newValue != null then
             filteredBookings = bookings
-               .filter( b => b.renter == newValue && b.outstandingItems.nonEmpty )
+               .filter( b => b.renter == newValue && b.outstandingItems().nonEmpty )
             bookingList ++= filteredBookings
                .map( b =>
                   b.bookingStartTime.format( dateFormatter ) + " to " + b.bookingEndTime
@@ -86,7 +86,7 @@ object ReturnItem:
             // if found, display a list of items that need to be returned
             if selectedBooking.nonEmpty then
                itemCheckBoxes =
-                  selectedBooking.flatMap( _.outstandingItems ).toSet.map( i => CheckBox( i.name ) )
+                  selectedBooking.flatMap( _.outstandingItems() ).toSet.map( i => CheckBox( i.name ) )
                // dislay items to be returned or display a message informing user
                if itemCheckBoxes.nonEmpty then
                   itemList.children = itemCheckBoxes

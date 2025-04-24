@@ -1,10 +1,11 @@
 package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
-import logic.BookingList.{bookingListByDates, overlapBookingList}
-import logic.ItemList.{inventory, updateItemsDataSource}
+import logic.BookingList.{bookingListByDates, bookings, overlapBookingList}
+import logic.ItemList.inventory
 import logic.SavedList.calculateRentalCost
 import logic.enums.{IncidentType, ItemStatus}
+import logic.util.IOHandler.{prodDataFilePath, writeItemData}
 import logic.util.{BookingDuration, MissingData}
 import upickle.default.*
 
@@ -43,35 +44,53 @@ case class Item( name:             String,
       ownedQuantity - lostQuantity
 
    /** Get item quantity rented out in a given time interval */
-   def rentedQntByDateRange( start: LocalDateTime, end: LocalDateTime ): Int =
-      overlapBookingList( this.itemId, start, end )
+   def rentedQntByDateRange( start:        LocalDateTime,
+                             end:          LocalDateTime,
+                             bookingList:  Buffer[Booking] = bookings,
+                             allItemsList: Buffer[Item] = inventory
+   ): Int =
+      overlapBookingList( this.itemId, start, end, bookingList, allItemsList )
          .flatMap( _.items.filter( _.itemId == this.itemId ) )
          .map( _.rentQuantity )
          .sum
 
    /** Check if item has enough quantity to be rented out in a specific booking */
-   def isItemAvailable( currentBooking: Booking, requestQuantity: Int ): Boolean =
+   def isItemAvailable( currentBooking:  Booking,
+                        requestQuantity: Int,
+                        bookingList:     Buffer[Booking],
+                        allItemsList:    Buffer[Item]
+   ): Boolean =
       val reservedQuantity =
-         this.rentedQntByDateRange( currentBooking.bookingStartTime, currentBooking.bookingEndTime )
+         this.rentedQntByDateRange( currentBooking.bookingStartTime,
+                                    currentBooking.bookingEndTime,
+                                    bookingList,
+                                    allItemsList
+         )
 
       this.ownedQuantity - this.lostQuantity - reservedQuantity - requestQuantity >= 0
 
    /** Add a new comment */
-   def addComment( newCmt: String ) =
+   def addComment( newCmt:       String,
+                   allItemsList: Buffer[Item] = inventory,
+                   dataFilePath: String = prodDataFilePath
+   ) =
       this.comments += newCmt
       // update an item list in an external file
-      updateItemsDataSource()
+      writeItemData( allItemsList, dataFilePath )
 
    /** Add an incident */
-   def reportIncident( newIncident: Incident, quantity: Int ) =
-      if quantity <= 0 then throw MissingData( "Item quantity cannot be zero" )
+   def reportIncident( newIncident:  Incident,
+                       allItemsList: Buffer[Item] = inventory,
+                       dataFilePath: String = prodDataFilePath
+   ) =
+      if newIncident.affectedQuantity <= 0 then throw MissingData( "Item quantity cannot be zero" )
       else
          this.incidents += newIncident
          if newIncident.incidentType == IncidentType.Loss
-         then lostQuantity += quantity
+         then lostQuantity += newIncident.affectedQuantity
 
          // update an item list in an external file
-         updateItemsDataSource()
+         writeItemData( allItemsList, dataFilePath )
 
    /** Deactivate an item and hide it from the UI */
    def hideItem() =
@@ -87,8 +106,15 @@ case class Item( name:             String,
             .flatMap( c => c.withAllChildren( allItemsList ) )
 
    /** Get the earliest return date */
-   def getEarliestReturnDate: LocalDateTime =
-      overlapBookingList( this.itemId, LocalDateTime.now, LocalDateTime.now.plusHours( 1 ) )
+   def getEarliestReturnDate( bookingList:  Buffer[Booking] = bookings,
+                              allItemsList: Buffer[Item] = inventory
+   ): LocalDateTime =
+      overlapBookingList( this.itemId,
+                          LocalDateTime.now,
+                          LocalDateTime.now.plusHours( 1 ),
+                          bookingList,
+                          allItemsList
+      )
          .map( _.bookingEndTime )
          .min
 
@@ -125,18 +151,25 @@ case class Item( name:             String,
          .sum
 
    /** Calculate income generated from an item within a time interval */
-   def totalIncome( start: LocalDate, end: LocalDate ): Double =
-      bookingListByDates( start, end )
+   def totalIncome( start:       LocalDate,
+                    end:         LocalDate,
+                    bookingList: Buffer[Booking] = bookings,
+                    allItemsList: Buffer[Item] = inventory
+   ): Double =
+      bookingListByDates( start, end, bookingList )
          .map( b =>
             val bookingItems = b.items.filter( _.itemId == this.itemId )
             val duration = BookingDuration( b.bookingStartTime, b.bookingEndTime )
-            calculateRentalCost( duration, bookingItems )
+            calculateRentalCost( duration, bookingItems, allItemsList )
          )
          .sum
 
    /** Calculate demand for an item within a time interval */
-   def totalDemand( start: LocalDate, end: LocalDate ): Int =
-      bookingListByDates( start, end )
+   def totalDemand( start:       LocalDate,
+                    end:         LocalDate,
+                    bookingList: Buffer[Booking] = bookings
+   ): Int =
+      bookingListByDates( start, end, bookingList )
          .flatMap( _.items.filter( _.itemId == this.itemId ) )
          .map( _.rentQuantity )
          .sum

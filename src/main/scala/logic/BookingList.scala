@@ -1,43 +1,42 @@
 package logic
 
-import logic.util.IOHandler.{getDataFromFile, prodDataFilePath, writeBookings}
+import logic.ItemList.inventory
+import logic.util.IOHandler.{getBookingData, prodDataFilePath, writeBookingData}
 import logic.util.ItemNotAvailable
-import upickle.default.read
 
 import java.time.{LocalDate, LocalDateTime}
 import scala.collection.mutable.Buffer
 
 object BookingList:
-
    // get booking list from external file
-   val bookings =
-      getDataFromFile( "bookings" ).map( item => read[Booking]( item ) )
+   val bookings = getBookingData()
 
    /** Add a new rental reservation */
    def addBooking( newBooking:   Booking,
                    bookingList:  Buffer[Booking] = bookings,
+                   allItemsList: Buffer[Item] = inventory,
                    dataFilePath: String = prodDataFilePath
    ) =
       // check if saved items are available during requested booking period
       val isAvailable: Boolean =
          newBooking.items.forall( si =>
-            si.getDetailsFromItemList().exists( _.isItemAvailable( newBooking, si.rentQuantity ) )
+            si.getDetailsFromItemList( allItemsList )
+               .exists(
+                   _.isItemAvailable( newBooking, si.rentQuantity, bookingList, allItemsList )
+               )
          )
 
       if isAvailable then
          bookingList += newBooking
          newBooking.items.foreach( bi => bi.confirmBooking() )
-         writeBookings( bookingList, dataFilePath)
+         writeBookingData( bookingList, dataFilePath )
       else
          throw ItemNotAvailable(
              s"Some item in this bundle is not available for rent"
          )
 
    /** Get a list of bookings that have the end date falls within a time interval */
-   def bookingListByDates( start:       LocalDate,
-                           end:         LocalDate,
-                           bookingList: Buffer[Booking] = bookings
-   ) =
+   def bookingListByDates( start: LocalDate, end: LocalDate, bookingList: Buffer[Booking] ) =
       if start == null && end == null then bookingList
       else if start != null && end == null then
          bookingList.filter( b =>
@@ -64,8 +63,9 @@ object BookingList:
    def overlapBookingList( targetItemId: String,
                            start:        LocalDateTime,
                            end:          LocalDateTime,
-                           bookingList:  Buffer[Booking] = bookings
+                           bookingList:  Buffer[Booking],
+                           allItemsList: Buffer[Item]
    ): Buffer[Booking] =
       bookingList
-         .filter( _.outstandingItems.map( _.itemId ).contains( targetItemId ) )
+         .filter( _.outstandingItems( allItemsList ).map( _.itemId ).contains( targetItemId ) )
          .filter( b => b.bookingStartTime.isBefore( end ) && b.bookingEndTime.isAfter( start ) )

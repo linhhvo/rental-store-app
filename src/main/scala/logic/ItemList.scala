@@ -11,17 +11,11 @@ import java.io.File
 import scala.collection.mutable.Buffer
 
 object ItemList:
-
-   val inventory =
-      getDataFromFile( "items" ).map( item => read[Item]( item ) )
+   val inventory = getItemData()
 
    /** Get only active items */
    def activeItems( itemList: Buffer[Item] = inventory ) =
       itemList.filter( i => i.status == Active )
-
-   /** Update items list in external file */
-   def updateItemsDataSource( dataFilePath: String = prodDataFilePath ) =
-      writeItems( inventory, dataFilePath )
 
    /** Add new item to inventory list */
    def addItem( item:           Item,
@@ -62,15 +56,16 @@ object ItemList:
       if validItem then
          item.image = item.name.toLowerCase + ".png"
          itemList += item
-         writeItems( itemList, dataFilePath )
-         os.copy.over( os.Path( imageFile ), os.pwd / os.RelPath( prodImageFilePath + item.image ) )
+         writeItemData( itemList, dataFilePath )
+         os.copy.over( os.Path( imageFile ), os.pwd / os.RelPath( imageFilePath + item.image ) )
 
    }
 
    /** Delete item from inventory list */
-   def deleteItem( item:         Item,
-                   itemList:     Buffer[Item] = inventory,
-                   dataFilePath: String = prodDataFilePath
+   def deleteItem( item:          Item,
+                   itemList:      Buffer[Item] = inventory,
+                   dataFilePath:  String = prodDataFilePath,
+                   imageFilePath: String = prodImageFilePath
    ) =
       activeItems( itemList ).find( _.itemId == item.itemId ) match
          /* if item exists and is active, set item status to Inactive and remove from parent item
@@ -80,7 +75,7 @@ object ItemList:
             // remove associated item image from resources folder
             if di.image != "" then
                try
-                  os.remove( os.pwd / os.RelPath( "src/main/resources/images/" + di.image ) )
+                  os.remove( os.pwd / os.RelPath( imageFilePath + di.image ) )
                   di.image = ""
                catch case _ => println( "cannot remove item image" )
 
@@ -90,7 +85,7 @@ object ItemList:
                   pi.deleteChildren( di.itemId )
                case None       => // Do nothing
             // update items list in external file
-            writeItems( itemList, dataFilePath )
+            writeItemData( itemList, dataFilePath )
 
             // remove item from saved list if it was added to saved list before deleting
             removeFromCart( di )
@@ -98,3 +93,10 @@ object ItemList:
          // if item is not found in the items list, throw error
          case None =>
             throw ItemDoesNotExist( s"${item.name} does not exist or is not active in the system" )
+
+   /** Get active items that belong to an item category */
+   def getItemsByCategory( category: String ): Buffer[Item] =
+      activeItems().filter( i => i.category == category )
+
+   def itemCountByCategory( category: String ): Int =
+      this.getItemsByCategory( category ).size

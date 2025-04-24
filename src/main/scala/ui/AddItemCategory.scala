@@ -2,6 +2,7 @@ package ui
 
 import logic.ItemCategory
 import logic.ItemCategory.*
+import logic.ItemList.itemCountByCategory
 import logic.util.{DuplicateItemCategory, InvalidInput, ItemDoesNotExist}
 import scalafx.geometry.Insets
 import scalafx.scene.control.*
@@ -81,8 +82,8 @@ object AddItemCategory:
              // list the number of items in each category
              targetCategories.foreach( c =>
                 deleteCatMsg = deleteCatMsg +
-                   ( if itemInCategoryCount( c ) > 0 then
-                        s"There are ${itemInCategoryCount( c )} items in category $c\n\nThe associated items will also be deleted."
+                   ( if itemCountByCategory( c ) > 0 then
+                        s"There are ${itemCountByCategory( c )} items in category $c\n"
                      else s"There are no item in category $c\n" )
              )
 
@@ -91,7 +92,7 @@ object AddItemCategory:
                 // display a confirmation alert with messsage warning about related items
                 new Alert( Confirmation ):
                    headerText =
-                      deleteCatMsg + "\nAre you sure you want to delete selected categories?"
+                      deleteCatMsg + "\nThe associated items, if any, will also be deleted.\nAre you sure you want to delete selected categories?"
                    buttonTypes = Seq( ButtonType.Yes, ButtonType.No )
                 .showAndWait() match
                    // if user selects Yes button, proceed with deletion

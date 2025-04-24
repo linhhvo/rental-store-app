@@ -2,8 +2,9 @@ package logic
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils.*
 import logic.BookingList.bookings
+import logic.ItemList.inventory
 import logic.enums.SavedItemStatus.*
-import logic.util.IOHandler.{prodDataFilePath, writeBookings}
+import logic.util.IOHandler.{prodDataFilePath, writeBookingData}
 import upickle.default.*
 
 import java.time.LocalDateTime
@@ -23,10 +24,10 @@ case class Booking( items:            Buffer[SavedItem] = Buffer.empty,
    def getItemDetails: Buffer[Item] = this.items.flatMap( _.getDetailsFromItemList() )
 
    /** Get item details for all items that are being rented out and have not been returned */
-   def outstandingItems: Buffer[Item] =
+   def outstandingItems(allItemsList: Buffer[Item] = inventory) : Buffer[Item] =
       this.items
          .filter( i => i.savedItemStatus == Booked )
-         .flatMap( _.getDetailsFromItemList() )
+         .flatMap( _.getDetailsFromItemList(allItemsList) )
 
    /** Return selected items in this booking */
    def returnItems( targetItemNames: Set[String],
@@ -41,7 +42,7 @@ case class Booking( items:            Buffer[SavedItem] = Buffer.empty,
          )
          .foreach( _.returnFromBooking() )
 
-      writeBookings( bookingList, dataFilePath )
+      writeBookingData(bookingList, dataFilePath)
 end Booking
 
 object Booking:
