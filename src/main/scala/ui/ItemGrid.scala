@@ -23,7 +23,7 @@ object ItemGrid:
 
    /** Create UI components for each item and display in a grid format */
    def renderItemGridPage =
-      val itemElements = activeItems.map( item =>
+      val itemElements = activeItems().map( item =>
          val itemImageView = getItemImageView( item )
 
          val itemNameLabel = new Label:

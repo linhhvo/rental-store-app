@@ -34,7 +34,7 @@ object ItemCategory:
 
    /** Get active items that belong to an item category */
    def getItemsInCategory( category: String ): Buffer[Item] =
-      activeItems.filter( i => i.category == category )
+      activeItems().filter( i => i.category == category )
 
    def itemInCategoryCount( category: String ): Int =
       this.getItemsInCategory( category ).size

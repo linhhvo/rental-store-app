@@ -1,8 +1,8 @@
 package ui
 
 import logic.*
-import logic.ItemList.activeItems
 import logic.ItemCategory.itemCategoryList
+import logic.ItemList.activeItems
 import logic.util.{DuplicateItem, InvalidInput, ItemDoesNotExist}
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.Insets
@@ -166,17 +166,10 @@ object AddItem:
                 )
 
                 // if no parent item is selected, add item without parent
-                if dataToReset._2.getValue == null then ItemList.addItem(newItem, None)
+                if dataToReset._2.getValue == null then
+                   ItemList.addItem( newItem, None, selectedImage )
                 else // if parent item is selected
-                   ItemList.addItem(newItem, Some(dataToReset._2.getValue))
-
-                // copy selected image to resources folder
-                val newImage = File(
-                    nameTextField.getText.trim.toLowerCase + ".png"
-                )
-                os.copy.over( os.Path( selectedImage ),
-                              os.pwd / os.RelPath( "src/main/resources/images/" + newImage.getName )
-                )
+                   ItemList.addItem( newItem, Some( dataToReset._2.getValue ), selectedImage )
 
                 // display success message to user and clear page
                 displayAlert( messageAlert, "Item added to the system" )
@@ -226,7 +219,7 @@ object AddItem:
 
       // get a list of existing item names as potential parent item
       val parentList = ObservableBuffer.empty[String]
-      parentList ++= activeItems.map( item => item.name )
+      parentList ++= activeItems().map( item => item.name )
       // drop down menu
       val depChoiceBox = new ChoiceBox[String]:
          items = parentList

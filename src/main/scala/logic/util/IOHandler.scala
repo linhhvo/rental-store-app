@@ -9,6 +9,7 @@ import scala.collection.mutable.Buffer
 
 object IOHandler:
    val prodDataFilePath = "src/main/resources/data/"
+   val prodImageFilePath = "src/main/resources/images/"
 
    def getDataFromFile( fileName: String, dataFilePath: String = prodDataFilePath ) =
       try ujson.read( os.read( os.pwd / os.RelPath( dataFilePath + fileName + ".json" ) ) ).arr

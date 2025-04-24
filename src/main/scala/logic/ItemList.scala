@@ -7,6 +7,7 @@ import logic.util.IOHandler.*
 import logic.util.{DuplicateItem, ItemDoesNotExist}
 import upickle.default.*
 
+import java.io.File
 import scala.collection.mutable.Buffer
 
 object ItemList:
@@ -15,55 +16,63 @@ object ItemList:
       getDataFromFile( "items" ).map( item => read[Item]( item ) )
 
    /** Get only active items */
-   def activeItems = inventory.filter( i => i.status == Active )
+   def activeItems( itemList: Buffer[Item] = inventory ) =
+      itemList.filter( i => i.status == Active )
 
    /** Update items list in external file */
    def updateItemsDataSource( dataFilePath: String = prodDataFilePath ) =
       writeItems( inventory, dataFilePath )
 
    /** Add new item to inventory list */
-   def addItem( item:         Item,
-                parentItem:   Option[String],
-                itemList:     Buffer[Item] = inventory,
-                dataFilePath: String = prodDataFilePath
-   ) =
+   def addItem( item:           Item,
+                parentItemName: Option[String],
+                imageFile:      File,
+                itemList:       Buffer[Item] = inventory,
+                categoryList:   Buffer[String] = itemCategoryList,
+                dataFilePath:   String = prodDataFilePath,
+                imageFilePath:  String = prodImageFilePath
+   ) = {
+      var validItem = false
       // check that the selected item category exists in the system
-      if !itemCategoryList.contains( item.category.toUpperCase ) then
+      if !categoryList.contains( item.category.toUpperCase ) then
          throw ItemDoesNotExist( s"Item category ${item.category} doesn't exist in the system" )
       else
          // check that the same item doesn't already exist in the system
-         if activeItems.exists( _.name.trim.toLowerCase == item.name.trim.toLowerCase )
+         if activeItems( itemList ).exists( _.name.trim.toLowerCase == item.name.trim.toLowerCase )
          then throw DuplicateItem( s"${item.name} already exists in the system" )
          else
             /* parent item is not required but if an item is selected, check that the parent item
              * exists in the system and is active */
-            parentItem match
+            parentItemName match
                case Some( parent ) =>
-                  activeItems.find( _.name == parent ) match
+                  activeItems( itemList ).find( _.name == parent ) match
                      /* if parent item found, add new item to items list and to parent's
                       * dependencies list */
                      case Some( pi ) =>
-                        item.image = item.name.toLowerCase + ".png"
-                        itemList += item
+                        validItem = true
                         pi.addChildren( item.itemId )
-                        writeItems( itemList, dataFilePath )
                      // if parent item not found
                      case None       =>
                         throw ItemDoesNotExist(
                             s"Parent item $parent doesn't exist in the system"
                         )
                // if no parent item is selected, only add new item to items list
-               case None           =>
-                  item.image = item.name.toLowerCase + ".png"
-                  itemList += item
-                  writeItems( itemList, dataFilePath )
+               case None           => validItem = true
+
+      if validItem then
+         item.image = item.name.toLowerCase + ".png"
+         itemList += item
+         writeItems( itemList, dataFilePath )
+         os.copy.over( os.Path( imageFile ), os.pwd / os.RelPath( prodImageFilePath + item.image ) )
+
+   }
 
    /** Delete item from inventory list */
    def deleteItem( item:         Item,
                    itemList:     Buffer[Item] = inventory,
                    dataFilePath: String = prodDataFilePath
    ) =
-      activeItems.find( _.itemId == item.itemId ) match
+      activeItems( itemList ).find( _.itemId == item.itemId ) match
          /* if item exists and is active, set item status to Inactive and remove from parent item
           * dependency if any */
          case Some( di ) =>
@@ -76,7 +85,7 @@ object ItemList:
                catch case _ => println( "cannot remove item image" )
 
             // check if deleted item is any other item's child
-            inventory.find( _.children.contains( di.itemId ) ) match
+            itemList.find( _.children.contains( di.itemId ) ) match
                case Some( pi ) => // if parent item found, delete item from children list
                   pi.deleteChildren( di.itemId )
                case None       => // Do nothing

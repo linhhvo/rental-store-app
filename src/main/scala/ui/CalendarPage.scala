@@ -24,7 +24,7 @@ class CalendarPage:
    private val rentalReservations = CalendarSource( "Reservations" )
 
    // create a calendar for each item
-   private val itemCalendarList = activeItems.map( i => i.itemId -> new Calendar( i.name ) ).toMap
+   private val itemCalendarList = activeItems().map( i => i.itemId -> new Calendar( i.name ) ).toMap
 
    // assign different color styles to each calendar
    private var styleNum = 1
