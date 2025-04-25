@@ -1,10 +1,9 @@
 package logic.util
 
 import logic.{Booking, Item, Renter, SavedItem}
-import ujson.{IncompleteParseException, ParseException}
+import ujson.IncompleteParseException
 import upickle.default.*
 
-import java.nio.file.NoSuchFileException
 import scala.collection.mutable.Buffer
 
 object IOHandler:
@@ -14,33 +13,46 @@ object IOHandler:
    def getDataFromFile( fileName: String, dataFilePath: String ) =
       try ujson.read( os.read( os.pwd / os.RelPath( dataFilePath + fileName + ".json" ) ) ).arr
       catch
-         case IncompleteParseException( msg ) =>
-            Buffer.empty
-         case ParseException( msg, num )      =>
-            println( "Data source file does not have the correct format\n" + msg )
-            Buffer.empty
-         case e: NoSuchFileException =>
-            println( "Missing data source file\n" + e )
-            Buffer.empty
-         case _ =>
-            println( "Cannot load data source" )
+         case IncompleteParseException( m ) => Buffer.empty
+         case e: Exception =>
+            println( e )
             Buffer.empty
    end getDataFromFile
 
    def getItemData( dataFilePath: String = prodDataFilePath ) =
-      getDataFromFile( "items", dataFilePath ).map( value => read[Item]( value ) )
+      try getDataFromFile( "items", dataFilePath ).map( value => read[Item]( value ) )
+      catch
+         case e: Exception =>
+            println( e )
+            Buffer.empty
 
    def getBookingData( dataFilePath: String = prodDataFilePath ) =
-      getDataFromFile( "bookings", dataFilePath ).map( value => read[Booking]( value ) )
+      try getDataFromFile( "bookings", dataFilePath ).map( value => read[Booking]( value ) )
+      catch
+         case e: Exception =>
+            println( e )
+            Buffer.empty
 
    def getSavedListData( dataFilePath: String = prodDataFilePath ) =
-      getDataFromFile( "savedItems", dataFilePath ).map( value => read[SavedItem]( value ) )
+      try getDataFromFile( "savedItems", dataFilePath ).map( value => read[SavedItem]( value ) )
+      catch
+         case e: Exception =>
+            println( e )
+            Buffer.empty
 
    def getCategoryData( dataFilePath: String = prodDataFilePath ) =
-      getDataFromFile( "itemCategories", dataFilePath ).map( _.str.toUpperCase )
+      try getDataFromFile( "itemCategories", dataFilePath ).map( _.str.toUpperCase )
+      catch
+         case e: Exception =>
+            println( e )
+            Buffer.empty
 
    def getRenterData( dataFilePath: String = prodDataFilePath ) =
-      getDataFromFile( "renters", dataFilePath ).map( value => read[Renter]( value ) )
+      try getDataFromFile( "renters", dataFilePath ).map( value => read[Renter]( value ) )
+      catch
+         case e: Exception =>
+            println( e )
+            Buffer.empty
 
    def writeItemData( itemList: Iterable[Item], dataFilePath: String ) =
       os.write.over( os.pwd / os.RelPath( dataFilePath ) / "items.json",

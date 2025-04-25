@@ -1,0 +1,18 @@
+},
+{
+"name": "child1",
+"desc": "child item 1",
+"ownedQuantity": 10,
+"category": "valid",
+"ratePerHour": 10,
+"ratePerDay": 100,
+"ratePerWeek": 1000,
+"itemId": "mPH39M_l8aMclEjkzw9em",
+"incidents": [],
+"children": [],
+"image": "",
+"comments": [],
+"lostQuantity": 0,
+"status": "Inactive"
+}
+]

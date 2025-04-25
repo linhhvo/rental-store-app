@@ -2,7 +2,7 @@ import logic.*
 import logic.ItemList.{addItem, deleteItem}
 import logic.enums.IncidentType.{Damage, Loss}
 import logic.enums.ItemStatus
-import logic.util.IOHandler.{getCategoryData, getItemData}
+import logic.util.IOHandler.getItemData
 import logic.util.{DuplicateItem, ItemDoesNotExist}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.*
@@ -175,4 +175,26 @@ class ItemSpec extends AnyFlatSpec with Matchers:
       newItemList should have size 2
       newItemList.foreach( i => i shouldBe a[Item] )
       newItemList should contain theSameElementsAs ( testItems )
+   }
+
+   it should "print out an error message to the console and return an empty list if items.json file doesn't exist" in {
+      os.remove( os.pwd / os.RelPath( testDataFilePath + "items.json" ) )
+      val newItemList = getItemData( testDataFilePath )
+      newItemList should have size 0
+   }
+
+   it should "print out an error message to the console and return an empty list if data is not in the correct format" in {
+      os.copy.over( os.pwd / os.RelPath( testDataFilePath + "invalidFile.json" ),
+                    os.pwd / os.RelPath( testDataFilePath + "items.json" )
+      )
+      val newItemList = getItemData( testDataFilePath )
+      newItemList should have size 0
+   }
+
+   it should "print out an error message and return an empty list if some information is missing in the file" in {
+      os.copy.over( os.pwd / os.RelPath( testDataFilePath + "missingData.json" ),
+                    os.pwd / os.RelPath( testDataFilePath + "items.json" )
+      )
+      val newItemList = getItemData( testDataFilePath )
+      newItemList should have size 0
    }
