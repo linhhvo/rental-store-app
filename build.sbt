@@ -6,3 +6,4 @@ libraryDependencies += "com.lihaoyi" %% "os-lib"      % "0.11.4"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.19"    % "test"
 libraryDependencies += "com.aventrix.jnanoid"         % "jnanoid"   % "2.0.0"
 libraryDependencies += "com.calendarfx"               % "view"      % "11.12.7"
+Compile / mainClass                                  := Some( "ui.Main" )
