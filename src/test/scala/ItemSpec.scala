@@ -2,7 +2,7 @@ import logic.*
 import logic.ItemList.{addItem, deleteItem}
 import logic.enums.IncidentType.{Damage, Loss}
 import logic.enums.ItemStatus
-import logic.util.IOHandler.getItemData
+import logic.util.IOHandler.{getCategoryData, getItemData}
 import logic.util.{DuplicateItem, ItemDoesNotExist}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.*
@@ -24,62 +24,64 @@ class ItemSpec extends AnyFlatSpec with Matchers:
    )
 
    val testItems = Buffer.empty[Item]
-   val testCategories = Buffer("VALID")
+   val testCategories = Buffer( "VALID" )
 
    val testDataFilePath = "src/test/resources/test-data/"
    val testImageFilePath = "src/test/resources/test-images/"
 
    "addItem" should "add a new item to the item list and save item data in JSON file" in {
-      assert(testItems.isEmpty)
-      addItem(validItem,
-              None,
-              itemImageFile,
-              testItems,
-              testCategories,
-              testDataFilePath,
-              testImageFilePath
-              )
+      assert( testItems.isEmpty )
+      addItem( validItem,
+               None,
+               itemImageFile,
+               testItems,
+               testCategories,
+               testDataFilePath,
+               testImageFilePath
+      )
 
       val image = new File( os.pwd.toString + "/" + testImageFilePath + "item1.png" )
 
       testItems should have size 1
-      testItems should contain(validItem)
+      testItems should contain( validItem )
       testItems.head.image shouldBe "item1.png"
       image should exist
    }
 
    it should "add the new item to the item list and to its parent item's children list" in {
-      addItem(childItem1,
-              Some( validItem.name ),
-              itemImageFile,
-              testItems,
-              testCategories,
-              testDataFilePath,
-              testImageFilePath
-              )
+      addItem( childItem1,
+               Some( validItem.name ),
+               itemImageFile,
+               testItems,
+               testCategories,
+               testDataFilePath,
+               testImageFilePath
+      )
 
       val image = new File( os.pwd.toString + "/" + testImageFilePath + "item1.png" )
 
       testItems should have size 2
-      testItems should contain(childItem1)
-      testItems.find(_.itemId == validItem.itemId).get.children should contain(childItem1.itemId)
+      testItems should contain( childItem1 )
+      testItems.find( _.itemId == validItem.itemId ).get.children should contain(
+          childItem1.itemId
+      )
       image should exist
    }
 
    "withAllChildren" should "return a list of the item along with its child items" in {
-      validItem.withAllChildren(testItems) should contain allOf ( validItem, childItem1 )
+      validItem.withAllChildren( testItems ) should contain allOf ( validItem, childItem1 )
    }
 
    it should "throw error if the item category doesn't exist" in {
       the[ItemDoesNotExist] thrownBy {
-         addItem(invalidItem,
-                 None,
-                 itemImageFile,
-                 testItems,
-                 testCategories,
-                 testDataFilePath,
-                 testImageFilePath
-                 )
+         addItem( invalidItem,
+                  None,
+                  itemImageFile,
+                  testItems,
+                  testCategories,
+                  testDataFilePath,
+                  testImageFilePath
+         )
       } should have message s"Item category invalid doesn't exist in the system"
 
       testItems should have size 2
@@ -87,14 +89,14 @@ class ItemSpec extends AnyFlatSpec with Matchers:
 
    it should "throw error if there is already an active item with the same name" in {
       the[DuplicateItem] thrownBy {
-         addItem(validItem,
-                 None,
-                 itemImageFile,
-                 testItems,
-                 testCategories,
-                 testDataFilePath,
-                 testImageFilePath
-                 )
+         addItem( validItem,
+                  None,
+                  itemImageFile,
+                  testItems,
+                  testCategories,
+                  testDataFilePath,
+                  testImageFilePath
+         )
       } should have message "item1 already exists in the system"
 
       testItems should have size 2
@@ -102,24 +104,24 @@ class ItemSpec extends AnyFlatSpec with Matchers:
 
    it should "throw error if the given parent item doesn't exist" in {
       the[ItemDoesNotExist] thrownBy {
-         addItem(childItem2,
-                 Some( "item2" ),
-                 itemImageFile,
-                 testItems,
-                 testCategories,
-                 testDataFilePath,
-                 testImageFilePath
-                 )
+         addItem( childItem2,
+                  Some( "item2" ),
+                  itemImageFile,
+                  testItems,
+                  testCategories,
+                  testDataFilePath,
+                  testImageFilePath
+         )
       } should have message "Parent item item2 doesn't exist in the system"
 
       testItems should have size 2
    }
 
    "deteleItem" should "set an existing item's status to Inactive without actually removing it" in {
-      deleteItem(childItem1, testItems, testDataFilePath, testImageFilePath)
+      deleteItem( childItem1, testItems, testDataFilePath, testImageFilePath )
 
       testItems should have size 2
-      testItems should contain(childItem1)
+      testItems should contain( childItem1 )
       childItem1.status shouldBe ItemStatus.Inactive
       testItems
          .find( _.itemId == validItem.itemId )
@@ -129,24 +131,24 @@ class ItemSpec extends AnyFlatSpec with Matchers:
 
    it should "throw an error if the item doesn't exist in the item list" in {
       the[ItemDoesNotExist] thrownBy {
-         deleteItem(childItem2, testItems, testDataFilePath, testImageFilePath)
+         deleteItem( childItem2, testItems, testDataFilePath, testImageFilePath )
       } should have message "child2 does not exist or is not active in the system"
    }
 
    it should "throw an error if the item is already inactive" in {
       the[ItemDoesNotExist] thrownBy {
-         deleteItem(childItem1, testItems, testDataFilePath, testImageFilePath)
+         deleteItem( childItem1, testItems, testDataFilePath, testImageFilePath )
       } should have message "child1 does not exist or is not active in the system"
 
-      testItems should contain(childItem1)
+      testItems should contain( childItem1 )
    }
 
    val incident1 = Incident( Damage, LocalDate.of( 2025, 4, 4 ), 1, "test incident damage", 100 )
    val incident2 = Incident( Loss, LocalDate.of( 2025, 3, 3 ), 1, "test incident loss", 100 )
 
    "reportIncident" should "add a new incident to the item's incident list and adjust lost quantity if needed" in {
-      validItem.reportIncident(incident1, testItems, testDataFilePath)
-      validItem.reportIncident(incident2, testItems, testDataFilePath)
+      validItem.reportIncident( incident1, testItems, testDataFilePath )
+      validItem.reportIncident( incident2, testItems, testDataFilePath )
 
       validItem.incidents should have size 2
       validItem.incidents should contain allOf ( incident1, incident2 )
@@ -168,8 +170,9 @@ class ItemSpec extends AnyFlatSpec with Matchers:
       ) shouldBe 0.0
    }
 
-   "getDataFromFile" should "parse items data from items.json file into a list of Item instances" in {
+   "getItemData" should "parse items data from items.json file into a list of Item instances" in {
       val newItemList = getItemData( testDataFilePath )
       newItemList should have size 2
+      newItemList.foreach( i => i shouldBe a[Item] )
       newItemList should contain theSameElementsAs ( testItems )
    }

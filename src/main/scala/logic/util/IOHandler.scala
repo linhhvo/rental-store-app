@@ -1,6 +1,5 @@
 package logic.util
 
-import logic.ItemCategory.itemCategoryList
 import logic.{Booking, Item, Renter, SavedItem}
 import ujson.{IncompleteParseException, ParseException}
 import upickle.default.*

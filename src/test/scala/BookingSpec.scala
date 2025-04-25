@@ -1,5 +1,6 @@
 import logic.BookingList.addBooking
 import logic.SavedList.*
+import logic.util.IOHandler.{getBookingData, getSavedListData}
 import logic.util.{BookingDuration, ItemNotAvailable, MissingData}
 import logic.{Booking, Item, SavedItem}
 import org.scalatest.flatspec.AnyFlatSpec
@@ -95,9 +96,18 @@ class BookingSpec extends AnyFlatSpec with Matchers:
    }
 
    "totalDemand" should "calculate the total rented quantity from bookings within the given date range" in {
-      item2.totalDemand(LocalDate.of( 2025, 4, 11 ),
+      item2.totalDemand( LocalDate.of( 2025, 4, 11 ),
                          LocalDate.of( 2025, 4, 13 ),
-                         testBookingList) shouldBe 2
+                         testBookingList
+      ) shouldBe 2
+   }
+
+   "getBookingData" should "parse booking data from bookings.json into a list of Booking instances" in {
+      val newBookingList = getBookingData( testDataFilePath )
+
+      newBookingList should have size 2
+      newBookingList.foreach( b => b shouldBe a[Booking] )
+      newBookingList should contain theSameElementsAs ( testBookingList )
    }
 
    "removeFromCart" should "remove the given item from the saved list" in {
@@ -105,4 +115,12 @@ class BookingSpec extends AnyFlatSpec with Matchers:
 
       testSavedList should have size 1
       testSavedList.find( _.itemId == item1.itemId ) shouldBe empty
+   }
+
+   "getSavedListData" should "parse saved list data from savedItems.json into a list of SavedItem instances" in {
+      val newSavedList = getSavedListData( testDataFilePath )
+
+      newSavedList should have size 1
+      newSavedList.foreach( s => s shouldBe a[SavedItem] )
+      newSavedList should contain theSameElementsAs ( testSavedList )
    }
