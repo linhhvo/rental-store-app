@@ -1,22 +1,18 @@
 [
   {
     "name": "renter1",
-    "email": "renter1@email.com",
-    "comments": []
+    "email": "renter1@email.com"
   },
   {
     "name": "renter2",
-    "email": "renter2@email.com",
-    "comments": []
+    "email": "renter2@email.com"
   },
   {
     "name": "renter3",
-    "email": "renter3@email.com",
-    "comments": []
+    "email": "renter3@email.com"
   },
   {
     "name": "renter4",
-    "email": "renter4@email.com",
-    "comments": []
+    "email": "renter4@email.com"
   }
 ]
