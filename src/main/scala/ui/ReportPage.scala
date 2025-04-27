@@ -1,7 +1,7 @@
 package ui
 
-import logic.ItemList.inventory
 import logic.Item
+import logic.ItemList.inventory
 import logic.enums.IncidentType.{Damage, Loss}
 import scalafx.geometry.Insets
 import scalafx.geometry.Orientation.Horizontal
@@ -153,8 +153,8 @@ object ReportPage:
             prefWidth = 500
 
          val incCost =
-            if inc.incidentType == Loss then Label( "Replacement Cost: " + inc.repairCost )
-            else Label( "Repair Cost: " + inc.repairCost )
+            if inc.incidentType == Loss then Label( f"Replacement Cost: ${inc.repairCost}%,.2f" )
+            else Label( f"Repair Cost: ${inc.repairCost}%,.2f" )
 
          new VBox:
             children = Array( incType, incDate, incQnt, incDetails, incCost )
@@ -193,9 +193,9 @@ object ReportPage:
             children = Array(
                 nameLabel,
                 Label( "Demand: " + i.totalDemand( start, end ) + " unit(s)" ),
-                Label( "Income: " + i.totalIncome( start, end ) ),
-                Label( "Repair Cost: " + i.totalExpense( Damage, start, end ) ),
-                Label( "Replacement Cost: " + i.totalExpense( Loss, start, end ) )
+                Label( f"Income: ${i.totalIncome( start, end )}%,.2f" ),
+                Label( f"Repair Cost: ${i.totalExpense( Damage, start, end )}%,.2f" ),
+                Label( f"Replacement Cost: ${i.totalExpense( Loss, start, end )}%,.2f" )
             )
             spacing = 5
             margin = Insets( 0, 0, 5, 20 )

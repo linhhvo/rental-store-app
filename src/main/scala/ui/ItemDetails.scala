@@ -318,20 +318,24 @@ object ItemDetails:
          children = Array( catLabel, Label( item.category ) )
          alignment = BaselineLeft
 
-      val itemDesc = new HBox:
-         children = Array( descLabel, Label( item.desc ) )
-         alignment = BaselineLeft
+      val itemDesc = new VBox:
+         children = Array( descLabel,
+                           new Label:
+                              text = item.desc
+                              wrapText = true
+                              maxWidth = 400
+         )
 
       val itemRph = new HBox:
-         children = Array( rphLabel, Label( item.ratePerHour.toString ) )
+         children = Array( rphLabel, Label( f"${item.ratePerHour}%,.2f" ) )
          alignment = BaselineLeft
 
       val itemRpd = new HBox:
-         children = Array( rpdLabel, Label( item.ratePerDay.toString ) )
+         children = Array( rpdLabel, Label( f"${item.ratePerDay}%,.2f" ) )
          alignment = BaselineLeft
 
       val itemRpw = new HBox:
-         children = Array( rpwLabel, Label( item.ratePerWeek.toString ) )
+         children = Array( rpwLabel, Label( f"${item.ratePerWeek}%,.2f" ) )
          alignment = BaselineLeft
 
       // display item availability status
@@ -357,13 +361,19 @@ object ItemDetails:
          status3.children = Array(
              statusLabel3,
              Label(
-                 item.getEarliestReturnDate()
+                 item
+                    .getEarliestReturnDate()
                     .format( DateTimeFormatter.ofPattern( "dd-MM-yyyy HH:mm" ) )
              )
          )
 
       // display item comments
-      val itemCmt = VBox( cmtLabel, Label( "- " + item.comments.mkString( "\n- " ) ) )
+      val itemCmt = VBox( cmtLabel,
+                          new Label:
+                             text = "- " + item.comments.mkString( "\n- " )
+                             wrapText = true
+                             maxWidth = 400
+      )
       if item.comments.isEmpty then
          itemCmt.visible = false
          itemCmt.managed = false

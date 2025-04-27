@@ -94,7 +94,7 @@ object RentItem:
 
    // update cost label to display new cost when start or end datetime change
    totalCost.onChange { ( source, oldValue, newValue ) =>
-      costLabel.text = s"Rental Total Cost: ${totalCost.value}"
+      costLabel.text = f"Rental Total Cost: ${totalCost.value}%,.2f"
    }
 
    /* BOOKING BUTTON */
