@@ -4,6 +4,10 @@ A desktop rental management app for tracking inventory and reservations, built w
 
 **Tech stack:** Scala · ScalaFX · sbt · local JSON storage · JDK 21+
 
+### Demo
+
+https://github.com/user-attachments/assets/8f30637d-59d9-4b41-84e7-2cdddf8234c7
+
 ## What I Learned
 
 - Planning and documenting a system from design through to completion
@@ -133,8 +137,7 @@ The code is split into two layers:
 - **`logic/`**: the domain model (items, bookings, renters, incidents), the lists that manage them, and the JSON persistence in `util/IOHandler.scala`.
 - **`ui/`**: the ScalaFX views and the reusable components and validators in `ui/util/`.
  
-<details>
-<summary>Project structure</summary>
+### Project structure
 
 ```text
 src/main
@@ -185,7 +188,6 @@ src/main
         │   └── Validator.scala
         └── ViewRenter.scala
 ```
-</details>
 
 ## Class Diagram
 
